@@ -16,8 +16,8 @@ const STATIONS = [
     trackUrl1: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
     trackUrl2: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
     colors: {
-      neonPink: "#ff6600",
-      neonGreen: "#ffcc00",
+      neonPink: "#ff00ff",
+      neonGreen: "#a1fb00",
       surfaceLowest: "#0e0d0a",
       surfaceLow: "#1c1b18"
     },
@@ -58,8 +58,8 @@ const STATIONS = [
     trackUrl2: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
     trackUrl3: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-11.mp3",
     colors: {
-      neonPink: "#ff003c",
-      neonGreen: "#00ffff",
+      neonPink: "#0066FF",
+      neonGreen: "#a1fb00",
       surfaceLowest: "#0f0a0a",
       surfaceLow: "#1d1919"
     },
@@ -106,7 +106,7 @@ const STATIONS = [
     trackUrl1: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
     trackUrl2: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3",
     colors: {
-      neonPink: "#ff00ff",
+      neonPink: "#D4AF37",
       neonGreen: "#a1fb00",
       surfaceLowest: "#0e0e0e",
       surfaceLow: "#1c1b1b"
@@ -153,7 +153,7 @@ const STATIONS = [
     trackUrl3: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-12.mp3",
     colors: {
       neonPink: "#B0B7C3",
-      neonGreen: "#ffffff",
+      neonGreen: "#a1fb00",
       surfaceLowest: "#0d0d0c",
       surfaceLow: "#1c1c1a"
     },
@@ -203,8 +203,8 @@ const STATIONS = [
     trackUrl1: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3",
     trackUrl2: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3",
     colors: {
-      neonPink: "#9b30ff",
-      neonGreen: "#00ffcc",
+      neonPink: "#7B00FF",
+      neonGreen: "#a1fb00",
       surfaceLowest: "#0a0d0e",
       surfaceLow: "#181a1c"
     },
@@ -245,7 +245,7 @@ const STATIONS = [
     trackUrl2: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
     colors: {
       neonPink: "#FF2DAA",
-      neonGreen: "#ffff00",
+      neonGreen: "#a1fb00",
       surfaceLowest: "#0e0a0d",
       surfaceLow: "#1c181b"
     },
@@ -285,7 +285,7 @@ const STATIONS = [
     trackUrl2: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3",
     colors: {
       neonPink: "#FF6B1A",
-      neonGreen: "#39ff14",
+      neonGreen: "#a1fb00",
       surfaceLowest: "#0a0e0a",
       surfaceLow: "#181c18"
     },
@@ -326,8 +326,8 @@ const STATIONS = [
     trackUrl1: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3",
     trackUrl2: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3",
     colors: {
-      neonPink: "#ff3333",
-      neonGreen: "#ff3333",
+      neonPink: "#5A5F6E",
+      neonGreen: "#a1fb00",
       surfaceLowest: "#0d0a0a",
       surfaceLow: "#1a1515"
     },
@@ -367,8 +367,8 @@ const STATIONS = [
     trackUrl1: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3",
     trackUrl2: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3",
     colors: {
-      neonPink: "#B3001B",
-      neonGreen: "#00ffcc",
+      neonPink: "#FF2A2A",
+      neonGreen: "#a1fb00",
       surfaceLowest: "#0a070e",
       surfaceLow: "#15101c"
     },
@@ -409,8 +409,8 @@ const STATIONS = [
     trackUrl1: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3",
     trackUrl2: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
     colors: {
-      neonPink: "#ff0099",
-      neonGreen: "#ccff00",
+      neonPink: "#00C2B2",
+      neonGreen: "#a1fb00",
       surfaceLowest: "#0e090b",
       surfaceLow: "#1c1216"
     },
@@ -440,3 +440,4 @@ const STATIONS = [
 ];
 
 if (typeof module !== 'undefined') { module.exports = STATIONS; }
+

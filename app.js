@@ -40,8 +40,6 @@ function formatTime(secs) {
 
 function applyStationTheme(station) {
   const r = document.documentElement.style;
-  r.setProperty('--neon-pink', station.colors.neonPink);
-  r.setProperty('--neon-green', station.colors.neonGreen);
   r.setProperty('--surface-lowest', station.colors.surfaceLowest);
   r.setProperty('--surface-low', station.colors.surfaceLow);
 }
@@ -431,6 +429,13 @@ function resetPartProgressUI(partNum) {
 function updateUIForStation(station) {
   // Apply CSS theme colors to :root (bridges entire page)
   applyStationTheme(station);
+
+  // Apply episodic body theme class
+  document.body.className = document.body.className
+    .split(' ')
+    .filter(c => !c.startsWith('theme-ep'))
+    .join(' ');
+  document.body.classList.add(`theme-ep${station.epNum}`);
 
   // Header / hero
   DOM.signalBadgeText.textContent = `SIGNAL: ${station.freq.toFixed(1)} FM`;
