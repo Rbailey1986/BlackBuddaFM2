@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BLACK BUDDHA FM | TACTICAL BROADCAST DECK</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Rock+Salt&family=JetBrains+Mono:wght@400;500;700&family=Hanken+Grotesk:wght@400;500;700&family=Bebas+Neue&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <div class="crt"></div>
+
+  <!-- Ticker — populated dynamically from STATIONS in app.js -->
+  <div class="ticker-wrap">
+    <div class="ticker" id="ticker"></div>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="header-inner">
+      <div class="logo-block">
+        <span class="logo-name">BLACK BUDDHA FM</span>
+        <span class="logo-sub">PIRATE BROADCASTING 24/7</span>
+      </div>
+      <nav id="main-nav">
+        <a href="episodes.html">EPISODES</a>
+        <a href="#player">MIXES</a>
+        <a href="#archive">ARCHIVE</a>
+        <a href="#about">ABOUT</a>
+      </nav>
+      <div class="header-right">
+        <div class="signal-badge">
+          <span class="flicker"></span>
+          <span id="signal-badge-text">SIGNAL: 93.5 FM</span>
+        </div>
+      </div>
+    </div>
+
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-bg"></div>
+      <div class="section-inner" style="padding-top:48px;padding-bottom:48px;">
+        <div class="hero-grid">
+          <div>
+            <div class="on-air-box"><span>ON AIR</span></div>
+            <h1 class="hero-title">BLACK<br>BUDDHA FM</h1>
+            <div class="waveform" id="hero-wave">
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+              <div class="wave-bar"></div>
+            </div>
+            <div class="hero-desc">
+              <span class="host-tag">Hosted by DJ President Bailey</span>
+              An underground broadcast through 30 years of Black British music. Raw frequencies transmitted from the
+              heart of London.
+            </div>
+            <div class="hero-btns">
+              <button class="btn-primary" id="hero-play-btn">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+                LISTEN TO LATEST BROADCAST
+              </button>
+              <a class="btn-outline" href="#player">BUDDHA HQ</a>
+            </div>
+          </div>
+
+          <!-- Tactical monitor -->
+          <div class="tactical-monitor">
+            <div class="monitor-header">
+              <div>
+                <div class="monitor-label">CURRENTLY TRANSMITTING</div>
+                <div class="monitor-title" id="monitor-title">UK GARAGE</div>
+              </div>
+              <span class="monitor-ref">REF: BB-LND-935</span>
+            </div>
+            <div class="green-bars" id="monitor-bars">
+              <div class="green-bar"></div>
+              <div class="green-bar"></div>
+              <div class="green-bar"></div>
+              <div class="green-bar"></div>
+              <div class="green-bar"></div>
+              <div class="green-bar"></div>
+              <div class="green-bar"></div>
+              <div class="green-bar"></div>
+            </div>
+            <div class="monitor-stats">
+              <div class="stat-box">
+                <div class="stat-label">DURATION</div>
+                <div class="stat-value" id="monitor-duration">42:17</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-label">STATION ID</div>
+                <div class="stat-value" id="monitor-freq">93.5 FM</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Player -->
+    <section id="player">
+      <div class="section-inner" style="max-width:1400px;">
+        <div class="player-outer">
+          <div class="player-inner">
+            <div class="player-grid">
+
+              <!-- Left: Stats -->
+              <div class="player-left">
+                <div class="on-air-large"><span>ON AIR</span></div>
+                <div class="stat-row">
+                  <span class="stat-key">LENGTH</span>
+                  <span class="stat-big" id="stat-length">42:17</span>
+                </div>
+                <div class="stat-row">
+                  <span class="stat-key">GENRE</span>
+                  <span class="stat-big stat-green" id="stat-genre">UK GARAGE</span>
+                </div>
+                <div class="stat-row">
+                  <span class="stat-key">BITRATE</span>
+                  <span class="stat-big">320 KBPS</span>
+                </div>
+                <div class="stat-row">
+                  <span class="stat-key">LOCATION</span>
+                  <span class="stat-location" id="stat-location">BLACK BUDDHA HQ</span>
+                </div>
+
+                <div class="rec-row">
+                  <span class="flicker"></span>
+                  <span class="rec-label">REC: ACTIVE</span>
+                </div>
+              </div>
+
+              <!-- Center: Now Transmitting -->
+              <div class="player-center">
+                <div class="now-tx-label">
+                  <span class="flicker" style="width:8px;height:8px;"></span>
+                  NOW TRANSMITTING
+                </div>
+                <h2 class="ep-title" id="ep-title">EP 03 &mdash; UK GARAGE &amp; 2-STEP: THE CHAMPAGNE SHUFFLE</h2>
+                <p class="ep-subtitle" id="ep-subtitle">2 STEP &amp; NIGHT BUS ANTHEMS</p>
+                <p class="ep-desc" id="ep-desc">
+                  Step into the late-90s Sunday club scene where UK Garage brought soul, swagger, and designer style to
+                  the underground. At 130 BPM, producers fused house, sub-bass, and chopped vocals into the unmistakable
+                  swing of 2-step. Tune the system and stay locked to this syncopated lineage.
+                </p>
+                <div class="tracklist-panel" id="tracklist-panel">
+                  <h3 class="tracklist-heading">DECK TRANSMISSION LOG (TRACKLIST)</h3>
+                  <div class="tracklist-tabs">
+                    <button class="tracklist-tab active" data-part="1">PT1</button>
+                    <button class="tracklist-tab" data-part="2">PT2</button>
+                    <button class="tracklist-tab" id="tab-pt3" data-part="3" style="display:none;">PT3</button>
+                  </div>
+                  <ul id="tracklist-list" class="tracklist-list"></ul>
+                </div>
+              </div>
+
+              <!-- Right: Vinyl + Controls — panels injected by JS -->
+              <div class="player-right">
+                <div class="vinyl-frame">
+                  <img id="vinyl-img"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_wEXSaYe5BZlrbBz85FsiQPhXYuNmtsceeT8911HmmvBcYb70OvO05QR6z0iBcVhFC6BkaeY2rkmdWMmtTiP4_60J5CEXvMFVrO7gTG5ElV40pvpCdtt_gDmDP4XJVZHxNlLfB2ybldd71gezzBsalGNrMCebFuNSHxa3bAb7zzqBKPJHhtFLQPRys7jCtHasO0X8SDn0yStshoHpgrUatItDnucGtsFMBk44IN_eo9QVEXRlITTyCRXFvREzsoIfs7OgEhHu5qQ"
+                    alt="EP vinyl">
+                  <div class="ep-badge" id="ep-badge">EP UK GARAGE LIVE</div>
+                </div>
+                <!-- Controls panels 1–3 injected here by createControlsPanel() -->
+                <div id="controls-container"></div>
+              </div>
+
+            </div>
+
+            <!-- Tuner -->
+            <div class="tuner-section">
+              <div class="tuner-header">
+                <span class="tuner-label">TUNING THE UNDERGROUND</span>
+                <span class="tuner-strength" id="tuner-strength">STRENGTH: 98%</span>
+              </div>
+              <div class="tuner-display" id="tuner-display">
+                <div class="tuner-ticks" id="tuner-ticks"></div>
+                <div class="tuner-stations-container" id="tuner-stations-container"></div>
+                <div class="tuner-needle" id="tuner-needle"></div>
+              </div>
+              <div class="tuner-controls">
+                <div class="tuner-ctrl-group">
+                  <div class="ctrl-item">
+                    <span class="ctrl-key">BAND</span>
+                    <div class="btn-group" id="band-group">
+                      <button class="btn-tab active-green">FM</button>
+                      <button class="btn-tab">AM</button>
+                    </div>
+                  </div>
+                  <div class="ctrl-item">
+                    <span class="ctrl-key">MODE</span>
+                    <div class="btn-group" id="mode-group">
+                      <button class="btn-tab active-pink">STEREO</button>
+                      <button class="btn-tab">MONO</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="ctrl-item">
+                  <span class="ctrl-key">GAIN</span>
+                  <div class="gain-knob" id="gain-knob">
+                    <div class="knob-line" id="knob-line"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Archive — cards generated from STATIONS data -->
+    <section id="archive">
+      <div class="section-inner" style="padding-top:0;">
+        <div class="archive-header">
+          <h2 class="archive-title">LATEST <span class="pink">CAPTURES</span></h2>
+          <span class="archive-sub">UNDERGROUND SCANLOG</span>
+        </div>
+        <div class="cards-grid" id="cards-grid">
+          <!-- populated by app.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section id="about">
+      <div class="samo-watermark">SAMO</div>
+      <div class="section-inner">
+        <div class="about-inner">
+          <h2 class="about-title">About Black Buddha FM</h2>
+          <div class="about-box">
+            <p>Founded on the principles of pirate radio, Black Buddha FM is a non-commercial broadcast dedicated to the
+              preservation and celebration of Black British music subcultures.</p>
+            <p>From the early jungle raves in East London to the grime sets on top of North London towers, we capture
+              the raw energy of a movement that redefined global music culture.</p>
+            <p class="about-quote">"This is not a history lesson. This is a vibration."</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span class="footer-text">Black Buddha FM // Clandestine Transmissions 1994&ndash;2025</span>
+  </footer>
+
+  <script src="stations-data.js"></script>
+  <script src="app.js" defer></script>
+</body>
+
+</html>

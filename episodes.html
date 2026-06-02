@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BLACK BUDDHA FM | TUBE LINE ARCHIVE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cabin+Condensed:wght@500;700&family=Permanent+Marker&family=Rock+Salt&family=JetBrains+Mono:wght@400;700&family=Space+Mono:wght@400;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="episodes.css">
+</head>
+
+<body>
+  <div class="crt"></div>
+
+  <!-- Ticker -->
+  <div class="ticker-wrap">
+    <div class="ticker" id="ticker">
+      <span>BLACK BUDDHA FM</span>
+      <span>EP 01 — JUNGLE: ORIGINAL NUTTAH SHOCKWAVE</span>
+      <span>EP 02 — DRUM &amp; BASS: SYMPHONIES IN THE SUB</span>
+      <span>EP 03 — UK GARAGE &amp; 2-STEP: THE CHAMPAGNE SHUFFLE</span>
+      <span>EP 04 — GRIME: ESKIMO ICE AGE</span>
+      <span>EP 05 — DUBSTEP: SOUTH OF THE RIVER SHADOWS</span>
+      <span>EP 06 — BASSLINE &amp; NICHE: UP THE M1 MOTORWAY</span>
+      <span>EP 07 — UK FUNKY: THE TRIBAL SHIFT</span>
+      <span>EP 08 — UK ROAD RAP: TALKIN’ THE HARDEST</span>
+      <span>EP 09 — UK DRILL: BRIXTON BLUEPRINT</span>
+      <span>EP 10 — AFROSWING: TRANSATLANTIC ROYALTY</span>
+      <span>30 YEARS OF BLACK BRITISH MUSIC</span>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="header-inner">
+      <div class="logo-block">
+        <a href="index.html" style="text-decoration: none; color: inherit;">
+          <span class="logo-name">BLACK BUDDHA FM</span>
+          <span class="logo-sub">PIRATE BROADCASTING 24/7</span>
+        </a>
+      </div>
+      <nav>
+        <a href="episodes.html" class="active" style="color: var(--neon-pink);">EPISODES</a>
+        <a href="index.html#player">MIXES</a>
+        <a href="index.html#archive">ARCHIVE</a>
+        <a href="index.html#about">ABOUT</a>
+      </nav>
+      <div class="signal-badge">
+        <span class="flicker"></span>
+        <span>SIGNAL: 93.5 FM</span>
+      </div>
+    </div>
+  </header>
+
+  <main style="padding-top: 32px;">
+    <section class="archive-container">
+      <div class="archive-title-section">
+        <h1 class="archive-page-title">EPISODE ARCHIVE</h1>
+        <p class="archive-page-subtitle">30 Years of Black British Music Frequencies — physical tape recordings</p>
+      </div>
+
+      <!-- Timeline evolution Tube Map Card -->
+      <div class="timeline-section-card">
+        <div class="timeline-header">
+          <div style="display: flex; align-items: center;">
+            <div class="header-bar-indicator"></div>
+            <div class="timeline-header-text">
+              <div class="timeline-micro-label">UK UNDERGROUND BASS SYSTEM · ROUTE MAP</div>
+              <h2 class="timeline-title">Bass Transit Network</h2>
+            </div>
+          </div>
+          <div class="timeline-status" id="timeline-radar-status">
+            <div class="status-pulse-dot" id="radar-pulse"></div>
+            <span id="radar-status-text">1992 → PRESENT</span>
+          </div>
+        </div>
+
+        <!-- London Underground Tube Map Nodes Track -->
+        <div class="nodes-track" id="nodes-track-wrap">
+          <div class="tube-grid-bg"></div>
+
+          <svg class="tube-lines-svg" id="tube-lines-svg-el">
+            <!-- SVG Paths for tube lines connecting stations will be injected here dynamically -->
+          </svg>
+
+          <!-- Zone Indicators behind nodes -->
+          <div class="tube-zone-marker" style="left: 40px;">Zone 1: Hardcore Roots</div>
+          <div class="tube-zone-marker" style="left: 450px;">Zone 2: 2000s Sub-Evolution</div>
+          <div class="tube-zone-marker" style="left: 950px;">Zone 3: Modern Street Era</div>
+
+          <div class="tube-stations-container" id="tube-stations-mount">
+            <!-- Node buttons injected here dynamically -->
+          </div>
+        </div>
+
+        <!-- Injected Info Panel for selected genre evolution -->
+        <div id="info-panel-mount"></div>
+
+        <!-- Section footer control bar -->
+        <div
+          style="margin-top: 20px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.04); display: flex; align-items: center; justify-content: space-between;">
+          <span
+            style="font-family: 'Cabin Condensed', sans-serif; font-size: 11px; letter-spacing: 0.12em; color: rgba(255,255,255,0.3); text-transform: uppercase; font-weight: 700;">
+            30 YEARS OF UK MUSIC EVOLUTION
+          </span>
+          <button id="clear-signal-footer"
+            style="display: none; background: none; border: none; cursor: pointer; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255, 255, 255, 0.4); font-family: 'Cabin Condensed', sans-serif; font-weight: 700; transition: color 0.2s;">
+            ✕ CLEAR ROUTE →
+          </button>
+        </div>
+      </div>
+
+      <!-- Cassette Spines Grid -->
+      <div class="cassette-grid" id="cassette-grid">
+        <!-- Injected by JavaScript -->
+      </div>
+    </section>
+  </main>
+
+  <div class="console-log-panel">
+    <div class="console-label">TRANSIT TELEMETRY · ROUTE SELECTION</div>
+    <div id="console-logs-mount">
+      <span style="font-size: 9px; color: rgba(255,255,255,0.2); fontFamily: monospace;">Awaiting transit
+        connection…</span>
+    </div>
+  </div>
+
+  <footer>
+    <span class="footer-text">Black Buddha FM // Clandestine Transmissions 1994–2025</span>
+  </footer>
+
+  <div class="modal-overlay" id="player-modal">
+    <div class="modal-content-wrap" id="modal-container"></div>
+  </div>
+
+  <script src="stations-data.js"></script>
+
+  <script>
+    const GENRES_METADATA = [
+      {
+        id: "jungle",
+        name: "Jungle",
+        era: "1991–1995",
+        color: "#39FF14",
+        x: 80, y: 100, // Grid coordinates
+        description: "Born in the raves. Breakbeat science meets sound system culture — ragga vocals over amen breaks at 160bpm. The original signal.",
+        artists: ["Goldie", "Shy FX", "LTJ Bukem", "DJ Hype"],
+        genreKey: "JUNGLE"
+      },
+      {
+        id: "dnb",
+        name: "Drum & Bass",
+        era: "1996–2005",
+        color: "#0066FF",
+        x: 200, y: 70,
+        description: "Jungle evolved, refined, exported. The amen break went global. Rollers, liquid, neurofunk — a genre fracturing into movements.",
+        artists: ["Goldie", "LTJ Bukem", "Roni Size", "J Majik", "Dillinja"],
+        genreKey: "DRUM & BASS"
+      },
+      {
+        id: "ukgarage",
+        name: "UK Garage",
+        era: "1996–2002",
+        color: "#D4AF37",
+        x: 320, y: 130,
+        description: "US house through a South London filter. 2-step rhythms, pitched-up vocals, champagne in the club. Speed garage gave way to something smoother.",
+        artists: ["Craig David", "MJ Cole", "Artful Dodger", "So Solid Crew"],
+        genreKey: "UK GARAGE"
+      },
+      {
+        id: "grime",
+        name: "Grime",
+        color: "#B0B7C3",
+        era: "2002–2010",
+        x: 440, y: 130,
+        description: "8-bar frequencies from E3. Pirate radio, Nokia ringtones, clashing MCs. Wiley's eskibeat rewired the cultural mainframe.",
+        artists: ["Wiley", "Dizzee Rascal", "Skepta", "JME", "Tinchy Stryder"],
+        genreKey: "GRIME"
+      },
+      {
+        id: "dubstep",
+        name: "Dubstep",
+        era: "2001–2011",
+        color: "#2B0A3D",
+        x: 560, y: 100,
+        description: "140bpm. Sub-bass that moved furniture. Croydon's answer to everything. From Plastic People to festival stages — the wobble heard worldwide.",
+        artists: ["Benga", "Skream", "Burial", "Digital Mystikz", "Kode9"],
+        genreKey: "DUBSTEP"
+      },
+      {
+        id: "bassline",
+        name: "Bassline",
+        era: "2003–2008",
+        color: "#FF2DAA",
+        x: 680, y: 70,
+        description: "Sheffield's contribution. 4x4 kicks, pitched basslines, speed garage's northern cousin. Underground but felt everywhere.",
+        artists: ["DJ Q", "T2", "Virus Syndicate", "Chunky"],
+        genreKey: "BASSLINE"
+      },
+      {
+        id: "ukfunky",
+        name: "UK Funky",
+        era: "2006–2012",
+        color: "#FF6B1A",
+        x: 800, y: 130,
+        description: "Warmth returned to the underground. Soulful house merged with syncopated Afro-Caribbean soca rhythms, tribal bongo loops, and euphoric vocals.",
+        artists: ["Donae'o", "Crazy Cousinz", "Roska", "Lil Silva", "Kyla"],
+        genreKey: "UK FUNKY"
+      },
+      {
+        id: "roadrap",
+        name: "Road Rap",
+        era: "2007–2016",
+        color: "#1A1A1A",
+        x: 920, y: 130,
+        description: "Peckham and Brixton street stories slowed down the tempo. Raw baritone flows, mixtape culture, and heavy sub-bass documenting road realities.",
+        artists: ["Giggs", "Blade Brown", "Potter Payper", "Casisdead", "Nines"],
+        genreKey: "ROAD RAP"
+      },
+      {
+        id: "ukdrill",
+        name: "UK Drill",
+        era: "2014–2023",
+        color: "#B3001B",
+        x: 1040, y: 100,
+        description: "South London's sliding 808 glides and brutalist narratives. Chicago's drill blueprints re-engineered for the estates, conquering global charts.",
+        artists: ["67", "Harlem Spartans", "Loski", "MizOrMac", "Unknown T"],
+        genreKey: "UK DRILL"
+      },
+      {
+        id: "afroswing",
+        name: "Afroswing",
+        era: "2015–2023",
+        color: "#00C2B2",
+        x: 1160, y: 100,
+        description: "Melodic fusions of British bass weight, West African highlife, and Jamaican dancehall. Joyous, cross-continental diaspora waves.",
+        artists: ["J Hus", "Kojo Funds", "Not3s", "Dave", "MoStack"],
+        genreKey: "AFROSWING"
+      }
+    ];
+
+    let activeGenreId = null;
+    const playingAudio = new Audio();
+    playingAudio.loop = true;
+    let playingEpisodeId = null;
+    let playingPartNum = 1;
+    let stateLogs = [];
+
+    function getHexAlpha(hex, opacity) {
+      const cleanHex = hex.replace('#', '');
+      const r = parseInt(cleanHex.substring(0, 2), 16);
+      const g = parseInt(cleanHex.substring(2, 4), 16);
+      const b = parseInt(cleanHex.substring(4, 6), 16);
+      return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+    }
+
+    function addStateLog(message) {
+      stateLogs.unshift(message);
+      stateLogs = stateLogs.slice(0, 4);
+      renderStateLogs();
+    }
+
+    function renderStateLogs() {
+      const mount = document.getElementById("console-logs-mount");
+      mount.innerHTML = "";
+      stateLogs.forEach((log, index) => {
+        const div = document.createElement("div");
+        div.className = "console-entry" + (index === 0 ? " latest" : "");
+        div.innerText = log;
+        mount.appendChild(div);
+      });
+    }
+
+    // Recalculate node coordinates based on track container clientWidth
+    function recalculateCoordinates() {
+      const container = document.getElementById("nodes-track-wrap");
+      if (!container) return;
+      const width = container.clientWidth;
+      const paddingX = 60; // Left and right padding for track nodes
+      const stepX = (width - 2 * paddingX) / (GENRES_METADATA.length - 1);
+
+      GENRES_METADATA.forEach((genre, idx) => {
+        genre.x = paddingX + idx * stepX;
+        const yLevels = [100, 70, 130, 130, 100, 70, 130, 130, 100, 100];
+        genre.y = yLevels[idx];
+      });
+
+      // Update zone indicators left positions
+      const zoneMarkers = document.querySelectorAll(".tube-zone-marker");
+      if (zoneMarkers.length >= 3) {
+        zoneMarkers[0].style.left = `${paddingX}px`;
+        zoneMarkers[1].style.left = `${paddingX + 3.2 * stepX}px`;
+        zoneMarkers[2].style.left = `${paddingX + 7.2 * stepX}px`;
+      }
+    }
+
+    // Draw the London Tube Lines between grid coordinates
+    function drawTubeLines() {
+      const svg = document.getElementById("tube-lines-svg-el");
+      svg.innerHTML = "";
+
+      // Build SVG polyline paths connecting stations
+      let pathD = "";
+      GENRES_METADATA.forEach((genre, idx) => {
+        if (idx === 0) {
+          pathD = `M ${genre.x} ${genre.y}`;
+        } else {
+          // Add typical 45-degree angle transit line bends
+          const prev = GENRES_METADATA[idx - 1];
+          const midX = prev.x + (genre.x - prev.x) / 2;
+          pathD += ` Q ${midX} ${genre.y} ${genre.x} ${genre.y}`;
+        }
+      });
+
+      // Glow effect background line
+      const glowLine = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      glowLine.setAttribute("d", pathD);
+      glowLine.setAttribute("fill", "none");
+      glowLine.setAttribute("stroke", "#2d3748");
+      glowLine.setAttribute("stroke-width", "8");
+      glowLine.setAttribute("stroke-linecap", "round");
+      glowLine.setAttribute("stroke-linejoin", "round");
+      svg.appendChild(glowLine);
+
+      // Main multi-colored segments
+      for (let i = 0; i < GENRES_METADATA.length - 1; i++) {
+        const start = GENRES_METADATA[i];
+        const end = GENRES_METADATA[i + 1];
+        const segment = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        const midX = start.x + (end.x - start.x) / 2;
+        segment.setAttribute("d", `M ${start.x} ${start.y} Q ${midX} ${end.y} ${end.x} ${end.y}`);
+        segment.setAttribute("fill", "none");
+        segment.setAttribute("stroke", start.color);
+        segment.setAttribute("stroke-width", "5");
+        segment.setAttribute("stroke-linecap", "round");
+        segment.setAttribute("stroke-linejoin", "round");
+        svg.appendChild(segment);
+      }
+    }
+
+    // Render tube stations on the lines grid
+    function renderTimelineNodes() {
+      const container = document.getElementById("tube-stations-mount");
+      container.innerHTML = "";
+
+      GENRES_METADATA.forEach(genre => {
+        const isActive = activeGenreId === genre.id;
+        const isDimmed = activeGenreId !== null && !isActive;
+
+        const btn = document.createElement("button");
+        btn.className = "genre-node-btn";
+        if (isActive) btn.classList.add("active");
+        if (isDimmed) btn.classList.add("dimmed");
+
+        btn.style.left = `${genre.x}px`;
+        btn.style.top = `${genre.y}px`;
+        btn.style.setProperty("--genre-color", genre.color);
+        btn.style.setProperty("--genre-color-alpha", getHexAlpha(genre.color, 0.4));
+        btn.style.setProperty("--genre-color-alpha-light", getHexAlpha(genre.color, 0.1));
+        btn.style.setProperty("--genre-color-alpha-heavy", getHexAlpha(genre.color, 0.2));
+        btn.style.setProperty("--genre-color-alpha-glow", getHexAlpha(genre.color, 0.15));
+        btn.style.setProperty("--genre-color-sticker", getHexAlpha(genre.color, 0.85));
+
+        btn.innerHTML = `
+          <div class="genre-node-circle" style="border-color: ${genre.color}; box-shadow: 0 0 10px ${getHexAlpha(genre.color, 0.45)};"></div>
+          <div class="genre-node-label">
+            <span class="genre-node-name">${genre.name}</span>
+            <span class="genre-node-era">${genre.era}</span>
+          </div>
+        `;
+
+        btn.addEventListener("click", () => {
+          handleSelect(genre.id);
+        });
+
+        container.appendChild(btn);
+      });
+    }
+
+    function handleSelect(id) {
+      const clearBtn = document.getElementById("clear-signal-footer");
+
+      if (activeGenreId === id) {
+        activeGenreId = null;
+        clearBtn.style.display = "none";
+        addStateLog("→ Closed Line Connection");
+      } else {
+        activeGenreId = id;
+        clearBtn.style.display = "block";
+        const g = GENRES_METADATA.find(x => x.id === id);
+        addStateLog(`→ Connected Station: ${g.name} Line (${g.era})`);
+      }
+
+      renderTimelineNodes();
+      renderInfoPanel();
+      renderCassettes();
+      updateRadarStatus();
+    }
+
+    function updateRadarStatus() {
+      const pulseDot = document.getElementById("radar-pulse");
+      const statusText = document.getElementById("radar-status-text");
+
+      if (activeGenreId) {
+        const genre = GENRES_METADATA.find(g => g.id === activeGenreId);
+        pulseDot.style.background = genre.color;
+        pulseDot.style.boxShadow = `0 0 10px ${genre.color}`;
+        statusText.innerText = `${genre.name} LINE ACTIVE`;
+        statusText.style.color = genre.color;
+      } else {
+        pulseDot.style.background = "#ff0055";
+        pulseDot.style.boxShadow = "0 0 6px #ff0055";
+        statusText.innerText = "1992 → PRESENT";
+        statusText.style.color = "";
+      }
+    }
+
+    function renderInfoPanel() {
+      const mount = document.getElementById("info-panel-mount");
+      mount.innerHTML = "";
+
+      if (!activeGenreId) return;
+
+      const genre = GENRES_METADATA.find(g => g.id === activeGenreId);
+      const station = STATIONS.find(s => s.genre === genre.genreKey);
+
+      const panel = document.createElement("div");
+      panel.className = "info-panel-container";
+
+      panel.style.setProperty("--genre-color", genre.color);
+      panel.style.setProperty("--genre-color-alpha", getHexAlpha(genre.color, 0.4));
+      panel.style.setProperty("--genre-color-alpha-heavy", getHexAlpha(genre.color, 0.2));
+      panel.style.setProperty("--genre-color-alpha-light", getHexAlpha(genre.color, 0.1));
+      panel.style.setProperty("--genre-color-alpha-glow", getHexAlpha(genre.color, 0.08));
+      panel.style.setProperty("--genre-color-sticker", getHexAlpha(genre.color, 0.8));
+
+      let tagsHtml = "";
+      genre.artists.forEach(a => {
+        tagsHtml += `<span class="artist-badge">${a}</span>`;
+      });
+
+      panel.innerHTML = `
+        <div class="info-panel-glow"></div>
+        <div class="info-panel-body">
+          <div class="info-panel-header">
+            <div>
+              <div class="info-status-row">
+                <div class="info-status-dot"></div>
+                <span class="info-status-text">ROUTE CONNECTED</span>
+              </div>
+              <h3 class="info-panel-title">${genre.name} Station</h3>
+              <span class="info-panel-era">${genre.era} Era</span>
+            </div>
+            <button class="info-close-btn" id="info-close-trigger">✕ DISCONNECT</button>
+          </div>
+
+          <p class="info-description">${genre.description}</p>
+
+          <div class="info-metadata-row">
+            <div>
+              <span class="artists-label">KEY OPERATING TRANSMITTERS</span>
+              <div class="artists-tags-container">
+                ${tagsHtml}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      panel.querySelector("#info-close-trigger").addEventListener("click", () => {
+        handleSelect(genre.id);
+      });
+
+      mount.appendChild(panel);
+    }
+
+    function renderCassettes() {
+      const container = document.getElementById("cassette-grid");
+      container.innerHTML = "";
+
+      STATIONS.forEach(station => {
+        const genreMeta = GENRES_METADATA.find(g => g.genreKey === station.genre);
+        const isDimmed = activeGenreId !== null && genreMeta.id !== activeGenreId;
+        const color = genreMeta.color;
+
+        const button = document.createElement("button");
+        button.className = "cassette-spine";
+        if (isDimmed) button.classList.add("dimmed");
+        button.setAttribute("aria-label", `${station.title} - ${station.genre}`);
+
+        button.style.setProperty("--genre-color", color);
+        button.style.setProperty("--genre-color-alpha-heavy", getHexAlpha(color, 0.4));
+        button.style.setProperty("--genre-color-alpha-glow", getHexAlpha(color, 0.15));
+        button.style.setProperty("--genre-color-sticker", getHexAlpha(color, 0.85));
+
+        const epShortName = station.title.split("—")[0].trim();
+        const epDisplayTitle = station.title.substring(station.title.indexOf("—") + 1).trim();
+
+        button.innerHTML = `
+          <div class="spine-body">
+            <div class="spine-label">
+              <div class="spine-stripe"></div>
+              <div class="spine-text-rotated">
+                <div class="rotated-inner">
+                  <span class="rotated-title">${epDisplayTitle}</span>
+                  <span class="rotated-subtitle">${epShortName} · ${station.genre}</span>
+                </div>
+              </div>
+              <div class="spine-side">SIDE A</div>
+            </div>
+            <div class="spine-tape-bottom">
+              <div class="tape-block" style="height: 10px;"></div>
+              <div class="tape-block" style="height: 8px;"></div>
+              <div class="tape-block" style="height: 9px;"></div>
+            </div>
+          </div>
+        `;
+
+        button.addEventListener("click", () => openModal(station));
+        container.appendChild(button);
+      });
+    }
+
+    function makeReelSvg(spinning, fillPercent, color) {
+      const isSpinningClass = spinning ? "reel-svg spinning" : "reel-svg";
+      return `
+        <svg class="${isSpinningClass}" viewBox="0 0 74 74">
+          <circle cx="37" cy="37" r="35" fill="none" stroke="rgba(0,0,0,0.22)" stroke-width="2" />
+          <circle cx="37" cy="37" r="${35 * fillPercent}" fill="rgba(80,45,15,${0.35 + fillPercent * 0.45})" />
+          <line x1="37" y1="12" x2="37" y2="26" stroke="rgba(0,0,0,0.35)" stroke-width="1.8" />
+          <line x1="37" y1="48" x2="37" y2="62" stroke="rgba(0,0,0,0.35)" stroke-width="1.8" />
+          <line x1="12" y1="37" x2="26" y2="37" stroke="rgba(0,0,0,0.35)" stroke-width="1.8" />
+          <line x1="48" y1="37" x2="62" y2="37" stroke="rgba(0,0,0,0.35)" stroke-width="1.8" />
+          <circle cx="37" cy="37" r="12" fill="#c8c0b0" stroke="rgba(0,0,0,0.2)" stroke-width="1" />
+          <circle cx="37" cy="37" r="5" fill="#1a1a1a" />
+        </svg>
+      `;
+    }
+
+    function openModal(station) {
+      const modal = document.getElementById("player-modal");
+      const container = document.getElementById("modal-container");
+      const genreMeta = GENRES_METADATA.find(g => g.genreKey === station.genre);
+      const color = genreMeta.color;
+
+      container.style.setProperty("--genre-color", color);
+      container.style.setProperty("--genre-color-alpha", getHexAlpha(color, 0.15));
+      container.style.setProperty("--genre-color-alpha-heavy", getHexAlpha(color, 0.4));
+      container.style.setProperty("--genre-color-sticker", getHexAlpha(color, 0.8));
+      container.style.setProperty("--bg-alpha", getHexAlpha(color, 0.04));
+
+      let localPartNum = 1;
+      if (playingEpisodeId === station.genre) {
+        localPartNum = playingPartNum;
+      }
+
+      let tabsHtml = `
+        <button class="inlay-tab ${localPartNum === 1 ? 'active' : ''}" data-part="1">PART 1</button>
+        <button class="inlay-tab ${localPartNum === 2 ? 'active' : ''}" data-part="2">PART 2</button>
+      `;
+      if (station.tracks3 && station.tracks3.length > 0) {
+        tabsHtml += `<button class="inlay-tab ${localPartNum === 3 ? 'active' : ''}" data-part="3">PART 3</button>`;
+      }
+
+      const cleanTitle = station.title.substring(station.title.indexOf("—") + 1).trim();
+
+      container.innerHTML = `
+        <div style="align-self: flex-end; margin-bottom: 12px;">
+          <button class="modal-close-btn" id="close-modal-btn">✕ CLOSE</button>
+        </div>
+
+        <div class="cassette-shell">
+          <div class="screw top-left"><div class="screw-slot"></div></div>
+          <div class="screw top-right"><div class="screw-slot"></div></div>
+          <div class="screw bottom-left"><div class="screw-slot" style="transform: rotate(30deg);"></div></div>
+          <div class="screw bottom-right"><div class="screw-slot" style="transform: rotate(-45deg);"></div></div>
+
+          <div class="shell-label">
+            <div class="label-color-stripe"></div>
+            <div style="margin-top: 6px;">
+              <div class="label-genre">${station.genre}</div>
+              <div class="label-title" title="${cleanTitle}">${cleanTitle}</div>
+            </div>
+            <div class="label-meta-row">
+              <div>
+                <div class="label-dj">DJ PRESIDENT BAILEY</div>
+                <div class="label-duration" id="label-meta-dur">${station.genre} · ${station.duration1}</div>
+              </div>
+              <div class="label-side" id="label-meta-side">SIDE A</div>
+            </div>
+          </div>
+
+          <div class="spindle-hole left" id="spindle-left">
+            ${makeReelSvg(false, 0.72, color)}
+          </div>
+          <div class="spindle-hole right" id="spindle-right">
+            ${makeReelSvg(false, 0.38, color)}
+          </div>
+
+          <div class="exposed-window">
+            <div class="exposed-tape"></div>
+            <div class="exposed-sheen"></div>
+          </div>
+
+          <div class="shell-brand-label">SOUNDSPACE FM · ARCHIVE · C60</div>
+        </div>
+
+        <div class="inlay-card">
+          <div class="inlay-divider"></div>
+          <div class="inlay-header-row">
+            <span class="inlay-header-title">TRACKLISTING</span>
+            <span class="inlay-duration" id="inlay-dur-display">${station.duration1}</span>
+          </div>
+
+          <div class="inlay-tabs" id="tab-row">
+            ${tabsHtml}
+          </div>
+
+          <div class="tracklist-container" id="modal-tracklist-list"></div>
+
+          <div class="inlay-footer">
+            <div class="inlay-meta-info">
+              <span class="inlay-dj">PRESIDENT BAILEY</span>
+              <span class="inlay-genre-year">${station.genre}</span>
+            </div>
+            <button class="cassette-play-btn" id="modal-play-btn">
+              <span style="font-size: 12px; line-height: 1;">▶</span>
+              <span class="btn-label-text">PLAY</span>
+            </button>
+          </div>
+        </div>
+      `;
+
+      document.getElementById("close-modal-btn").addEventListener("click", closeModal);
+
+      const playBtn = document.getElementById("modal-play-btn");
+      playBtn.addEventListener("click", () => toggleAudio(station));
+
+      const tabElements = document.querySelectorAll(".inlay-tab");
+      tabElements.forEach(tab => {
+        tab.addEventListener("click", () => {
+          tabElements.forEach(t => t.classList.remove("active"));
+          tab.classList.add("active");
+          const partNum = parseInt(tab.getAttribute("data-part"));
+          selectPart(station, partNum);
+        });
+      });
+
+      selectPart(station, localPartNum);
+      modal.style.display = "flex";
+    }
+
+    function selectPart(station, partNum) {
+      const isPlayingCurrentPart = (playingEpisodeId === station.genre && playingPartNum === partNum);
+      const isAudioActive = isPlayingCurrentPart && playingAudio && !playingAudio.paused;
+      const genreMeta = GENRES_METADATA.find(g => g.genreKey === station.genre);
+
+      const leftSpindle = document.getElementById("spindle-left");
+      const rightSpindle = document.getElementById("spindle-right");
+      leftSpindle.innerHTML = makeReelSvg(isAudioActive, 0.72, genreMeta.color);
+      rightSpindle.innerHTML = makeReelSvg(isAudioActive, 0.38, genreMeta.color);
+
+      const playBtn = document.getElementById("modal-play-btn");
+      const labelText = playBtn.querySelector(".btn-label-text");
+      const iconSpan = playBtn.querySelector("span");
+
+      if (isAudioActive) {
+        playBtn.classList.add("playing");
+        labelText.innerText = "PLAYING";
+        iconSpan.innerText = "■";
+      } else {
+        playBtn.classList.remove("playing");
+        labelText.innerText = "PLAY";
+        iconSpan.innerText = "▶";
+      }
+
+      const durationVal = partNum === 1 ? station.duration1 : (partNum === 2 ? station.duration2 : station.duration3);
+      const sideLetter = partNum === 1 ? "A" : (partNum === 2 ? "B" : "C");
+
+      document.getElementById("inlay-dur-display").innerText = durationVal;
+      document.getElementById("label-meta-dur").innerText = `${station.genre} · ${durationVal}`;
+      document.getElementById("label-meta-side").innerText = `SIDE ${sideLetter}`;
+
+      const tracklistContainer = document.getElementById("modal-tracklist-list");
+      tracklistContainer.innerHTML = "";
+
+      const activeTracksArray = partNum === 1 ? station.tracks1 : (partNum === 2 ? station.tracks2 : station.tracks3);
+
+      activeTracksArray.forEach((trackHtmlString, idx) => {
+        const item = document.createElement("div");
+        item.className = "tracklist-item";
+        item.innerHTML = `
+          <span class="track-num">${String(idx + 1).padStart(2, "0")}</span>
+          <div class="track-info-wrap">${trackHtmlString}</div>
+        `;
+        tracklistContainer.appendChild(item);
+      });
+    }
+
+    function closeModal() {
+      const modal = document.getElementById("player-modal");
+      modal.style.display = "none";
+    }
+
+    document.getElementById("player-modal").addEventListener("click", (e) => {
+      if (e.target.id === "player-modal") {
+        closeModal();
+      }
+    });
+
+    function toggleAudio(station) {
+      const activeTab = document.querySelector(".inlay-tab.active");
+      const partNum = parseInt(activeTab.getAttribute("data-part"));
+
+      const playBtn = document.getElementById("modal-play-btn");
+      const labelText = playBtn.querySelector(".btn-label-text");
+      const iconSpan = playBtn.querySelector("span");
+      const leftSpindle = document.getElementById("spindle-left");
+      const rightSpindle = document.getElementById("spindle-right");
+      const genreMeta = GENRES_METADATA.find(g => g.genreKey === station.genre);
+      const color = genreMeta.color;
+
+      const isPlayingCurrentPart = (playingEpisodeId === station.genre && playingPartNum === partNum);
+
+      if (isPlayingCurrentPart) {
+        if (!playingAudio.paused) {
+          playingAudio.pause();
+        }
+        playingEpisodeId = null;
+        playBtn.classList.remove("playing");
+        labelText.innerText = "PLAY";
+        iconSpan.innerText = "▶";
+
+        leftSpindle.innerHTML = makeReelSvg(false, 0.72, color);
+        rightSpindle.innerHTML = makeReelSvg(false, 0.38, color);
+      } else {
+        if (!playingAudio.paused) {
+          playingAudio.pause();
+        }
+
+        const streamUrl = partNum === 1 ? station.trackUrl1 : (partNum === 2 ? station.trackUrl2 : station.trackUrl3);
+        const targetAbsUrl = new URL(streamUrl, window.location.href).href;
+
+        if (playingAudio.src !== targetAbsUrl) {
+          playingAudio.src = targetAbsUrl;
+          playingAudio.load();
+        }
+
+        playingAudio.play().catch(err => {
+          console.warn("Autoplay block: ", err);
+        });
+
+        playingEpisodeId = station.genre;
+        playingPartNum = partNum;
+
+        playBtn.classList.add("playing");
+        labelText.innerText = "PLAYING";
+        iconSpan.innerText = "■";
+
+        leftSpindle.innerHTML = makeReelSvg(true, 0.72, color);
+        rightSpindle.innerHTML = makeReelSvg(true, 0.38, color);
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      recalculateCoordinates();
+      drawTubeLines();
+      renderTimelineNodes();
+      renderCassettes();
+
+      window.addEventListener("resize", () => {
+        recalculateCoordinates();
+        drawTubeLines();
+        renderTimelineNodes();
+      });
+
+      document.getElementById("clear-signal-footer").addEventListener("click", () => {
+        if (activeGenreId) {
+          handleSelect(activeGenreId);
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>
