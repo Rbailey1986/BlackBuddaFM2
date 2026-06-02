@@ -16,7 +16,7 @@ const STATIONS = [
     trackUrl1: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
     trackUrl2: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
     colors: {
-      neonPink: "#39FF14",
+      neonPink: "#ff6600",
       neonGreen: "#ffcc00",
       surfaceLowest: "#0e0d0a",
       surfaceLow: "#1c1b18"
@@ -58,7 +58,7 @@ const STATIONS = [
     trackUrl2: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
     trackUrl3: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-11.mp3",
     colors: {
-      neonPink: "#0066FF",
+      neonPink: "#ff003c",
       neonGreen: "#00ffff",
       surfaceLowest: "#0f0a0a",
       surfaceLow: "#1d1919"
@@ -106,7 +106,7 @@ const STATIONS = [
     trackUrl1: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
     trackUrl2: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3",
     colors: {
-      neonPink: "#D4AF37",
+      neonPink: "#ff00ff",
       neonGreen: "#a1fb00",
       surfaceLowest: "#0e0e0e",
       surfaceLow: "#1c1b1b"
@@ -203,7 +203,7 @@ const STATIONS = [
     trackUrl1: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3",
     trackUrl2: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3",
     colors: {
-      neonPink: "#7B00FF",
+      neonPink: "#9b30ff",
       neonGreen: "#00ffcc",
       surfaceLowest: "#0a0d0e",
       surfaceLow: "#181a1c"
@@ -326,7 +326,7 @@ const STATIONS = [
     trackUrl1: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3",
     trackUrl2: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3",
     colors: {
-      neonPink: "#5A5F6E",
+      neonPink: "#ff3333",
       neonGreen: "#ff3333",
       surfaceLowest: "#0d0a0a",
       surfaceLow: "#1a1515"
@@ -367,7 +367,7 @@ const STATIONS = [
     trackUrl1: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3",
     trackUrl2: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3",
     colors: {
-      neonPink: "#FF2A2A",
+      neonPink: "#B3001B",
       neonGreen: "#00ffcc",
       surfaceLowest: "#0a070e",
       surfaceLow: "#15101c"
@@ -409,7 +409,7 @@ const STATIONS = [
     trackUrl1: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3",
     trackUrl2: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
     colors: {
-      neonPink: "#00C2B2",
+      neonPink: "#ff0099",
       neonGreen: "#ccff00",
       surfaceLowest: "#0e090b",
       surfaceLow: "#1c1216"
