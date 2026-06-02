@@ -38,6 +38,7 @@ body.theme-ep10 { --theme-primary: #00C2B2; --theme-primary-rgb: 0, 194, 178; }
 }
 
 body {
+  --neon-pink: var(--theme-primary);
   background-color: var(--dark-navy);
   color: var(--bright-silver);
   font-family: 'Hanken Grotesk', sans-serif;
