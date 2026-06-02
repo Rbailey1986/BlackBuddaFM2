@@ -800,8 +800,8 @@ function wireEvents() {
     });
   }
 
-  // Set default station (UK Garage)
-  const defaultStation = getStationByGenre('UK GARAGE') || STATIONS[0];
+  // Set default station (Jungle)
+  const defaultStation = getStationByGenre('JUNGLE') || STATIONS[0];
   activeStation = defaultStation;
   lastActiveStation = defaultStation;
   currentFreq = defaultStation.freq;
