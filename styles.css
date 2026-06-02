@@ -211,11 +211,11 @@ nav a:hover {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(to bottom, rgba(10, 12, 16, 0.35), rgba(10, 12, 16, 0.98)),
+    linear-gradient(to bottom, rgba(var(--theme-primary-rgb), 0.3), rgba(10, 12, 16, 0.98)),
     url('https://lh3.googleusercontent.com/aida-public/AB6AXuAOZI7fsVpN9crobM768Cm61U7e7x6H2Az0C9Nem98_ZTp740_Hbu1iOqSin1iPKFpGH5p_PtTwzJ4KxQ-VKFWPwZdmmvB1A1fdNzaJJZBZVyfSIvO5KBt0MFmXDXh1RVWhZpTUV3JttHKsFnDHZtF3_DSfgati3dwCyHnjJoUcp4KHF-t9vCQShyS19HEfa039K9ms2oKVllwVozyNmlZcVKkpVuFXriCxScY4_HCcWyXL94nmTa6HOepbTLZSLaaNzI6hpS9pz8Y');
   background-size: cover;
   background-position: center;
-  filter: contrast(1.1) brightness(0.55) saturate(1.1) hue-rotate(240deg);
+  filter: contrast(1.15) brightness(0.5) saturate(1.2);
 }
 
 .hero-grid {
