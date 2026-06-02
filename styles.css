@@ -78,7 +78,7 @@ body.theme-ep10 {
 
 body {
   --neon-pink: var(--theme-primary);
-  background-color: var(--dark-navy);
+  background-color: #000;
   color: var(--bright-silver);
   font-family: 'Hanken Grotesk', sans-serif;
   background-image: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
