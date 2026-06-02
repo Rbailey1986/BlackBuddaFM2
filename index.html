@@ -81,31 +81,26 @@
 
           <!-- Tactical monitor -->
           <div class="tactical-monitor">
-            <div class="monitor-header">
-              <div>
-                <div class="monitor-label">CURRENTLY TRANSMITTING</div>
-                <div class="monitor-title" id="monitor-title">UK GARAGE</div>
-              </div>
-              <span class="monitor-ref">REF: BB-LND-935</span>
+            <div class="monitor-logo-wrap">
+              <img src="logo.png" alt="Black Buddha FM Logo" class="monitor-logo">
             </div>
-            <div class="green-bars" id="monitor-bars">
-              <div class="green-bar"></div>
-              <div class="green-bar"></div>
-              <div class="green-bar"></div>
-              <div class="green-bar"></div>
-              <div class="green-bar"></div>
-              <div class="green-bar"></div>
-              <div class="green-bar"></div>
-              <div class="green-bar"></div>
+            <div class="monitor-bio">
+              <p class="about-quote">"This is not a history lesson. This is a vibration."</p>
             </div>
-            <div class="monitor-stats">
-              <div class="stat-box">
-                <div class="stat-label">DURATION</div>
-                <div class="stat-value" id="monitor-duration">42:17</div>
-              </div>
-              <div class="stat-box">
-                <div class="stat-label">STATION ID</div>
-                <div class="stat-value" id="monitor-freq">93.5 FM</div>
+            <!-- Hidden DOM elements to satisfy app.js references -->
+            <div style="display: none;">
+              <span id="monitor-title"></span>
+              <span id="monitor-duration"></span>
+              <span id="monitor-freq"></span>
+              <div id="monitor-bars">
+                <div class="green-bar"></div>
+                <div class="green-bar"></div>
+                <div class="green-bar"></div>
+                <div class="green-bar"></div>
+                <div class="green-bar"></div>
+                <div class="green-bar"></div>
+                <div class="green-bar"></div>
+                <div class="green-bar"></div>
               </div>
             </div>
           </div>
