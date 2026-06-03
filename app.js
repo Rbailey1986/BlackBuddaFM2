@@ -64,32 +64,58 @@ function buildTicker() {
 function buildArchiveCards() {
   const grid = document.getElementById('cards-grid');
   if (!grid) return;
-  // Show only stations that have a cardImg defined
-  const withCards = STATIONS.filter(s => s.cardImg);
-  withCards.forEach((station, i) => {
-    const rotations = [-2, 1.5, -1, 2.5];
-    const rot = rotations[i % rotations.length];
-    const card = document.createElement('div');
-    card.className = 'capture-card';
-    card.style.transform = `rotate(${rot}deg)`;
-    card.innerHTML = `
-      <div class="card-inner">
-        <div class="card-img-wrap">
-          <img src="${station.cardImg}" alt="${station.genre}" loading="lazy">
-          <div class="genre-sticker">${station.genre}</div>
+
+  function getHexAlpha(hex, opacity) {
+    const cleanHex = hex.replace('#', '');
+    const r = parseInt(cleanHex.substring(0, 2), 16);
+    const g = parseInt(cleanHex.substring(2, 4), 16);
+    const b = parseInt(cleanHex.substring(4, 6), 16);
+    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+  }
+
+  STATIONS.forEach((station) => {
+    const color = station.colors.neonPink;
+    const button = document.createElement('button');
+    button.className = 'cassette-spine';
+    button.setAttribute('aria-label', `${station.title} - ${station.genre}`);
+
+    button.style.setProperty('--genre-color', color);
+    button.style.setProperty('--genre-color-alpha-heavy', getHexAlpha(color, 0.4));
+    button.style.setProperty('--genre-color-alpha-glow', getHexAlpha(color, 0.15));
+    button.style.setProperty('--genre-color-sticker', getHexAlpha(color, 0.85));
+
+    const parts = station.title.split(/[\u2013\u2014-]/);
+    const epShortName = parts[0] ? parts[0].trim() : `EP ${station.epNum}`;
+    const epDisplayTitle = parts.slice(1).join('-').trim();
+
+    button.innerHTML = `
+      <div class="spine-body">
+        <div class="spine-label">
+          <div class="spine-stripe"></div>
+          <div class="spine-text-rotated">
+            <div class="rotated-inner">
+              <span class="rotated-title">${epDisplayTitle}</span>
+              <span class="rotated-subtitle">${epShortName} · ${station.genre}</span>
+            </div>
+          </div>
+          <div class="spine-side">SIDE A</div>
         </div>
-        <div class="card-footer">
-          <span class="card-ep">${station.cardEp}</span>
-          <span class="card-date">${station.cardDate}</span>
+        <div class="spine-tape-bottom">
+          <div class="tape-block" style="height: 10px;"></div>
+          <div class="tape-block" style="height: 8px;"></div>
+          <div class="tape-block" style="height: 9px;"></div>
         </div>
       </div>`;
-    card.addEventListener('click', () => {
+
+    button.addEventListener('click', () => {
       initAudio();
       if (audioCtx) audioCtx.resume();
       animateTunerTo(station.freq);
-      document.getElementById('player').scrollIntoView({ behavior: 'smooth' });
+      const playerEl = document.getElementById('player');
+      if (playerEl) playerEl.scrollIntoView({ behavior: 'smooth' });
     });
-    grid.appendChild(card);
+
+    grid.appendChild(button);
   });
 }
 

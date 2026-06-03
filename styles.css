@@ -1512,3 +1512,186 @@ footer {
   text-align: center;
   line-height: 1.4;
 }
+
+/* ─── TAPE SHELF REDESIGN ─── */
+.tape-shelf-container {
+  position: relative;
+  width: 100%;
+  padding-bottom: 30px;
+  margin-top: 24px;
+}
+
+.tape-shelf-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-end;
+  gap: 24px;
+  overflow-x: auto;
+  padding: 30px 24px 0 24px;
+  position: relative;
+  z-index: 2;
+  scrollbar-width: none; /* Hide scrollbar Firefox */
+  min-height: 380px;
+}
+
+.tape-shelf-row::-webkit-scrollbar {
+  display: none; /* Hide scrollbar Chrome/Safari */
+}
+
+/* Shelf Graphics */
+.tape-shelf {
+  position: absolute;
+  bottom: 30px;
+  left: 0;
+  right: 0;
+  height: 18px;
+  background: linear-gradient(180deg, #3a3f4d 0%, #1a1e28 100%);
+  border-top: 3px solid #5a657a;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  z-index: 1;
+}
+
+.tape-shelf-shadow {
+  position: absolute;
+  bottom: -20px;
+  left: 0;
+  right: 0;
+  height: 50px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Cassette Spine Component (resembling episodes page but on shelf) */
+.cassette-spine {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: opacity 0.35s ease, transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+  flex-shrink: 0;
+}
+
+.cassette-spine:hover {
+  transform: translateY(-16px) scale(1.05);
+}
+
+.spine-body {
+  width: 105px;
+  height: 320px;
+  background: linear-gradient(180deg, #1c1a16 0%, #141210 100%);
+  border: 1.5px solid rgba(255, 255, 255, 0.08);
+  border-top: 4px solid var(--genre-color);
+  border-radius: 5px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.8), -1px 0 0 rgba(255, 255, 255, 0.03);
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.cassette-spine:hover .spine-body {
+  border-color: var(--genre-color-alpha-heavy);
+  box-shadow: 0 0 35px var(--genre-color-alpha-glow), 5px 5px 25px rgba(0, 0, 0, 0.9);
+  background: linear-gradient(180deg, var(--genre-color-alpha-glow) 0%, #1c1a16 40%, #100e0c 100%);
+}
+
+.spine-label {
+  position: absolute;
+  top: 15px;
+  left: 9px;
+  right: 9px;
+  bottom: 45px;
+  background: linear-gradient(180deg, #f8f5ed, #ede8da);
+  border-radius: 3px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 12px 8px;
+  overflow: hidden;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+
+.spine-stripe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: var(--genre-color);
+  opacity: 0.85;
+}
+
+.spine-text-rotated {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rotated-inner {
+  transform: rotate(-90deg);
+  white-space: nowrap;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.rotated-title {
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #1a1814;
+  max-width: 210px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rotated-subtitle {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--genre-color-sticker);
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.spine-side {
+  position: absolute;
+  bottom: 10px;
+  right: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.22);
+}
+
+.spine-tape-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 36px;
+  background: linear-gradient(180deg, #120e08, #080603);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.tape-block {
+  width: 18px;
+  background: rgba(80, 45, 15, 0.65);
+  border-radius: 1.5px;
+}
+
+/* Center shelf tapes if there is enough screen width */
+@media (min-width: 1300px) {
+  .tape-shelf-row {
+    justify-content: center;
+  }
+}
