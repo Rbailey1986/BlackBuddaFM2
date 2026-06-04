@@ -3048,12 +3048,17 @@ footer {
   background: #090a0f;
   border: 1px solid #1a202c;
   border-radius: 6px;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
 }
 
 .tube-grid-bg {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
+  width: 1250px;
+  height: 100%;
   background-image:
     linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
@@ -3066,7 +3071,7 @@ footer {
   top: 0;
   left: 0;
   height: 100%;
-  width: 100%;
+  width: 1250px;
   pointer-events: none;
   z-index: 1;
 }
@@ -3093,7 +3098,7 @@ footer {
   top: 0;
   left: 0;
   height: 100%;
-  width: 100%;
+  width: 1250px;
   z-index: 2;
 }
 
