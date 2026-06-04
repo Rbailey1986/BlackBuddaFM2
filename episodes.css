@@ -367,11 +367,36 @@
 
 /* Cassette spines grid styling */
 .cassette-grid {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
   gap: 32px;
   align-items: flex-end;
   min-height: 380px;
+  justify-items: center;
+}
+
+@media (max-width: 1292px) {
+  .cassette-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 1040px) {
+  .cassette-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 788px) {
+  .cassette-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 536px) {
+  .cassette-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Cassette Spine Component */
