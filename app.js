@@ -44,6 +44,18 @@ function applyStationTheme(station) {
   r.setProperty('--surface-low', station.colors.surfaceLow);
 }
 
+// Pre-parse station hex colors to RGB format once on boot to save string manipulation CPU cycles
+function precalculateColors() {
+  STATIONS.forEach(s => {
+    const hex = s.colors.neonPink;
+    const cleanHex = hex.replace('#', '');
+    const r = parseInt(cleanHex.substring(0, 2), 16);
+    const g = parseInt(cleanHex.substring(2, 4), 16);
+    const b = parseInt(cleanHex.substring(4, 6), 16);
+    s.colors.rgb = `${r}, ${g}, ${b}`;
+  });
+}
+
 // ── Build ticker from STATIONS data (no hardcoded duplication) ───────────────
 
 function buildTicker() {
@@ -59,30 +71,21 @@ function buildTicker() {
   ticker.innerHTML = html;
 }
 
-// ── Build archive cards from STATIONS data ───────────────────────────────────
-
 function buildArchiveCards() {
   const grid = document.getElementById('cards-grid');
   if (!grid) return;
 
-  function getHexAlpha(hex, opacity) {
-    const cleanHex = hex.replace('#', '');
-    const r = parseInt(cleanHex.substring(0, 2), 16);
-    const g = parseInt(cleanHex.substring(2, 4), 16);
-    const b = parseInt(cleanHex.substring(4, 6), 16);
-    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
-  }
-
   STATIONS.forEach((station) => {
     const color = station.colors.neonPink;
+    const rgb = station.colors.rgb;
     const button = document.createElement('button');
     button.className = 'cassette-spine';
     button.setAttribute('aria-label', `${station.title} - ${station.genre}`);
 
     button.style.setProperty('--genre-color', color);
-    button.style.setProperty('--genre-color-alpha-heavy', getHexAlpha(color, 0.4));
-    button.style.setProperty('--genre-color-alpha-glow', getHexAlpha(color, 0.15));
-    button.style.setProperty('--genre-color-sticker', getHexAlpha(color, 0.85));
+    button.style.setProperty('--genre-color-alpha-heavy', `rgba(${rgb}, 0.4)`);
+    button.style.setProperty('--genre-color-alpha-glow', `rgba(${rgb}, 0.15)`);
+    button.style.setProperty('--genre-color-sticker', `rgba(${rgb}, 0.85)`);
 
     const parts = station.title.split(/[\u2013\u2014-]/);
     const epShortName = parts[0] ? parts[0].trim() : `EP ${station.epNum}`;
@@ -218,6 +221,10 @@ let staticFactor   = 0.06;
 let currentBand    = 'FM';
 let currentMode    = 'STEREO';
 
+// Optimizations State
+let currentThemeClass   = null;
+let isVisualizerRunning = false;
+
 // ── Web Audio ─────────────────────────────────────────────────────────────────
 
 let audioCtx           = null;
@@ -274,7 +281,10 @@ function initAudio() {
   staticNode.start(0);
   staticGain.gain.value = 0;
 
-  audioEl.addEventListener('play', startProgressLoop);
+  audioEl.addEventListener('play', () => {
+    startProgressLoop();
+    startVisualizerLoop();
+  });
   audioEl.addEventListener('pause', stopProgressLoop);
 
   isAudioInitialized = true;
@@ -412,6 +422,7 @@ function renderTuningState() {
       filterNode.type = 'lowpass';
       filterNode.frequency.setTargetAtTime(filterFreq, t, 0.05);
     }
+    startVisualizerLoop();
   }
 
   // Update dial highlights using cached refs
@@ -457,11 +468,11 @@ function updateUIForStation(station) {
   applyStationTheme(station);
 
   // Apply episodic body theme class
-  document.body.className = document.body.className
-    .split(' ')
-    .filter(c => !c.startsWith('theme-ep'))
-    .join(' ');
-  document.body.classList.add(`theme-ep${station.epNum}`);
+  if (currentThemeClass) {
+    document.body.classList.remove(currentThemeClass);
+  }
+  currentThemeClass = `theme-ep${station.epNum}`;
+  document.body.classList.add(currentThemeClass);
 
   // Header / hero
   DOM.signalBadgeText.textContent = `SIGNAL: ${station.freq.toFixed(1)} FM`;
@@ -634,36 +645,55 @@ function stopProgressLoop() {
 
 // ── Visualizer ────────────────────────────────────────────────────────────────
 
+let miniBarSets = [];
+let bufferLength = 0;
+let dataArray = null;
+
 function startVisualizer() {
   document.getElementById('hero-wave')?.classList.add('active-visualizer');
 
-  const miniBarSets = [
+  miniBarSets = [
     document.querySelectorAll('#mini-wave-1 .mini-bar'),
     document.querySelectorAll('#mini-wave-2 .mini-bar'),
     document.querySelectorAll('#mini-wave-3 .mini-bar')
   ];
-  const bufferLength = analyserNode.frequencyBinCount;
-  const dataArray    = new Uint8Array(bufferLength);
+  bufferLength = analyserNode.frequencyBinCount;
+  dataArray    = new Uint8Array(bufferLength);
 
-  function draw() {
-    requestAnimationFrame(draw);
-    analyserNode.getByteFrequencyData(dataArray);
-    const playing   = audioEl && !audioEl.paused;
-    const staticVol = staticGain ? staticGain.gain.value : 0;
+  startVisualizerLoop();
+}
 
-    if (!playing && staticVol === 0) {
-      decayBars(DOM.heroBars);
-      decayBars(DOM.monitorBars);
-      miniBarSets.forEach(decayBars);
+function startVisualizerLoop() {
+  if (isVisualizerRunning || !isAudioInitialized) return;
+  isVisualizerRunning = true;
+  requestAnimationFrame(drawVisualizer);
+}
+
+function drawVisualizer() {
+  analyserNode.getByteFrequencyData(dataArray);
+  const playing   = audioEl && !audioEl.paused;
+  const staticVol = staticGain ? staticGain.gain.value : 0;
+
+  if (!playing && staticVol === 0) {
+    let stillDecaying = false;
+    if (decayBars(DOM.heroBars)) stillDecaying = true;
+    if (decayBars(DOM.monitorBars)) stillDecaying = true;
+    miniBarSets.forEach(set => {
+      if (decayBars(set)) stillDecaying = true;
+    });
+
+    if (!stillDecaying) {
+      isVisualizerRunning = false;
       return;
     }
-
+  } else {
     updateBars(DOM.heroBars,    dataArray, 0,  8);
     updateBars(DOM.monitorBars, dataArray, 4,  12);
     const activeMini = miniBarSets[currentPart - 1];
     if (activeMini) updateBars(activeMini, dataArray, 8, 16);
   }
-  draw();
+
+  requestAnimationFrame(drawVisualizer);
 }
 
 function updateBars(bars, dataArray, startBin, endBin) {
@@ -679,11 +709,16 @@ function updateBars(bars, dataArray, startBin, endBin) {
 }
 
 function decayBars(bars) {
-  if (!bars || !bars.length) return;
+  if (!bars || !bars.length) return false;
+  let active = false;
   bars.forEach(bar => {
     const cur = parseFloat(bar.style.height) || 5;
-    if (cur > 5) bar.style.height = (cur - 1.5) + '%';
+    if (cur > 5) {
+      bar.style.height = Math.max(5, cur - 1.5) + '%';
+      active = true;
+    }
   });
+  return active;
 }
 
 // ── Tuner drag (mouse + touch) ────────────────────────────────────────────────
@@ -712,6 +747,7 @@ function applyKnobDelta(dy) {
     const ratio = diff / 1.5;
     const vol   = diff < 1.5 ? Math.max(0, 1 - ratio) : 0;
     musicGain.gain.setTargetAtTime(vol * volumeFactor, audioCtx.currentTime, 0.05);
+    startVisualizerLoop();
   }
 }
 
@@ -810,6 +846,7 @@ function wireEvents() {
 // ── Boot ──────────────────────────────────────────────────────────────────────
 
 (function init() {
+  precalculateColors();
   buildTicker();
   buildControlsPanels();
   buildArchiveCards();

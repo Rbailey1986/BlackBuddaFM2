@@ -251,12 +251,27 @@
     let playingPartNum = 1;
     let stateLogs = [];
 
-    function getHexAlpha(hex, opacity) {
-      const cleanHex = hex.replace('#', '');
-      const r = parseInt(cleanHex.substring(0, 2), 16);
-      const g = parseInt(cleanHex.substring(2, 4), 16);
-      const b = parseInt(cleanHex.substring(4, 6), 16);
-      return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+    // Cached elements arrays
+    const timelineNodeEls = [];
+    const cassetteEls = [];
+
+    // Pre-calculate hex colors to RGB format once
+    function precalculateGenreColors() {
+      GENRES_METADATA.forEach(genre => {
+        const cleanHex = genre.color.replace('#', '');
+        const r = parseInt(cleanHex.substring(0, 2), 16);
+        const g = parseInt(cleanHex.substring(2, 4), 16);
+        const b = parseInt(cleanHex.substring(4, 6), 16);
+        genre.rgb = `${r}, ${g}, ${b}`;
+      });
+
+      STATIONS.forEach(station => {
+        const cleanHex = station.colors.neonPink.replace('#', '');
+        const r = parseInt(cleanHex.substring(0, 2), 16);
+        const g = parseInt(cleanHex.substring(2, 4), 16);
+        const b = parseInt(cleanHex.substring(4, 6), 16);
+        station.colors.rgb = `${r}, ${g}, ${b}`;
+      });
     }
 
     function addStateLog(message) {
@@ -288,6 +303,12 @@
         genre.x = paddingX + idx * stepX;
         const yLevels = [100, 70, 130, 130, 100, 70, 130, 130, 100, 100];
         genre.y = yLevels[idx];
+      });
+
+      // Update actual DOM element positions
+      timelineNodeEls.forEach(item => {
+        item.el.style.left = `${item.genre.x}px`;
+        item.el.style.top = `${item.genre.y}px`;
       });
 
       // Update zone indicators left positions
@@ -343,31 +364,26 @@
       }
     }
 
-    // Render tube stations on the lines grid
-    function renderTimelineNodes() {
+    // Build timeline node buttons once
+    function initTimelineNodes() {
       const container = document.getElementById("tube-stations-mount");
       container.innerHTML = "";
+      timelineNodeEls.length = 0;
 
       GENRES_METADATA.forEach(genre => {
-        const isActive = activeGenreId === genre.id;
-        const isDimmed = activeGenreId !== null && !isActive;
-
         const btn = document.createElement("button");
         btn.className = "genre-node-btn";
-        if (isActive) btn.classList.add("active");
-        if (isDimmed) btn.classList.add("dimmed");
 
-        btn.style.left = `${genre.x}px`;
-        btn.style.top = `${genre.y}px`;
+        const rgb = genre.rgb;
         btn.style.setProperty("--genre-color", genre.color);
-        btn.style.setProperty("--genre-color-alpha", getHexAlpha(genre.color, 0.4));
-        btn.style.setProperty("--genre-color-alpha-light", getHexAlpha(genre.color, 0.1));
-        btn.style.setProperty("--genre-color-alpha-heavy", getHexAlpha(genre.color, 0.2));
-        btn.style.setProperty("--genre-color-alpha-glow", getHexAlpha(genre.color, 0.15));
-        btn.style.setProperty("--genre-color-sticker", getHexAlpha(genre.color, 0.85));
+        btn.style.setProperty("--genre-color-alpha", `rgba(${rgb}, 0.4)`);
+        btn.style.setProperty("--genre-color-alpha-light", `rgba(${rgb}, 0.1)`);
+        btn.style.setProperty("--genre-color-alpha-heavy", `rgba(${rgb}, 0.2)`);
+        btn.style.setProperty("--genre-color-alpha-glow", `rgba(${rgb}, 0.15)`);
+        btn.style.setProperty("--genre-color-sticker", `rgba(${rgb}, 0.85)`);
 
         btn.innerHTML = `
-          <div class="genre-node-circle" style="border-color: ${genre.color}; box-shadow: 0 0 10px ${getHexAlpha(genre.color, 0.45)};"></div>
+          <div class="genre-node-circle" style="border-color: ${genre.color}; box-shadow: 0 0 10px rgba(${rgb}, 0.45);"></div>
           <div class="genre-node-label">
             <span class="genre-node-name">${genre.name}</span>
             <span class="genre-node-era">${genre.era}</span>
@@ -379,6 +395,17 @@
         });
 
         container.appendChild(btn);
+        timelineNodeEls.push({ el: btn, genre: genre });
+      });
+    }
+
+    // Render timeline node states (active/dimmed) dynamically
+    function renderTimelineNodes() {
+      timelineNodeEls.forEach(item => {
+        const isActive = activeGenreId === item.genre.id;
+        const isDimmed = activeGenreId !== null && !isActive;
+        item.el.classList.toggle("active", isActive);
+        item.el.classList.toggle("dimmed", isDimmed);
       });
     }
 
@@ -427,17 +454,17 @@
       if (!activeGenreId) return;
 
       const genre = GENRES_METADATA.find(g => g.id === activeGenreId);
-      const station = STATIONS.find(s => s.genre === genre.genreKey);
+      const rgb = genre.rgb;
 
       const panel = document.createElement("div");
       panel.className = "info-panel-container";
 
       panel.style.setProperty("--genre-color", genre.color);
-      panel.style.setProperty("--genre-color-alpha", getHexAlpha(genre.color, 0.4));
-      panel.style.setProperty("--genre-color-alpha-heavy", getHexAlpha(genre.color, 0.2));
-      panel.style.setProperty("--genre-color-alpha-light", getHexAlpha(genre.color, 0.1));
-      panel.style.setProperty("--genre-color-alpha-glow", getHexAlpha(genre.color, 0.08));
-      panel.style.setProperty("--genre-color-sticker", getHexAlpha(genre.color, 0.8));
+      panel.style.setProperty("--genre-color-alpha", `rgba(${rgb}, 0.4)`);
+      panel.style.setProperty("--genre-color-alpha-heavy", `rgba(${rgb}, 0.2)`);
+      panel.style.setProperty("--genre-color-alpha-light", `rgba(${rgb}, 0.1)`);
+      panel.style.setProperty("--genre-color-alpha-glow", `rgba(${rgb}, 0.08)`);
+      panel.style.setProperty("--genre-color-sticker", `rgba(${rgb}, 0.8)`);
 
       let tagsHtml = "";
       genre.artists.forEach(a => {
@@ -479,50 +506,85 @@
       mount.appendChild(panel);
     }
 
-    function renderCassettes() {
+    // Build cassette cards once and cache them
+    function initCassettes() {
       const container = document.getElementById("cassette-grid");
       container.innerHTML = "";
+      cassetteEls.length = 0;
 
       STATIONS.forEach(station => {
         const genreMeta = GENRES_METADATA.find(g => g.genreKey === station.genre);
-        const isDimmed = activeGenreId !== null && genreMeta.id !== activeGenreId;
         const color = genreMeta.color;
+        const rgb = genreMeta.rgb;
 
         const button = document.createElement("button");
         button.className = "cassette-spine";
-        if (isDimmed) button.classList.add("dimmed");
         button.setAttribute("aria-label", `${station.title} - ${station.genre}`);
 
         button.style.setProperty("--genre-color", color);
-        button.style.setProperty("--genre-color-alpha-heavy", getHexAlpha(color, 0.4));
-        button.style.setProperty("--genre-color-alpha-glow", getHexAlpha(color, 0.15));
-        button.style.setProperty("--genre-color-sticker", getHexAlpha(color, 0.85));
+        button.style.setProperty("--genre-color-alpha-heavy", `rgba(${rgb}, 0.4)`);
+        button.style.setProperty("--genre-color-alpha-glow", `rgba(${rgb}, 0.15)`);
+        button.style.setProperty("--genre-color-sticker", `rgba(${rgb}, 0.85)`);
 
         const epShortName = station.title.split("—")[0].trim();
         const epDisplayTitle = station.title.substring(station.title.indexOf("—") + 1).trim();
 
         button.innerHTML = `
-          <div class="spine-body">
-            <div class="spine-label">
-              <div class="spine-stripe"></div>
-              <div class="spine-text-rotated">
-                <div class="rotated-inner">
-                  <span class="rotated-title">${epDisplayTitle}</span>
-                  <span class="rotated-subtitle">${epShortName} · ${station.genre}</span>
+          <div class="cassette-3d-card">
+            <!-- Spine Face -->
+            <div class="spine-body">
+              <div class="spine-label">
+                <div class="spine-stripe"></div>
+                <div class="spine-text-rotated">
+                  <div class="rotated-inner">
+                    <span class="rotated-title">${epDisplayTitle}</span>
+                    <span class="rotated-subtitle">${epShortName} · ${station.genre}</span>
+                  </div>
+                </div>
+                <div class="spine-side">SIDE A</div>
+              </div>
+              <div class="spine-tape-bottom">
+                <div class="tape-block" style="height: 10px;"></div>
+                <div class="tape-block" style="height: 8px;"></div>
+                <div class="tape-block" style="height: 9px;"></div>
+              </div>
+            </div>
+
+            <!-- Cover Face -->
+            <div class="cover-body">
+              <div class="cover-jcard">
+                <div class="cover-stripe"></div>
+                <div class="cover-content">
+                  <div class="cover-header">
+                    <span class="cover-genre">${station.genre}</span>
+                    <span class="cover-number">${epShortName}</span>
+                  </div>
+                  <div class="cover-main">
+                    <h3 class="cover-title">${epDisplayTitle}</h3>
+                    <span class="cover-dj">${station.dj || 'BLACK BUDDHA FM'}</span>
+                  </div>
+                  <div class="cover-footer">
+                    <span class="cover-footer-text">CLANDESTINE TRANSMISSION</span>
+                    <span class="cover-side">SIDE A</span>
+                  </div>
                 </div>
               </div>
-              <div class="spine-side">SIDE A</div>
-            </div>
-            <div class="spine-tape-bottom">
-              <div class="tape-block" style="height: 10px;"></div>
-              <div class="tape-block" style="height: 8px;"></div>
-              <div class="tape-block" style="height: 9px;"></div>
+              <div class="case-sheen"></div>
             </div>
           </div>
         `;
 
         button.addEventListener("click", () => openModal(station));
         container.appendChild(button);
+        cassetteEls.push({ el: button, genreMeta: genreMeta });
+      });
+    }
+
+    // Toggle dimmed state dynamically
+    function renderCassettes() {
+      cassetteEls.forEach(item => {
+        const isDimmed = activeGenreId !== null && item.genreMeta.id !== activeGenreId;
+        item.el.classList.toggle("dimmed", isDimmed);
       });
     }
 
@@ -547,12 +609,13 @@
       const container = document.getElementById("modal-container");
       const genreMeta = GENRES_METADATA.find(g => g.genreKey === station.genre);
       const color = genreMeta.color;
+      const rgb = genreMeta.rgb;
 
       container.style.setProperty("--genre-color", color);
-      container.style.setProperty("--genre-color-alpha", getHexAlpha(color, 0.15));
-      container.style.setProperty("--genre-color-alpha-heavy", getHexAlpha(color, 0.4));
-      container.style.setProperty("--genre-color-sticker", getHexAlpha(color, 0.8));
-      container.style.setProperty("--bg-alpha", getHexAlpha(color, 0.04));
+      container.style.setProperty("--genre-color-alpha", `rgba(${rgb}, 0.15)`);
+      container.style.setProperty("--genre-color-alpha-heavy", `rgba(${rgb}, 0.4)`);
+      container.style.setProperty("--genre-color-sticker", `rgba(${rgb}, 0.8)`);
+      container.style.setProperty("--bg-alpha", `rgba(${rgb}, 0.04)`);
 
       let localPartNum = 1;
       if (playingEpisodeId === station.genre) {
@@ -768,6 +831,9 @@
     }
 
     window.addEventListener("DOMContentLoaded", () => {
+      precalculateGenreColors();
+      initTimelineNodes();
+      initCassettes();
       recalculateCoordinates();
       drawTubeLines();
       renderTimelineNodes();
@@ -776,7 +842,6 @@
       window.addEventListener("resize", () => {
         recalculateCoordinates();
         drawTubeLines();
-        renderTimelineNodes();
       });
 
       document.getElementById("clear-signal-footer").addEventListener("click", () => {
