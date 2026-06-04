@@ -484,6 +484,10 @@ function updateUIForStation(station) {
 
   renderMagazineCover(station);
 
+  if (typeof updateTubeMapActiveState === 'function') {
+    updateTubeMapActiveState(station.genre);
+  }
+
   DOM.epBadge.textContent = `EP ${station.genre} LIVE`;
 
   // Controls panels setup
@@ -1227,6 +1231,332 @@ function wireEvents() {
       renderBookletSpread();
     }
   });
+
+  window.addEventListener('resize', () => {
+    if (typeof drawTubeLines === 'function') drawTubeLines();
+  });
+}
+
+// ── Tube Map Timeline Integration ────────────────────────────────────────────
+
+const GENRES_METADATA = [
+  {
+    id: "jungle",
+    name: "Jungle",
+    era: "1991–1995",
+    color: "#39FF14",
+    x: 80, y: 100,
+    description: "Born in the raves. Breakbeat science meets sound system culture — ragga vocals over amen breaks at 160bpm. The original signal.",
+    artists: ["Goldie", "Shy FX", "LTJ Bukem", "DJ Hype"],
+    genreKey: "JUNGLE"
+  },
+  {
+    id: "dnb",
+    name: "Drum & Bass",
+    era: "1996–2005",
+    color: "#0066FF",
+    x: 200, y: 70,
+    description: "Jungle evolved, refined, exported. The amen break went global. Rollers, liquid, neurofunk — a genre fracturing into movements.",
+    artists: ["Goldie", "LTJ Bukem", "Roni Size", "J Majik", "Dillinja"],
+    genreKey: "DRUM & BASS"
+  },
+  {
+    id: "ukgarage",
+    name: "UK Garage",
+    era: "1996–2002",
+    color: "#D4AF37",
+    x: 320, y: 130,
+    description: "US house through a South London filter. 2-step rhythms, pitched-up vocals, champagne in the club. Speed garage gave way to something smoother.",
+    artists: ["Craig David", "MJ Cole", "Artful Dodger", "So Solid Crew"],
+    genreKey: "UK GARAGE"
+  },
+  {
+    id: "grime",
+    name: "Grime",
+    color: "#B0B7C3",
+    era: "2002–2010",
+    x: 440, y: 130,
+    description: "8-bar frequencies from E3. Pirate radio, Nokia ringtones, clashing MCs. Wiley's eskibeat rewired the cultural mainframe.",
+    artists: ["Wiley", "Dizzee Rascal", "Skepta", "JME", "Tinchy Stryder"],
+    genreKey: "GRIME"
+  },
+  {
+    id: "dubstep",
+    name: "Dubstep",
+    era: "2001–2011",
+    color: "#2B0A3D",
+    x: 560, y: 100,
+    description: "140bpm. Sub-bass that moved furniture. Croydon's answer to everything. From Plastic People to festival stages — the wobble heard worldwide.",
+    artists: ["Benga", "Skream", "Burial", "Digital Mystikz", "Kode9"],
+    genreKey: "DUBSTEP"
+  },
+  {
+    id: "bassline",
+    name: "Bassline",
+    era: "2003–2008",
+    color: "#FF2DAA",
+    x: 680, y: 70,
+    description: "Sheffield's contribution. 4x4 kicks, pitched basslines, speed garage's northern cousin. Underground but felt everywhere.",
+    artists: ["DJ Q", "T2", "Virus Syndicate", "Chunky"],
+    genreKey: "BASSLINE"
+  },
+  {
+    id: "ukfunky",
+    name: "UK Funky",
+    era: "2006–2012",
+    color: "#FF6B1A",
+    x: 800, y: 130,
+    description: "Warmth returned to the underground. Soulful house merged with syncopated Afro-Caribbean soca rhythms, tribal bongo loops, and euphoric vocals.",
+    artists: ["Donae'o", "Crazy Cousinz", "Roska", "Lil Silva", "Kyla"],
+    genreKey: "UK FUNKY"
+  },
+  {
+    id: "roadrap",
+    name: "Road Rap",
+    era: "2007–2016",
+    color: "#1A1A1A",
+    x: 920, y: 130,
+    description: "Peckham and Brixton street stories slowed down the tempo. Raw baritone flows, mixtape culture, and heavy sub-bass documenting road realities.",
+    artists: ["Giggs", "Blade Brown", "Potter Payper", "Casisdead", "Nines"],
+    genreKey: "ROAD RAP"
+  },
+  {
+    id: "ukdrill",
+    name: "UK Drill",
+    era: "2014–2023",
+    color: "#B3001B",
+    x: 1040, y: 100,
+    description: "South London's sliding 808 glides and brutalist narratives. Chicago's drill blueprints re-engineered for the estates, conquering global charts.",
+    artists: ["67", "Harlem Spartans", "Loski", "MizOrMac", "Unknown T"],
+    genreKey: "UK DRILL"
+  },
+  {
+    id: "afroswing",
+    name: "Afroswing",
+    era: "2015–2023",
+    color: "#00C2B2",
+    x: 1160, y: 100,
+    description: "Melodic fusions of British bass weight, West African highlife, and Jamaican dancehall. Joyous, cross-continental diaspora waves.",
+    artists: ["J Hus", "Kojo Funds", "Not3s", "Dave", "MoStack"],
+    genreKey: "AFROSWING"
+  }
+];
+
+let activeGenreId = null;
+const timelineNodeEls = [];
+
+function hexToRgb(hex) {
+  const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+  const fullHex = hex.replace(shorthandRegex, (m, r, g, b) => r + r + g + g + b + b);
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(fullHex);
+  return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : null;
+}
+
+// Precalculate RGBs for metadata
+GENRES_METADATA.forEach(g => {
+  g.rgb = hexToRgb(g.color) || "255, 255, 255";
+});
+
+function drawTubeLines() {
+  const svg = document.getElementById("tube-lines-svg-el");
+  if (!svg) return;
+  svg.innerHTML = "";
+
+  let pathD = "";
+  GENRES_METADATA.forEach((genre, idx) => {
+    if (idx === 0) {
+      pathD = `M ${genre.x} ${genre.y}`;
+    } else {
+      const prev = GENRES_METADATA[idx - 1];
+      const midX = prev.x + (genre.x - prev.x) / 2;
+      pathD += ` Q ${midX} ${genre.y} ${genre.x} ${genre.y}`;
+    }
+  });
+
+  const glowLine = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  glowLine.setAttribute("d", pathD);
+  glowLine.setAttribute("fill", "none");
+  glowLine.setAttribute("stroke", "#1a202c");
+  glowLine.setAttribute("stroke-width", "8");
+  glowLine.setAttribute("stroke-linecap", "round");
+  glowLine.setAttribute("stroke-linejoin", "round");
+  svg.appendChild(glowLine);
+
+  for (let i = 0; i < GENRES_METADATA.length - 1; i++) {
+    const start = GENRES_METADATA[i];
+    const end = GENRES_METADATA[i + 1];
+    const segment = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    const midX = start.x + (end.x - start.x) / 2;
+    segment.setAttribute("d", `M ${start.x} ${start.y} Q ${midX} ${end.y} ${end.x} ${end.y}`);
+    segment.setAttribute("fill", "none");
+    segment.setAttribute("stroke", start.color);
+    segment.setAttribute("stroke-width", "5");
+    segment.setAttribute("stroke-linecap", "round");
+    segment.setAttribute("stroke-linejoin", "round");
+    svg.appendChild(segment);
+  }
+}
+
+function initTimelineNodes() {
+  const container = document.getElementById("tube-stations-mount");
+  if (!container) return;
+  container.innerHTML = "";
+  timelineNodeEls.length = 0;
+
+  GENRES_METADATA.forEach(genre => {
+    const btn = document.createElement("button");
+    btn.className = "genre-node-btn";
+    btn.style.left = `${genre.x}px`;
+    btn.style.top = `${genre.y}px`;
+
+    const rgb = genre.rgb;
+    btn.style.setProperty("--genre-color", genre.color);
+    btn.style.setProperty("--genre-color-alpha", `rgba(${rgb}, 0.4)`);
+    btn.style.setProperty("--genre-color-alpha-light", `rgba(${rgb}, 0.1)`);
+    btn.style.setProperty("--genre-color-alpha-heavy", `rgba(${rgb}, 0.2)`);
+    btn.style.setProperty("--genre-color-alpha-glow", `rgba(${rgb}, 0.15)`);
+    btn.style.setProperty("--genre-color-sticker", `rgba(${rgb}, 0.85)`);
+
+    btn.innerHTML = `
+      <div class="genre-node-circle" style="border-color: ${genre.color}; box-shadow: 0 0 10px rgba(${rgb}, 0.45);"></div>
+      <div class="genre-node-label">
+        <span class="genre-node-name">${genre.name}</span>
+        <span class="genre-node-era">${genre.era}</span>
+      </div>
+    `;
+
+    btn.addEventListener("click", () => {
+      handleSelect(genre.id);
+    });
+
+    container.appendChild(btn);
+    timelineNodeEls.push({ el: btn, genre: genre });
+  });
+}
+
+function renderTimelineNodes() {
+  timelineNodeEls.forEach(item => {
+    const isActive = activeGenreId === item.genre.id;
+    const isDimmed = activeGenreId !== null && !isActive;
+    item.el.classList.toggle("active", isActive);
+    item.el.classList.toggle("dimmed", isDimmed);
+  });
+}
+
+function handleSelect(id) {
+  const clearBtn = document.getElementById("clear-signal-footer");
+
+  if (activeGenreId === id) {
+    activeGenreId = null;
+    if (clearBtn) clearBtn.style.display = "none";
+  } else {
+    activeGenreId = id;
+    if (clearBtn) clearBtn.style.display = "block";
+    const g = GENRES_METADATA.find(x => x.id === id);
+    
+    // Auto-tune the main radio player
+    const station = STATIONS.find(s => s.genre === g.genreKey);
+    if (station) {
+      initAudio();
+      if (audioCtx) audioCtx.resume();
+      animateTunerTo(station.freq);
+    }
+  }
+
+  renderTimelineNodes();
+  renderInfoPanel();
+  updateRadarStatus();
+}
+
+function updateRadarStatus() {
+  const pulseDot = document.getElementById("radar-pulse");
+  const statusText = document.getElementById("radar-status-text");
+  if (!pulseDot || !statusText) return;
+
+  if (activeGenreId) {
+    const genre = GENRES_METADATA.find(g => g.id === activeGenreId);
+    pulseDot.style.background = genre.color;
+    pulseDot.style.boxShadow = `0 0 10px ${genre.color}`;
+    statusText.innerText = `${genre.name} LINE ACTIVE`;
+    statusText.style.color = genre.color;
+  } else {
+    pulseDot.style.background = "#ff0055";
+    pulseDot.style.boxShadow = "0 0 6px #ff0055";
+    statusText.innerText = "1992 → PRESENT";
+    statusText.style.color = "";
+  }
+}
+
+function renderInfoPanel() {
+  const mount = document.getElementById("info-panel-mount");
+  if (!mount) return;
+  mount.innerHTML = "";
+
+  if (!activeGenreId) return;
+
+  const genre = GENRES_METADATA.find(g => g.id === activeGenreId);
+  const rgb = genre.rgb;
+
+  const panel = document.createElement("div");
+  panel.className = "info-panel-container";
+
+  panel.style.setProperty("--genre-color", genre.color);
+  panel.style.setProperty("--genre-color-alpha", `rgba(${rgb}, 0.4)`);
+  panel.style.setProperty("--genre-color-alpha-heavy", `rgba(${rgb}, 0.2)`);
+  panel.style.setProperty("--genre-color-alpha-light", `rgba(${rgb}, 0.1)`);
+  panel.style.setProperty("--genre-color-alpha-glow", `rgba(${rgb}, 0.08)`);
+  panel.style.setProperty("--genre-color-sticker", `rgba(${rgb}, 0.8)`);
+
+  let tagsHtml = "";
+  genre.artists.forEach(a => {
+    tagsHtml += `<span class="artist-badge">${a}</span>`;
+  });
+
+  panel.innerHTML = `
+    <div class="info-panel-glow"></div>
+    <div class="info-panel-body">
+      <div class="info-panel-header">
+        <div>
+          <div class="info-status-row">
+            <div class="info-status-dot"></div>
+            <span class="info-status-text">ROUTE CONNECTED</span>
+          </div>
+          <h3 class="info-panel-title">${genre.name} Station</h3>
+          <span class="info-panel-era">${genre.era} Era</span>
+        </div>
+        <button class="info-close-btn" id="info-close-trigger">✕ DISCONNECT</button>
+      </div>
+
+      <p class="info-description">${genre.description}</p>
+
+      <div class="info-metadata-row">
+        <div>
+          <span class="artists-label" style="font-family:'Space Mono', monospace; font-size:10px; color:#a0aec0; display:block; margin-bottom:8px; text-transform:uppercase;">KEY OPERATING TRANSMITTERS</span>
+          <div class="artists-tags-container" style="display:flex; flex-wrap:wrap; gap:8px;">
+            ${tagsHtml}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  panel.querySelector("#info-close-trigger").addEventListener("click", () => {
+    handleSelect(genre.id);
+  });
+
+  mount.appendChild(panel);
+}
+
+function updateTubeMapActiveState(genreName) {
+  const matchingGenre = GENRES_METADATA.find(g => g.genreKey === genreName.toUpperCase());
+  if (matchingGenre) {
+    activeGenreId = matchingGenre.id;
+  } else {
+    activeGenreId = null;
+  }
+  renderTimelineNodes();
+  renderInfoPanel();
+  updateRadarStatus();
 }
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
@@ -1239,6 +1569,10 @@ function wireEvents() {
   cacheDOMRefs();
   setupTunerUI();
   wireEvents();
+
+  // Initialize London Tube Line elements
+  initTimelineNodes();
+  drawTubeLines();
 
   // Set default station (Jungle)
   const defaultStation = getStationByGenre('JUNGLE') || STATIONS[0];
@@ -1254,4 +1588,14 @@ function wireEvents() {
       mark.classList.add('active');
     }
   });
+
+  // Wire clear signal footer button
+  const clearBtn = document.getElementById("clear-signal-footer");
+  if (clearBtn) {
+    clearBtn.addEventListener("click", () => {
+      if (activeGenreId) {
+        handleSelect(activeGenreId);
+      }
+    });
+  }
 })();

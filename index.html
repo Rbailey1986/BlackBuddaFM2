@@ -211,8 +211,52 @@
                   <span class="ctrl-key">GAIN</span>
                   <div class="gain-knob" id="gain-knob">
                     <div class="knob-line" id="knob-line"></div>
+              </div>
+            </div>
+
+            <!-- Timeline evolution Tube Map Card -->
+            <div class="timeline-section-card" style="margin-top: 32px;">
+              <div class="timeline-header">
+                <div style="display: flex; align-items: center;">
+                  <div class="header-bar-indicator"></div>
+                  <div class="timeline-header-text">
+                    <div class="timeline-micro-label">UK UNDERGROUND BASS SYSTEM · ROUTE MAP</div>
+                    <h2 class="timeline-title">Bass Transit Network</h2>
                   </div>
                 </div>
+                <div class="timeline-status" id="timeline-radar-status">
+                  <div class="status-pulse-dot" id="radar-pulse"></div>
+                  <span id="radar-status-text">1992 → PRESENT</span>
+                </div>
+              </div>
+
+              <!-- London Underground Tube Map Nodes Track -->
+              <div class="nodes-track" id="nodes-track-wrap">
+                <div class="tube-grid-bg"></div>
+
+                <svg class="tube-lines-svg" id="tube-lines-svg-el">
+                  <!-- SVG Paths for tube lines connecting stations will be injected here dynamically -->
+                </svg>
+
+                <!-- Zone Indicators behind nodes -->
+                <div class="tube-zone-marker" style="left: 40px;">Zone 1: Hardcore Roots</div>
+                <div class="tube-zone-marker" style="left: 450px;">Zone 2: 2000s Sub-Evolution</div>
+                <div class="tube-zone-marker" style="left: 950px;">Zone 3: Modern Street Era</div>
+
+                <div class="tube-stations-container" id="tube-stations-mount">
+                  <!-- Node buttons injected here dynamically -->
+                </div>
+              </div>
+
+              <!-- Injected Info Panel for selected genre evolution -->
+              <div id="info-panel-mount"></div>
+
+              <!-- Section footer control bar -->
+              <div style="margin-top: 20px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.04); display: flex; align-items: center; justify-content: space-between;">
+                <span style="font-family: 'Hanken Grotesk', sans-serif; font-size: 11px; letter-spacing: 0.12em; color: rgba(255,255,255,0.3); text-transform: uppercase; font-weight: 700;">
+                  30 YEARS OF UK MUSIC EVOLUTION
+                </span>
+                <button id="clear-signal-footer" class="info-close-btn" style="display: none; border-color: var(--genre-color); color: var(--genre-color);">CLEAR CONNECTION</button>
               </div>
             </div>
 
