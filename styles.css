@@ -1843,7 +1843,7 @@ footer {
 }
 
 .player-left .cassette-spine:hover .cassette-3d-card {
-  transform: rotateY(90deg) translateY(-8px);
+  transform: rotateY(90deg) translateY(-7px);
 }
 
 .player-left .spine-body {
