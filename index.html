@@ -31,7 +31,6 @@
       <nav id="main-nav">
         <a href="episodes.html">EPISODES</a>
         <a href="#player">MIXES</a>
-        <a href="#archive">ARCHIVE</a>
       </nav>
       <div class="header-right">
         <div class="signal-badge">
@@ -40,7 +39,6 @@
         </div>
       </div>
     </div>
-
   </header>
 
   <main>
@@ -107,23 +105,23 @@
       </div>
     </section>
 
-    <!-- Player -->
+    <!-- Redesigned Player -->
     <section id="player">
       <div class="section-inner" style="max-width:1400px;">
         <div class="player-outer">
           <div class="player-inner">
             <div class="player-grid">
 
-              <!-- Left: Stats -->
+              <!-- Left: Stats & Cassette Shelf -->
               <div class="player-left">
                 <div class="on-air-large"><span>ON AIR</span></div>
                 <div class="stat-row">
                   <span class="stat-key">LENGTH</span>
-                  <span class="stat-big" id="stat-length">42:17</span>
+                  <span class="stat-big" id="stat-length">52:14</span>
                 </div>
                 <div class="stat-row">
                   <span class="stat-key">GENRE</span>
-                  <span class="stat-big stat-green" id="stat-genre">UK GARAGE</span>
+                  <span class="stat-big stat-green" id="stat-genre">JUNGLE</span>
                 </div>
                 <div class="stat-row">
                   <span class="stat-key">BITRATE</span>
@@ -131,54 +129,45 @@
                 </div>
                 <div class="stat-row">
                   <span class="stat-key">LOCATION</span>
-                  <span class="stat-location" id="stat-location">BLACK BUDDHA HQ</span>
+                  <span class="stat-location" id="stat-location">JUNGLE CLANDESTINE HQ</span>
                 </div>
 
-                <div class="rec-row">
-                  <span class="flicker"></span>
-                  <span class="rec-label">REC: ACTIVE</span>
+                <!-- Cassette Spine Shelf (integrated directly in column) -->
+                <div class="tape-shelf-container">
+                  <div class="tape-shelf-row" id="cards-grid">
+                    <!-- Dynamic cassette spines populated by player-test.js -->
+                  </div>
                 </div>
               </div>
 
-              <!-- Center: Now Transmitting -->
+              <!-- Center: Now Transmitting & Clickable Magazine Cover -->
               <div class="player-center">
                 <div class="now-tx-label">
-                  <span class="flicker" style="width:8px;height:8px;"></span>
-                  NOW TRANSMITTING
+                  <span class="flicker" style="width:8px;height:8px;background:#ff00ff;box-shadow:0 0 8px #ff00ff;"></span>
+                  • NOW TRANSMITTING
                 </div>
-                <h2 class="ep-title" id="ep-title">EP 03 &mdash; UK GARAGE &amp; 2-STEP: THE CHAMPAGNE SHUFFLE</h2>
-                <p class="ep-subtitle" id="ep-subtitle">2 STEP &amp; NIGHT BUS ANTHEMS</p>
-                <p class="ep-desc" id="ep-desc">
-                  Step into the late-90s Sunday club scene where UK Garage brought soul, swagger, and designer style to
-                  the underground. At 130 BPM, producers fused house, sub-bass, and chopped vocals into the unmistakable
-                  swing of 2-step. Tune the system and stay locked to this syncopated lineage.
-                </p>
-                <div class="tracklist-panel" id="tracklist-panel">
-                  <h3 class="tracklist-heading">DECK TRANSMISSION LOG (TRACKLIST)</h3>
-                  <div class="tracklist-tabs">
-                    <button class="tracklist-tab active" data-part="1">PT1</button>
-                    <button class="tracklist-tab" data-part="2">PT2</button>
-                    <button class="tracklist-tab" id="tab-pt3" data-part="3" style="display:none;">PT3</button>
-                  </div>
-                  <ul id="tracklist-list" class="tracklist-list"></ul>
+                <h2 class="ep-title-custom" id="ep-title-custom">EP 01 - JUNGLE: ORIGINAL</h2>
+                
+                <div id="magazine-cover-mount" class="magazine-cover-mount" style="cursor: pointer;">
+                  <!-- Injected by player-test.js -->
                 </div>
               </div>
 
-              <!-- Right: Vinyl + Controls — panels injected by JS -->
+              <!-- Right: Case Sleeve Graphic & Controls -->
               <div class="player-right">
-                <div class="vinyl-frame">
-                  <img id="vinyl-img"
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuB_wEXSaYe5BZlrbBz85FsiQPhXYuNmtsceeT8911HmmvBcYb70OvO05QR6z0iBcVhFC6BkaeY2rkmdWMmtTiP4_60J5CEXvMFVrO7gTG5ElV40pvpCdtt_gDmDP4XJVZHxNlLfB2ybldd71gezzBsalGNrMCebFuNSHxa3bAb7zzqBKPJHhtFLQPRys7jCtHasO0X8SDn0yStshoHpgrUatItDnucGtsFMBk44IN_eo9QVEXRlITTyCRXFvREzsoIfs7OgEhHu5qQ"
-                    alt="EP vinyl">
-                  <div class="ep-badge" id="ep-badge">EP UK GARAGE LIVE</div>
+                <div class="vinyl-frame" id="vinyl-frame">
+                  <div class="vinyl-disc-graphic" id="vinyl-disc-graphic">
+                    <div class="vinyl-label-center" id="vinyl-label-center"></div>
+                  </div>
+                  <div class="ep-badge" id="ep-badge">EP JUNGLE LIVE</div>
                 </div>
-                <!-- Controls panels 1–3 injected here by createControlsPanel() -->
+                <!-- Controls panels 1–3 injected here by player-test.js -->
                 <div id="controls-container"></div>
               </div>
 
             </div>
 
-            <!-- Tuner -->
+            <!-- Tuner section -->
             <div class="tuner-section">
               <!-- Basquiat Crown SVG decoration -->
               <svg class="crown-icon" viewBox="0 0 100 80">
@@ -194,7 +183,7 @@
 
               <div class="tuner-header">
                 <span class="tuner-label">TUNING THE UNDERGROUND</span>
-                <span class="tuner-strength" id="tuner-strength">STRENGTH: 98%</span>
+                <span class="tuner-strength" id="tuner-strength">STRENGTH: 97%</span>
               </div>
               <div class="tuner-display" id="tuner-display">
                 <div class="tuner-ticks" id="tuner-ticks"></div>
@@ -231,30 +220,26 @@
         </div>
       </div>
     </section>
-
-    <!-- Archive — cards generated from STATIONS data -->
-    <section id="archive">
-      <div class="section-inner" style="padding-top:0;">
-        <div class="archive-header">
-          <h2 class="archive-title">TAPE <span class="pink">COLLECTION</span></h2>
-          <span class="archive-sub">UNDERGROUND SCANLOG</span>
-        </div>
-        <div class="tape-shelf-container">
-          <div class="tape-shelf-row" id="cards-grid">
-            <!-- populated by app.js -->
-          </div>
-          <div class="tape-shelf"></div>
-          <div class="tape-shelf-shadow"></div>
-        </div>
-      </div>
-    </section>
-
-
   </main>
 
   <footer>
     <span class="footer-text">Black Buddha FM // Clandestine Transmissions 1994&ndash;2025</span>
   </footer>
+
+  <!-- Interactive Magazine Modal overlay -->
+  <div id="magazine-modal" class="magazine-modal-overlay">
+    <div class="magazine-modal-content">
+      <button class="magazine-close-btn" id="magazine-close-btn">✕ CLOSE BOOKLET</button>
+      <div class="booklet-container" id="booklet-container">
+        <!-- Inside pages will be rendered here dynamically -->
+      </div>
+      <div class="booklet-nav-bar">
+        <button class="booklet-nav-btn" id="booklet-prev-btn" disabled>← PREV PAGE</button>
+        <span class="booklet-page-indicator" id="booklet-page-indicator">SPREAD 1 / 2</span>
+        <button class="booklet-nav-btn" id="booklet-next-btn">NEXT PAGE →</button>
+      </div>
+    </div>
+  </div>
 
   <script src="stations-data.js"></script>
   <script src="app.js" defer></script>

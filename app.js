@@ -1,7 +1,4 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// BlackBuddaFM — app.js
-// STATIONS is loaded from stations-data.js (single source of truth)
-// ─────────────────────────────────────────────────────────────────────────────
+// player-test.js — Prototype scripting for redesigned Broadcaster Deck
 
 const MIN_FREQ = 88.9;
 const MAX_FREQ = 109.8;
@@ -14,12 +11,6 @@ function getStationByGenre(genre) {
 
 function getStationByFreq(freq) {
   return STATIONS.find(s => s.freq === freq) || null;
-}
-
-function getNearestStation(freq) {
-  return STATIONS.reduce((nearest, s) => {
-    return Math.abs(s.freq - freq) < Math.abs(nearest.freq - freq) ? s : nearest;
-  });
 }
 
 // ── Helper: time formatting ───────────────────────────────────────────────────
@@ -35,16 +26,8 @@ function formatTime(secs) {
   return `${m}:${s < 10 ? '0' : ''}${s}`;
 }
 
-// ── Helper: CSS custom property theming ──────────────────────────────────────
-// Bridges per-station color data onto :root so every CSS rule picks it up
+// ── Helper: RGB calculations ──────────────────────────────────────────────────
 
-function applyStationTheme(station) {
-  const r = document.documentElement.style;
-  r.setProperty('--surface-lowest', station.colors.surfaceLowest);
-  r.setProperty('--surface-low', station.colors.surfaceLow);
-}
-
-// Pre-parse station hex colors to RGB format once on boot to save string manipulation CPU cycles
 function precalculateColors() {
   STATIONS.forEach(s => {
     const hex = s.colors.neonPink;
@@ -56,7 +39,7 @@ function precalculateColors() {
   });
 }
 
-// ── Build ticker from STATIONS data (no hardcoded duplication) ───────────────
+// ── Build ticker from STATIONS data ──────────────────────────────────────────
 
 function buildTicker() {
   const ticker = document.getElementById('ticker');
@@ -66,10 +49,11 @@ function buildTicker() {
     ...STATIONS.map(s => `EP ${s.epNum} \u2014 ${s.genre}: ${s.title.split('\u2013')[1]?.trim() || s.subtitle}`),
     '30 YEARS OF BLACK BRITISH MUSIC'
   ];
-  // Duplicate for seamless loop (CSS animation goes -50%)
   const html = [...items, ...items].map(t => `<span>${t}</span>`).join('');
   ticker.innerHTML = html;
 }
+
+// ── Build horizontal miniature tape shelf in left column ──────────────────────
 
 function buildArchiveCards() {
   const grid = document.getElementById('cards-grid');
@@ -92,21 +76,39 @@ function buildArchiveCards() {
     const epDisplayTitle = parts.slice(1).join('-').trim();
 
     button.innerHTML = `
-      <div class="spine-body">
-        <div class="spine-label">
-          <div class="spine-stripe"></div>
-          <div class="spine-text-rotated">
-            <div class="rotated-inner">
-              <span class="rotated-title">${epDisplayTitle}</span>
-              <span class="rotated-subtitle">${epShortName} · ${station.genre}</span>
+      <div class="cassette-3d-card">
+        <!-- Spine Face -->
+        <div class="spine-body">
+          <div class="spine-label">
+            <div class="spine-stripe"></div>
+            <div class="spine-text-rotated">
+              <div class="rotated-inner">
+                <span class="rotated-title">${epDisplayTitle}</span>
+                <span class="rotated-subtitle">${epShortName}</span>
+              </div>
             </div>
           </div>
-          <div class="spine-side">SIDE A</div>
+          <div class="spine-tape-bottom">
+            <div class="tape-block" style="height: 4px;"></div>
+            <div class="tape-block" style="height: 3px;"></div>
+            <div class="tape-block" style="height: 4px;"></div>
+          </div>
         </div>
-        <div class="spine-tape-bottom">
-          <div class="tape-block" style="height: 10px;"></div>
-          <div class="tape-block" style="height: 8px;"></div>
-          <div class="tape-block" style="height: 9px;"></div>
+        <!-- Cover Face (Reverse Spin) -->
+        <div class="cover-body">
+          <div class="cover-jcard">
+            <div class="cover-stripe"></div>
+            <div class="cover-content">
+              <div class="cover-header">
+                <span class="cover-genre">${station.genre}</span>
+                <span class="cover-number">${epShortName}</span>
+              </div>
+              <div class="cover-main">
+                <h3 class="cover-title">${epDisplayTitle}</h3>
+                <span class="cover-dj">PRESIDENT BAILEY</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>`;
 
@@ -122,7 +124,7 @@ function buildArchiveCards() {
   });
 }
 
-// ── Build controls panels (parts 1–3) from template ──────────────────────────
+// ── Build controls panels from template ──────────────────────────────────────
 
 function createControlsPanel(partNum, label) {
   const panel = document.createElement('div');
@@ -167,7 +169,7 @@ function buildControlsPanels() {
   container.appendChild(createControlsPanel(3, 'PART 3: THE SECTOR CHANGE'));
 }
 
-// ── DOM refs (cached after panels are injected) ───────────────────────────────
+// ── DOM refs ──────────────────────────────────────────────────────────────────
 
 let DOM = {};
 
@@ -177,11 +179,8 @@ function cacheDOMRefs() {
     tunerNeedle:     document.getElementById('tuner-needle'),
     tunerStrength:   document.getElementById('tuner-strength'),
     signalBadgeText: document.getElementById('signal-badge-text'),
-    vinylImg:        document.getElementById('vinyl-img'),
+    vinylFrame:      document.getElementById('vinyl-frame'),
     heroBayPlayBtn:  document.getElementById('hero-play-btn'),
-    epTitle:         document.getElementById('ep-title'),
-    epSubtitle:      document.getElementById('ep-subtitle'),
-    epDesc:          document.getElementById('ep-desc'),
     epBadge:         document.getElementById('ep-badge'),
     statLength:      document.getElementById('stat-length'),
     statGenre:       document.getElementById('stat-genre'),
@@ -189,11 +188,6 @@ function cacheDOMRefs() {
     monitorTitle:    document.getElementById('monitor-title'),
     monitorDuration: document.getElementById('monitor-duration'),
     monitorFreq:     document.getElementById('monitor-freq'),
-    tracklistPanel:  document.getElementById('tracklist-panel'),
-    tracklistList:   document.getElementById('tracklist-list'),
-    tracklistTabs:   document.querySelectorAll('.tracklist-tab'),
-    tabPt3:          document.getElementById('tab-pt3'),
-    controlsPart3:   document.getElementById('controls-part3'),
     progSignals:     [null, document.getElementById('prog-signal-1'), document.getElementById('prog-signal-2'), document.getElementById('prog-signal-3')],
     playBtns:        [null, document.getElementById('play-btn-1'), document.getElementById('play-btn-2'), document.getElementById('play-btn-3')],
     timeDisplays:    [null, document.getElementById('time-1'), document.getElementById('time-2'), document.getElementById('time-3')],
@@ -203,25 +197,23 @@ function cacheDOMRefs() {
     recFlicker:      document.querySelector('.rec-row .flicker'),
     heroBars:        document.querySelectorAll('#hero-wave .wave-bar'),
     monitorBars:     document.querySelectorAll('#monitor-bars .green-bar'),
-    stationMarks:    null // populated after setupTunerUI
+    stationMarks:    null
   };
 }
 
 // ── State ─────────────────────────────────────────────────────────────────────
 
-let currentFreq    = 93.5; // default: UK Garage
+let currentFreq    = 88.9; 
 let isDragging     = false;
 let activeStation  = null;
 let lastActiveStation = null;
 let currentPart    = 1;
-let selectedTracklistPart = 1;
 
 let volumeFactor   = 0.8;
 let staticFactor   = 0.06;
 let currentBand    = 'FM';
 let currentMode    = 'STEREO';
 
-// Optimizations State
 let currentThemeClass   = null;
 let isVisualizerRunning = false;
 
@@ -237,7 +229,6 @@ let filterNode         = null;
 let analyserNode       = null;
 let isAudioInitialized = false;
 
-// SVG paths for play/pause (constants, not rebuilt on every call)
 const SVG_PLAY  = '<path d="M8 5v14l11-7z"/>';
 const SVG_PAUSE = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
 
@@ -261,7 +252,6 @@ function initAudio() {
   analyserNode = audioCtx.createAnalyser();
   analyserNode.fftSize = 64;
 
-  // White-noise buffer for FM static
   const bufferSize = 2 * audioCtx.sampleRate;
   const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
   const output = noiseBuffer.getChannelData(0);
@@ -309,7 +299,6 @@ function setupTunerUI() {
   const ticksContainer    = document.getElementById('tuner-ticks');
   const stationsContainer = document.getElementById('tuner-stations-container');
 
-  // Tick marks
   const startTick = 88.5, endTick = 110.0;
   const totalTicks = Math.floor((endTick - startTick) / 0.5);
   for (let i = 0; i <= totalTicks; i++) {
@@ -321,7 +310,6 @@ function setupTunerUI() {
     ticksContainer.appendChild(tick);
   }
 
-  // Station labels
   STATIONS.forEach(station => {
     const mark = document.createElement('div');
     mark.className = 'tuner-station-mark';
@@ -337,7 +325,6 @@ function setupTunerUI() {
     stationsContainer.appendChild(mark);
   });
 
-  // Cache marks ref now that they exist
   DOM.stationMarks = document.querySelectorAll('.tuner-station-mark');
 }
 
@@ -367,7 +354,6 @@ function renderTuningState() {
   DOM.tunerNeedle.style.left = freqToPercent(currentFreq) + '%';
   DOM.signalBadgeText.textContent = `SIGNAL: ${currentFreq.toFixed(1)} FM`;
 
-  // Find nearest station
   let nearest  = null;
   let minDiff  = Infinity;
   STATIONS.forEach(s => {
@@ -375,7 +361,6 @@ function renderTuningState() {
     if (d < minDiff) { minDiff = d; nearest = s; }
   });
 
-  // Proximity-based volume/static
   let volume = 0, staticVol = 1.0, filterFreq = 20000;
   if (minDiff < 1.5) {
     activeStation = nearest;
@@ -389,7 +374,6 @@ function renderTuningState() {
     filterFreq = 300;
   }
 
-  // Station changed — update UI + audio source
   let stationChanged = false;
   if (activeStation && activeStation !== lastActiveStation) {
     lastActiveStation = activeStation;
@@ -399,7 +383,6 @@ function renderTuningState() {
     lastActiveStation = null;
   }
 
-  // Audio node updates
   if (isAudioInitialized) {
     if (activeStation && stationChanged) {
       resetPartProgressUI(2);
@@ -425,7 +408,6 @@ function renderTuningState() {
     startVisualizerLoop();
   }
 
-  // Update dial highlights using cached refs
   DOM.stationMarks.forEach(mark => {
     const f = parseFloat(mark.getAttribute('data-freq'));
     if (activeStation && activeStation.freq === f && minDiff < 0.2) {
@@ -441,10 +423,21 @@ function renderTuningState() {
     DOM.tunerStrength.textContent = `STRENGTH: ${activeStation ? Math.round((1 - minDiff / 1.5) * 40) : 0}%`;
     setSignalStatus(activeStation ? 'SIGNAL DRIFT' : 'NO SIGNAL', 'var(--neon-pink)');
   }
+
+  // Update active status classes in mini cassettes shelf
+  document.querySelectorAll('#cards-grid .cassette-spine').forEach(spine => {
+    const label = spine.getAttribute('aria-label');
+    if (activeStation && label.includes(activeStation.genre)) {
+      spine.classList.remove('dimmed');
+    } else if (activeStation) {
+      spine.classList.add('dimmed');
+    } else {
+      spine.classList.remove('dimmed');
+    }
+  });
 }
 
 function setSignalStatus(text, color) {
-  // Update all three prog-signal spans
   for (let i = 1; i <= 3; i++) {
     const el = DOM.progSignals[i];
     if (el) { el.textContent = text; el.style.color = color; }
@@ -464,81 +457,98 @@ function resetPartProgressUI(partNum) {
 // ── Full UI update for a station ──────────────────────────────────────────────
 
 function updateUIForStation(station) {
-  // Apply CSS theme colors to :root (bridges entire page)
-  applyStationTheme(station);
+  const r = document.documentElement.style;
+  r.setProperty('--surface-lowest', station.colors.surfaceLowest);
+  r.setProperty('--surface-low', station.colors.surfaceLow);
 
-  // Apply episodic body theme class
   if (currentThemeClass) {
     document.body.classList.remove(currentThemeClass);
   }
   currentThemeClass = `theme-ep${station.epNum}`;
   document.body.classList.add(currentThemeClass);
 
-  // Header / hero
   DOM.signalBadgeText.textContent = `SIGNAL: ${station.freq.toFixed(1)} FM`;
-  DOM.monitorTitle.textContent = station.genre;
-  DOM.monitorDuration.textContent = station.duration1;
-  DOM.monitorFreq.textContent = `${station.freq.toFixed(1)} FM`;
+  if (DOM.monitorTitle) DOM.monitorTitle.textContent = station.genre;
+  if (DOM.monitorDuration) DOM.monitorDuration.textContent = station.duration1;
+  if (DOM.monitorFreq) DOM.monitorFreq.textContent = `${station.freq.toFixed(1)} FM`;
 
-  // Player left
   DOM.statLength.textContent   = station.duration1;
   DOM.statGenre.textContent    = station.genre;
   DOM.statLocation.textContent = station.location;
 
-  // Player center
-  DOM.epTitle.textContent    = station.title;
-  DOM.epSubtitle.textContent = station.subtitle;
-  DOM.epDesc.textContent     = station.desc;
+  // Center column custom chalkboard title and dynamic magazine cover mount
+  const customTitle = document.getElementById('ep-title-custom');
+  if (customTitle) {
+    customTitle.textContent = `EP ${station.epNum} - ${station.genre}: ${station.title.split(/[\u2013\u2014-]/).slice(1).join('-').trim()}`;
+  }
 
-  // Player right
-  DOM.vinylImg.src = station.vinylImg;
+  renderMagazineCover(station);
+
   DOM.epBadge.textContent = `EP ${station.genre} LIVE`;
 
-  // Progress displays
+  // Controls panels setup
   if (DOM.timeDisplays[1]) DOM.timeDisplays[1].textContent = `00:00 / ${station.duration1}`;
   if (DOM.timeDisplays[2]) DOM.timeDisplays[2].textContent = `00:00 / ${station.duration2}`;
   if (DOM.fills[1]) DOM.fills[1].style.width = '0%';
   if (DOM.fills[2]) DOM.fills[2].style.width = '0%';
 
-  // Show/hide Part 3
   const hasPart3 = !!(station.duration3 && station.tracks3);
   if (DOM.controlsPart3) DOM.controlsPart3.style.display = hasPart3 ? 'flex' : 'none';
-  if (DOM.tabPt3)        DOM.tabPt3.style.display        = hasPart3 ? 'block' : 'none';
   if (hasPart3 && DOM.timeDisplays[3]) DOM.timeDisplays[3].textContent = `00:00 / ${station.duration3}`;
   if (DOM.fills[3]) DOM.fills[3].style.width = '0%';
 
-  // Clear tracklist
-  DOM.tracklistList.innerHTML = '';
-  DOM.tracklistTabs.forEach(t => t.classList.remove('active'));
+  // Set vinyl label color and variables
+  const labelCenter = document.getElementById('vinyl-label-center');
+  if (labelCenter) {
+    labelCenter.style.background = station.colors.neonPink;
+  }
 }
 
-// ── Tracklist renderer ────────────────────────────────────────────────────────
+// ── Dynamic Magazine Cover Fallback Generator ──────────────────────────────────
 
-function renderTracklistForPart(partNum) {
-  if (!activeStation) return;
-  selectedTracklistPart = partNum;
+function renderMagazineCover(station) {
+  const mount = document.getElementById('magazine-cover-mount');
+  if (!mount) return;
 
-  DOM.tracklistTabs.forEach(tab => {
-    tab.classList.toggle('active', parseInt(tab.getAttribute('data-part')) === partNum);
-  });
+  const color = station.colors.neonPink;
+  const rgb = station.colors.rgb;
 
-  const tracks = activeStation[`tracks${partNum}`];
-  DOM.tracklistList.innerHTML = '';
-
-  if (tracks && tracks.length) {
-    tracks.forEach((tr, idx) => {
-      const li = document.createElement('li');
-      li.className = 'tracklist-item';
-      li.innerHTML = `<span class="track-num">${String(idx + 1).padStart(2, '0')}</span>
-        <span class="track-title">${tr.title}</span>
-        ${tr.note ? `<span class="track-note">${tr.note}</span>` : ''}`;
-      DOM.tracklistList.appendChild(li);
-    });
+  if (station.cardImg) {
+    mount.innerHTML = `<img src="${station.cardImg}" alt="${station.genre} Magazine Cover" class="magazine-img">`;
   } else {
-    const li = document.createElement('li');
-    li.className = 'tracklist-empty';
-    li.textContent = 'NO TRANSMISSION LOG FOR THIS SEGMENT.';
-    DOM.tracklistList.appendChild(li);
+    // Generate static Unsplash background based on genre to keep visual fidelity high
+    let fallbackImgUrl = 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=400&auto=format&fit=crop';
+    if (station.genre === 'DRUM & BASS') fallbackImgUrl = 'dnb-cover.png';
+    else if (station.genre === 'BASSLINE') fallbackImgUrl = 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=400&auto=format&fit=crop';
+    else if (station.genre === 'UK FUNKY') fallbackImgUrl = 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=400&auto=format&fit=crop';
+    else if (station.genre === 'ROAD RAP') fallbackImgUrl = 'https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?q=80&w=400&auto=format&fit=crop';
+    else if (station.genre === 'UK DRILL') fallbackImgUrl = 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=400&auto=format&fit=crop';
+    else if (station.genre === 'AFROSWING') fallbackImgUrl = 'https://images.unsplash.com/photo-1518609878373-06d740f60d8b?q=80&w=400&auto=format&fit=crop';
+
+    mount.innerHTML = `
+      <div class="magazine-dynamic-fallback" style="--genre-color: ${color}">
+        <div class="mag-header">
+          <span class="mag-brand">${station.genre} CULTURE MAGAZINE</span>
+          <span class="mag-issue">ISSUE ${station.epNum}</span>
+        </div>
+        <div class="mag-title-main">${station.genre}</div>
+        <div class="mag-artwork-wrap">
+          <div class="mag-artwork-gradient" style="background: radial-gradient(circle, rgba(${rgb}, 0.5) 0%, #000 100%)">
+            <img src="${fallbackImgUrl}" class="mag-artwork-img">
+          </div>
+        </div>
+        <div class="mag-content-list">
+          <div class="mag-section-title">ORIGINAL VIBES</div>
+          <div class="mag-section-desc">THE ROOTS OF ${station.genre} MUSIC</div>
+          <div class="mag-interviews">INTERVIEWS: ${station.tracks1[0]?.title.split('–')[0].trim() || 'UNDERGROUND COLLECTIVE'}</div>
+          <div class="mag-club-scene">CLUB SCENE: THEN & NOW</div>
+        </div>
+        <div class="mag-barcode-wrap">
+          <div class="mag-barcode"></div>
+          <div class="mag-barcode-num">9 771234 567890</div>
+        </div>
+      </div>
+    `;
   }
 }
 
@@ -548,8 +558,11 @@ function playPart(partNum) {
   initAudio();
   if (audioCtx) audioCtx.resume();
 
+  // Stop booklet audio if active when main radio starts playing
+  stopBookletAudio();
+
   if (!activeStation) {
-    activeStation = getStationByGenre('UK GARAGE');
+    activeStation = getStationByGenre('JUNGLE');
     currentFreq = activeStation.freq;
     renderTuningState();
   }
@@ -559,7 +572,6 @@ function playPart(partNum) {
 
   const targetAbsUrl = new URL(targetUrl, location.href).href;
   if (currentPart !== partNum || audioEl.src !== targetAbsUrl) {
-    // Reset old part progress
     resetPartProgressUI(currentPart);
     currentPart = partNum;
     audioEl.src = targetAbsUrl;
@@ -580,7 +592,6 @@ function togglePlay() {
 }
 
 function updatePlayStateUI(isPlaying) {
-  // Update part play buttons (swap SVG path only — no string rebuild)
   for (let i = 1; i <= 3; i++) {
     const btn = DOM.playBtns[i];
     if (!btn) continue;
@@ -588,7 +599,6 @@ function updatePlayStateUI(isPlaying) {
     if (svg) svg.innerHTML = (isPlaying && currentPart === i) ? SVG_PAUSE : SVG_PLAY;
   }
 
-  // Hero button
   if (DOM.heroBayPlayBtn) {
     const svg = DOM.heroBayPlayBtn.querySelector('svg');
     if (svg) svg.innerHTML = isPlaying ? SVG_PAUSE : SVG_PLAY;
@@ -598,19 +608,16 @@ function updatePlayStateUI(isPlaying) {
     }
   }
 
-  // Vinyl spin
-  if (DOM.vinylImg) {
-    DOM.vinylImg.classList.toggle('spinning', isPlaying);
-    DOM.vinylImg.classList.toggle('paused', !isPlaying);
+  if (DOM.vinylFrame) {
+    DOM.vinylFrame.classList.toggle('playing', isPlaying);
   }
 
-  // Rec indicator
   if (DOM.recFlicker) {
     DOM.recFlicker.style.animationPlayState = isPlaying ? 'running' : 'paused';
   }
 }
 
-// ── RAF-based progress loop (only runs while audio is playing) ────────────────
+// ── RAF-based progress loop ───────────────────────────────────────────────────
 
 let progressRafId = null;
 
@@ -751,12 +758,378 @@ function applyKnobDelta(dy) {
   }
 }
 
+// ── Booklet Modal Features ───────────────────────────────────────────────────
 
+let currentSpread = 1;
+let bookletStation = null;
+let bookletAudio = null;
+let bookletAudioPlaying = false;
+let bookletProgressInterval = null;
+
+const magazineModal = document.getElementById('magazine-modal');
+const bookletContainer = document.getElementById('booklet-container');
+const prevBtn = document.getElementById('booklet-prev-btn');
+const nextBtn = document.getElementById('booklet-next-btn');
+const pageIndicator = document.getElementById('booklet-page-indicator');
+
+function openBookletModal(station) {
+  if (!station) return;
+  bookletStation = station;
+  currentSpread = 1;
+  magazineModal.style.display = 'flex';
+  renderBookletSpread();
+
+  // Create separate booklet audio instance
+  if (bookletAudio) {
+    bookletAudio.pause();
+    bookletAudio = null;
+  }
+  // Load Part 2 (Interview or special audio stream) as separate stream in booklet
+  const separateStreamUrl = station.trackUrl2 || 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3';
+  bookletAudio = new Audio(separateStreamUrl);
+  bookletAudio.crossOrigin = 'anonymous';
+  bookletAudioPlaying = false;
+}
+
+function closeBookletModal() {
+  magazineModal.style.display = 'none';
+  stopBookletAudio();
+  bookletStation = null;
+}
+
+function stopBookletAudio() {
+  if (bookletAudio) {
+    bookletAudio.pause();
+    bookletAudioPlaying = false;
+    clearInterval(bookletProgressInterval);
+    updateBookletAudioUI();
+  }
+}
+
+function renderBookletSpread() {
+  if (!bookletStation) return;
+
+  const color = bookletStation.colors.neonPink;
+  const rgb = bookletStation.colors.rgb;
+  bookletContainer.style.setProperty('--genre-color', color);
+  bookletContainer.style.setProperty('--genre-color-alpha-light', `rgba(${rgb}, 0.08)`);
+  bookletContainer.style.setProperty('--genre-color-alpha-heavy', `rgba(${rgb}, 0.4)`);
+
+  if (currentSpread === 1) {
+    // Spread 1: Page 1 (Cover fallback/real cover) & Page 2 (Editorial history)
+    
+    // Page 1 cover html
+    let coverHtml = '';
+    if (bookletStation.cardImg) {
+      coverHtml = `<img src="${bookletStation.cardImg}" alt="Cover" class="magazine-img">`;
+    } else {
+      let fallbackImgUrl = 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=400&auto=format&fit=crop';
+      if (bookletStation.genre === 'DRUM & BASS') fallbackImgUrl = 'dnb-cover.png';
+      else if (bookletStation.genre === 'BASSLINE') fallbackImgUrl = 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=400&auto=format&fit=crop';
+      else if (bookletStation.genre === 'UK FUNKY') fallbackImgUrl = 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=400&auto=format&fit=crop';
+      else if (bookletStation.genre === 'ROAD RAP') fallbackImgUrl = 'https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?q=80&w=400&auto=format&fit=crop';
+      else if (bookletStation.genre === 'UK DRILL') fallbackImgUrl = 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=400&auto=format&fit=crop';
+      else if (bookletStation.genre === 'AFROSWING') fallbackImgUrl = 'https://images.unsplash.com/photo-1518609878373-06d740f60d8b?q=80&w=400&auto=format&fit=crop';
+
+      coverHtml = `
+        <div class="magazine-dynamic-fallback" style="--genre-color: ${color}">
+          <div class="mag-header">
+            <span class="mag-brand">${bookletStation.genre} CULTURE MAGAZINE</span>
+            <span class="mag-issue">ISSUE ${bookletStation.epNum}</span>
+          </div>
+          <div class="mag-title-main">${bookletStation.genre}</div>
+          <div class="mag-artwork-wrap">
+            <div class="mag-artwork-gradient" style="background: radial-gradient(circle, rgba(${rgb}, 0.5) 0%, #000 100%)">
+              <img src="${fallbackImgUrl}" class="mag-artwork-img">
+            </div>
+          </div>
+          <div class="mag-content-list">
+            <div class="mag-section-title">ORIGINAL VIBES</div>
+            <div class="mag-section-desc">THE ROOTS OF ${bookletStation.genre} MUSIC</div>
+            <div class="mag-interviews">INTERVIEWS: ${bookletStation.tracks1[0]?.title.split('–')[0].trim() || 'UNDERGROUND COLLECTIVE'}</div>
+            <div class="mag-club-scene">CLUB SCENE: THEN & NOW</div>
+          </div>
+          <div class="mag-barcode-wrap">
+            <div class="mag-barcode"></div>
+            <div class="mag-barcode-num">9 771234 567890</div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Page 2 Editorial text
+    const editorialText = bookletStation.desc + " From pirate radio towers to the sticky floors of sweaty warehouses, this musical trajectory is built on raw frequencies and community power. This is an archival scan of the movement's evolution. Stay locked to the lineage.";
+
+    bookletContainer.innerHTML = `
+      <!-- Page 1 (Left) -->
+      <div class="booklet-page left-page" style="padding:0;">
+        ${coverHtml}
+      </div>
+
+      <!-- Page 2 (Right) -->
+      <div class="booklet-page right-page">
+        <div>
+          <h2 class="booklet-title" style="--genre-color: ${color}">${bookletStation.genre} EVOLUTION</h2>
+          <div class="booklet-subtitle">${bookletStation.subtitle}</div>
+          <p class="booklet-text">${bookletStation.desc}</p>
+          <p class="booklet-text">${editorialText.substring(0, 160)}...</p>
+        </div>
+        <div class="booklet-page-num">PAGE 02</div>
+      </div>
+    `;
+
+    prevBtn.disabled = true;
+    nextBtn.disabled = false;
+    pageIndicator.textContent = "SPREAD 1 / 4 (PAGES 1-2)";
+
+  } else if (currentSpread === 2) {
+    // Spread 2: Page 3 (Tracklisting) & Page 4 (Visual Archive gallery)
+    
+    // Generate tracklist list html
+    let tracksHtml = '';
+    if (bookletStation.tracks1 && bookletStation.tracks1.length > 0) {
+      bookletStation.tracks1.forEach((tr, idx) => {
+        tracksHtml += `
+          <div style="display:flex; align-items:baseline; gap:8px; margin-bottom:10px; font-family:'Space Mono',monospace; font-size:10px; color:#222; border-bottom:1px dashed rgba(0,0,0,0.05); padding-bottom:4px;">
+            <span style="color:${color}; font-weight:700; font-family:sans-serif;">${String(idx + 1).padStart(2, '0')}</span>
+            <span>${tr.title}</span>
+          </div>`;
+      });
+    } else {
+      tracksHtml = '<p class="booklet-text">No transmission log available.</p>';
+    }
+
+    // Choose beautiful gallery photo
+    let subcultureImgUrl = 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=500&auto=format&fit=crop';
+    if (bookletStation.genre === 'DRUM & BASS') subcultureImgUrl = 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=500&auto=format&fit=crop';
+    else if (bookletStation.genre === 'UK GARAGE') subcultureImgUrl = 'https://images.unsplash.com/photo-1487180142328-054b783fc471?q=80&w=500&auto=format&fit=crop';
+    else if (bookletStation.genre === 'BASSLINE') subcultureImgUrl = 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=500&auto=format&fit=crop';
+    else if (bookletStation.genre === 'UK FUNKY') subcultureImgUrl = 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=500&auto=format&fit=crop';
+    else if (bookletStation.genre === 'ROAD RAP') subcultureImgUrl = 'https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?q=80&w=500&auto=format&fit=crop';
+    else if (bookletStation.genre === 'UK DRILL') subcultureImgUrl = 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=500&auto=format&fit=crop';
+    else if (bookletStation.genre === 'AFROSWING') subcultureImgUrl = 'https://images.unsplash.com/photo-1518609878373-06d740f60d8b?q=80&w=500&auto=format&fit=crop';
+
+    // Artist list badges
+    const artists = [...new Set(bookletStation.tracks1.map(t => t.title.split(/[\u2013\u2014-]/)[0].trim()))].slice(0, 4);
+    const artistsBadges = artists.map(a => `<span class="booklet-artist-badge">${a}</span>`).join('');
+
+    bookletContainer.innerHTML = `
+      <!-- Page 3 (Left) -->
+      <div class="booklet-page left-page">
+        <h2 class="booklet-title" style="--genre-color: ${color}">TRACKLISTING</h2>
+        <div class="booklet-subtitle">LOGGED WAVEFORM RECORDINGS</div>
+        <div style="flex:1; overflow-y:auto; padding-right:6px;">
+          ${tracksHtml}
+        </div>
+        <div class="booklet-page-num" style="margin-top:10px;">PAGE 03</div>
+      </div>
+
+      <!-- Page 4 (Right) -->
+      <div class="booklet-page right-page">
+        <div class="booklet-gallery-wrap">
+          <h2 class="booklet-title" style="--genre-color: ${color}">VISUAL ARCHIVE</h2>
+          <div class="booklet-img-frame">
+            <img src="${subcultureImgUrl}" class="booklet-img" alt="Visual archive">
+          </div>
+          <div>
+            <div class="booklet-artists-label">KEY MOVEMENT PROPAGATORS:</div>
+            <div class="booklet-artists-list">
+              ${artistsBadges}
+            </div>
+          </div>
+        </div>
+        <div class="booklet-page-num">PAGE 04</div>
+      </div>
+    `;
+
+    prevBtn.disabled = false;
+    nextBtn.disabled = false;
+    pageIndicator.textContent = "SPREAD 2 / 4 (PAGES 3-4)";
+
+  } else if (currentSpread === 3) {
+    // Spread 3: Page 5 (Tech Specs/Telemetry) & Page 6 (Interview Excerpts Q&A)
+    bookletContainer.innerHTML = `
+      <!-- Page 5 (Left) -->
+      <div class="booklet-page left-page">
+        <div>
+          <h2 class="booklet-title" style="--genre-color: ${color}">RADIO TELEMETRY</h2>
+          <div class="booklet-subtitle">TECHNICAL SIGNAL ANALYSIS</div>
+          <div style="font-family:'Space Mono', monospace; font-size:10px; color:#333; margin-top:15px; line-height:1.6;">
+            <div style="border-bottom:1px solid rgba(0,0,0,0.1); padding-bottom:4px; margin-bottom:8px;">
+              <span style="font-weight:700; color:${color};">PARAMETER</span>
+              <span style="float:right; font-weight:700;">VALUE</span>
+            </div>
+            <div style="margin-bottom:6px;">
+              <span>FREQUENCY</span>
+              <span style="float:right; color:${color}; font-weight:700;">${bookletStation.freq} MHz</span>
+            </div>
+            <div style="margin-bottom:6px;">
+              <span>SIGNAL PATH</span>
+              <span style="float:right;">94.8 FM Relay</span>
+            </div>
+            <div style="margin-bottom:6px;">
+              <span>TRANSMITTER</span>
+              <span style="float:right;">500W ERP Dipole</span>
+            </div>
+            <div style="margin-bottom:8px;">
+              <span>ENCODING</span>
+              <span style="float:right;">Phase Lock Loop Stereo</span>
+            </div>
+          </div>
+          <p class="booklet-text" style="font-size:10px; margin-top:15px; line-height:1.4;">Rigged on high-rise rooftops in clandestine sectors, our custom masts relay sub-heavy signals across metropolitan zones. Continuous telemetry monitoring verifies clean spectrum bandwidth allocation free from interference patterns.</p>
+        </div>
+        <div class="booklet-page-num">PAGE 05</div>
+      </div>
+
+      <!-- Page 6 (Right) -->
+      <div class="booklet-page right-page">
+        <div>
+          <h2 class="booklet-title" style="--genre-color: ${color}">CONVERSATION SCANS</h2>
+          <div class="booklet-subtitle">PIRATE SELECTOR INTERVIEW</div>
+          <p class="booklet-text" style="font-size:10.5px; font-weight:700; color:#111; margin-top:10px; margin-bottom:4px;">Q: How do you choose your transmission sites?</p>
+          <p class="booklet-text" style="font-size:10px; color:#444; margin-bottom:10px; line-height:1.45;">A: "Elevation is everything. We look for blocks with clear lines of sight to key boroughs. We pack up the gear, climb up, set the rig, and lock the doors. If they locate the signal, we move. Keep moving, keep transmitting."</p>
+          <p class="booklet-text" style="font-size:10.5px; font-weight:700; color:#111; margin-bottom:4px;">Q: What defines the ${bookletStation.genre} sound?</p>
+          <p class="booklet-text" style="font-size:10px; color:#444; line-height:1.45;">A: "The low-end frequencies. It's the pressure that hits your chest, combined with the frantic breakbeats or rhythm shifts. That energy is built for packed basement clubs."</p>
+        </div>
+        <div class="booklet-page-num">PAGE 06</div>
+      </div>
+    `;
+
+    prevBtn.disabled = false;
+    nextBtn.disabled = false;
+    pageIndicator.textContent = "SPREAD 3 / 4 (PAGES 5-6)";
+
+  } else if (currentSpread === 4) {
+    // Spread 4: Page 7 (Outro credits) & Page 8 (Mixtape Separate player)
+    
+    bookletContainer.innerHTML = `
+      <!-- Page 7 (Left) -->
+      <div class="booklet-page left-page">
+        <div>
+          <h2 class="booklet-title" style="--genre-color: ${color}">TRANSMISSION CREDITS</h2>
+          <div class="booklet-subtitle">PIRATE RADIO ARCHIVAL PROJECT</div>
+          <p class="booklet-text">Broadcasting raw frequencies continuously. This booklet functions as a catalog and scanned artifact of early 90s to modern UK bass movements.</p>
+          <p class="booklet-text">All mixtape decks are digitized from physical tapes and remastered at 320 kbps. Special thanks to all participating transmitters, pirate crews, and selectors across London sub-sectors.</p>
+          <p class="booklet-text" style="font-style:italic; color:#666;">"Keep the frequency stable. Protect the underground."</p>
+        </div>
+        <div class="booklet-page-num">PAGE 07</div>
+      </div>
+
+      <!-- Page 8 (Right) -->
+      <div class="booklet-page right-page">
+        <div>
+          <h2 class="booklet-title" style="--genre-color: ${color}">SPECIAL STREAM</h2>
+          <div class="booklet-subtitle">CLANDESTINE AUDIO SOURCE</div>
+          <p class="booklet-text" style="font-size:11px;">Unlock the secondary transmission log. Tap below to initiate connection to the high-bitrate interview segment or special underground bootleg recorded live.</p>
+          
+          <!-- Custom player card -->
+          <div class="booklet-special-player-card" style="--genre-color: ${color}">
+            <div class="special-player-header">
+              <div class="special-player-indicator"></div>
+              <span class="special-player-title">CLANDESTINE FEED DECK B</span>
+            </div>
+            
+            <div class="special-player-controls-row">
+              <button class="special-play-btn" id="special-play-btn" aria-label="Play booklet stream">▶</button>
+              <div class="special-track-info">
+                <span class="special-track-title">${bookletStation.genre} SESSION</span>
+                <span class="special-track-subtitle">EP ${bookletStation.epNum} - PART 2 EDITORIAL</span>
+              </div>
+            </div>
+
+            <div class="special-progress-block">
+              <div class="special-progress-track" id="special-progress-track">
+                <div class="special-progress-fill" id="special-progress-fill"></div>
+              </div>
+              <div class="special-time-row">
+                <span id="special-current-time">00:00</span>
+                <span id="special-total-time">${bookletStation.duration2}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="booklet-page-num">PAGE 08</div>
+      </div>
+    `;
+
+    prevBtn.disabled = false;
+    nextBtn.disabled = true;
+    pageIndicator.textContent = "SPREAD 4 / 4 (PAGES 7-8)";
+
+    // Wire up booklet special player events
+    const bPlayBtn = document.getElementById('special-play-btn');
+    if (bPlayBtn) {
+      bPlayBtn.addEventListener('click', toggleBookletAudio);
+    }
+    const bProgressTrack = document.getElementById('special-progress-track');
+    if (bProgressTrack) {
+      bProgressTrack.addEventListener('click', seekBookletAudio);
+    }
+    
+    updateBookletAudioUI();
+  }
+}
+
+function toggleBookletAudio() {
+  if (!bookletAudio) return;
+
+  if (bookletAudioPlaying) {
+    bookletAudio.pause();
+    bookletAudioPlaying = false;
+    clearInterval(bookletProgressInterval);
+    updateBookletAudioUI();
+  } else {
+    // PAUSE the main player first (critical feature!)
+    if (audioEl && !audioEl.paused) {
+      audioEl.pause();
+      updatePlayStateUI(false);
+    }
+
+    bookletAudio.play().then(() => {
+      bookletAudioPlaying = true;
+      updateBookletAudioUI();
+      startBookletProgressLoop();
+    }).catch(e => console.log(e));
+  }
+}
+
+function startBookletProgressLoop() {
+  clearInterval(bookletProgressInterval);
+  bookletProgressInterval = setInterval(() => {
+    if (!bookletAudio) return;
+    const elapsed = bookletAudio.currentTime;
+    const duration = bookletAudio.duration || parseDuration(bookletStation.duration2);
+    const pct = (elapsed / duration) * 100;
+    
+    const fill = document.getElementById('special-progress-fill');
+    const timeDisplay = document.getElementById('special-current-time');
+    
+    if (fill) fill.style.width = pct + '%';
+    if (timeDisplay) timeDisplay.textContent = formatTime(elapsed);
+  }, 300);
+}
+
+function seekBookletAudio(e) {
+  if (!bookletAudio) return;
+  const rect = e.currentTarget.getBoundingClientRect();
+  const pct = (e.clientX - rect.left) / rect.width;
+  const duration = bookletAudio.duration || parseDuration(bookletStation.duration2);
+  bookletAudio.currentTime = pct * duration;
+  
+  const fill = document.getElementById('special-progress-fill');
+  if (fill) fill.style.width = (pct * 100) + '%';
+}
+
+function updateBookletAudioUI() {
+  const btn = document.getElementById('special-play-btn');
+  if (!btn) return;
+  btn.textContent = bookletAudioPlaying ? '■' : '▶';
+  btn.style.background = bookletAudioPlaying ? '#ffffff' : bookletStation.colors.neonPink;
+}
 
 // ── Wire event listeners ──────────────────────────────────────────────────────
 
 function wireEvents() {
-  // Tuner drag — mouse
   DOM.tunerDisplay.addEventListener('mousedown', e => {
     isDragging = true;
     initAudio();
@@ -766,7 +1139,6 @@ function wireEvents() {
   window.addEventListener('mousemove', e => { if (isDragging) updateNeedlePosition(e.clientX); });
   window.addEventListener('mouseup',   ()  => { isDragging = false; });
 
-  // Tuner drag — touch
   DOM.tunerDisplay.addEventListener('touchstart', e => {
     isDragging = true;
     initAudio();
@@ -776,7 +1148,6 @@ function wireEvents() {
   window.addEventListener('touchmove', e => { if (isDragging) updateNeedlePosition(e.touches[0].clientX); }, { passive: true });
   window.addEventListener('touchend',  ()  => { isDragging = false; });
 
-  // Volume knob — mouse
   DOM.gainKnob.addEventListener('mousedown', e => {
     isAdjustingVolume = true;
     volumeStartY = e.clientY;
@@ -791,7 +1162,6 @@ function wireEvents() {
   });
   window.addEventListener('mouseup', () => { isAdjustingVolume = false; });
 
-  // Volume knob — touch
   DOM.gainKnob.addEventListener('touchstart', e => {
     isAdjustingVolume = true;
     volumeStartY = e.touches[0].clientY;
@@ -806,14 +1176,12 @@ function wireEvents() {
   }, { passive: true });
   window.addEventListener('touchend', () => { isAdjustingVolume = false; });
 
-  // Play buttons
   for (let i = 1; i <= 3; i++) {
     const btn = DOM.playBtns[i];
     if (btn) btn.addEventListener('click', () => playPart(i));
   }
   if (DOM.heroBayPlayBtn) DOM.heroBayPlayBtn.addEventListener('click', togglePlay);
 
-  // Band buttons
   document.getElementById('band-group')?.querySelectorAll('.btn-tab').forEach(btn => {
     btn.addEventListener('click', () => {
       initAudio(); if (audioCtx) audioCtx.resume();
@@ -824,7 +1192,6 @@ function wireEvents() {
     });
   });
 
-  // Mode buttons
   document.getElementById('mode-group')?.querySelectorAll('.btn-tab').forEach(btn => {
     btn.addEventListener('click', () => {
       initAudio(); if (audioCtx) audioCtx.resume();
@@ -834,12 +1201,31 @@ function wireEvents() {
     });
   });
 
-  // Tracklist tabs
-  DOM.tracklistTabs.forEach(tab => {
-    tab.addEventListener('click', e => {
-      e.stopPropagation();
-      renderTracklistForPart(parseInt(tab.getAttribute('data-part')));
+  // Magazine Modal events
+  const magMount = document.getElementById('magazine-cover-mount');
+  if (magMount) {
+    magMount.addEventListener('click', () => {
+      openBookletModal(activeStation || STATIONS[0]);
     });
+  }
+
+  const closeMBtn = document.getElementById('magazine-close-btn');
+  if (closeMBtn) {
+    closeMBtn.addEventListener('click', closeBookletModal);
+  }
+
+  prevBtn.addEventListener('click', () => {
+    if (currentSpread > 1) {
+      currentSpread--;
+      renderBookletSpread();
+    }
+  });
+
+  nextBtn.addEventListener('click', () => {
+    if (currentSpread < 4) {
+      currentSpread++;
+      renderBookletSpread();
+    }
   });
 }
 
@@ -854,15 +1240,6 @@ function wireEvents() {
   setupTunerUI();
   wireEvents();
 
-  // Toggle tracklist visibility on heading click
-  const tracklistHeading = document.querySelector('.tracklist-heading');
-  const tracklistPanel = document.getElementById('tracklist-panel');
-  if (tracklistHeading && tracklistPanel) {
-    tracklistHeading.addEventListener('click', () => {
-      tracklistPanel.classList.toggle('collapsed');
-    });
-  }
-
   // Set default station (Jungle)
   const defaultStation = getStationByGenre('JUNGLE') || STATIONS[0];
   activeStation = defaultStation;
@@ -870,10 +1247,8 @@ function wireEvents() {
   currentFreq = defaultStation.freq;
   updateUIForStation(defaultStation);
 
-  // Position needle
   DOM.tunerNeedle.style.left = freqToPercent(defaultStation.freq) + '%';
 
-  // Mark default tuner station active
   document.querySelectorAll('.tuner-station-mark').forEach(mark => {
     if (parseFloat(mark.getAttribute('data-freq')) === defaultStation.freq) {
       mark.classList.add('active');
