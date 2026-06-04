@@ -39,6 +39,21 @@ function precalculateColors() {
   });
 }
 
+// ── Helper: genre → fallback image URL (single source of truth) ──────────────
+
+function getFallbackImageUrl(genre, size = 400) {
+  const map = {
+    'DRUM & BASS': 'dnb-cover.png',
+    'BASSLINE':    `https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=${size}&auto=format&fit=crop`,
+    'UK FUNKY':    `https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=${size}&auto=format&fit=crop`,
+    'ROAD RAP':    `https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?q=80&w=${size}&auto=format&fit=crop`,
+    'UK DRILL':    `https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=${size}&auto=format&fit=crop`,
+    'AFROSWING':   `https://images.unsplash.com/photo-1518609878373-06d740f60d8b?q=80&w=${size}&auto=format&fit=crop`,
+    'UK GARAGE':   `https://images.unsplash.com/photo-1487180142328-054b783fc471?q=80&w=${size}&auto=format&fit=crop`,
+  };
+  return map[genre] || `https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=${size}&auto=format&fit=crop`;
+}
+
 // ── Build ticker from STATIONS data ──────────────────────────────────────────
 
 function buildTicker() {
@@ -197,7 +212,15 @@ function cacheDOMRefs() {
     recFlicker:      document.querySelector('.rec-row .flicker'),
     heroBars:        document.querySelectorAll('#hero-wave .wave-bar'),
     monitorBars:     document.querySelectorAll('#monitor-bars .green-bar'),
-    stationMarks:    null
+    stationMarks:    null,
+    // Booklet modal elements — cached here so they're not queried at parse time
+    magazineModal:      document.getElementById('magazine-modal'),
+    bookletContainer:   document.getElementById('booklet-container'),
+    bookletPrevBtn:     document.getElementById('booklet-prev-btn'),
+    bookletNextBtn:     document.getElementById('booklet-next-btn'),
+    bookletPageIndicator: document.getElementById('booklet-page-indicator'),
+    // Cassette spines — cached to avoid live DOM query on every animation frame
+    cassetteSpines:     null
   };
 }
 
@@ -425,16 +448,18 @@ function renderTuningState() {
   }
 
   // Update active status classes in mini cassettes shelf
-  document.querySelectorAll('#cards-grid .cassette-spine').forEach(spine => {
-    const label = spine.getAttribute('aria-label');
-    if (activeStation && label.includes(activeStation.genre)) {
-      spine.classList.remove('dimmed');
-    } else if (activeStation) {
-      spine.classList.add('dimmed');
-    } else {
-      spine.classList.remove('dimmed');
-    }
-  });
+  if (DOM.cassetteSpines) {
+    DOM.cassetteSpines.forEach(spine => {
+      const label = spine.getAttribute('aria-label');
+      if (activeStation && label.includes(activeStation.genre)) {
+        spine.classList.remove('dimmed');
+      } else if (activeStation) {
+        spine.classList.add('dimmed');
+      } else {
+        spine.classList.remove('dimmed');
+      }
+    });
+  }
 }
 
 function setSignalStatus(text, color) {
@@ -520,14 +545,7 @@ function renderMagazineCover(station) {
   if (station.cardImg) {
     mount.innerHTML = `<img src="${station.cardImg}" alt="${station.genre} Magazine Cover" class="magazine-img">`;
   } else {
-    // Generate static Unsplash background based on genre to keep visual fidelity high
-    let fallbackImgUrl = 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=400&auto=format&fit=crop';
-    if (station.genre === 'DRUM & BASS') fallbackImgUrl = 'dnb-cover.png';
-    else if (station.genre === 'BASSLINE') fallbackImgUrl = 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=400&auto=format&fit=crop';
-    else if (station.genre === 'UK FUNKY') fallbackImgUrl = 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=400&auto=format&fit=crop';
-    else if (station.genre === 'ROAD RAP') fallbackImgUrl = 'https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?q=80&w=400&auto=format&fit=crop';
-    else if (station.genre === 'UK DRILL') fallbackImgUrl = 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=400&auto=format&fit=crop';
-    else if (station.genre === 'AFROSWING') fallbackImgUrl = 'https://images.unsplash.com/photo-1518609878373-06d740f60d8b?q=80&w=400&auto=format&fit=crop';
+    const fallbackImgUrl = getFallbackImageUrl(station.genre, 400);
 
     mount.innerHTML = `
       <div class="magazine-dynamic-fallback" style="--genre-color: ${color}">
@@ -770,17 +788,14 @@ let bookletAudio = null;
 let bookletAudioPlaying = false;
 let bookletProgressInterval = null;
 
-const magazineModal = document.getElementById('magazine-modal');
-const bookletContainer = document.getElementById('booklet-container');
-const prevBtn = document.getElementById('booklet-prev-btn');
-const nextBtn = document.getElementById('booklet-next-btn');
-const pageIndicator = document.getElementById('booklet-page-indicator');
+// Booklet DOM refs are accessed via DOM.magazineModal, DOM.bookletContainer, etc.
+// (populated by cacheDOMRefs after DOM is ready)
 
 function openBookletModal(station) {
   if (!station) return;
   bookletStation = station;
   currentSpread = 1;
-  magazineModal.style.display = 'flex';
+  DOM.magazineModal.style.display = 'flex';
   renderBookletSpread();
 
   // Create separate booklet audio instance
@@ -796,7 +811,7 @@ function openBookletModal(station) {
 }
 
 function closeBookletModal() {
-  magazineModal.style.display = 'none';
+  DOM.magazineModal.style.display = 'none';
   stopBookletAudio();
   bookletStation = null;
 }
@@ -815,9 +830,10 @@ function renderBookletSpread() {
 
   const color = bookletStation.colors.neonPink;
   const rgb = bookletStation.colors.rgb;
-  bookletContainer.style.setProperty('--genre-color', color);
-  bookletContainer.style.setProperty('--genre-color-alpha-light', `rgba(${rgb}, 0.08)`);
-  bookletContainer.style.setProperty('--genre-color-alpha-heavy', `rgba(${rgb}, 0.4)`);
+  const bc = DOM.bookletContainer;
+  bc.style.setProperty('--genre-color', color);
+  bc.style.setProperty('--genre-color-alpha-light', `rgba(${rgb}, 0.08)`);
+  bc.style.setProperty('--genre-color-alpha-heavy', `rgba(${rgb}, 0.4)`);
 
   if (currentSpread === 1) {
     // Spread 1: Page 1 (Cover fallback/real cover) & Page 2 (Editorial history)
@@ -827,13 +843,7 @@ function renderBookletSpread() {
     if (bookletStation.cardImg) {
       coverHtml = `<img src="${bookletStation.cardImg}" alt="Cover" class="magazine-img">`;
     } else {
-      let fallbackImgUrl = 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=400&auto=format&fit=crop';
-      if (bookletStation.genre === 'DRUM & BASS') fallbackImgUrl = 'dnb-cover.png';
-      else if (bookletStation.genre === 'BASSLINE') fallbackImgUrl = 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=400&auto=format&fit=crop';
-      else if (bookletStation.genre === 'UK FUNKY') fallbackImgUrl = 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=400&auto=format&fit=crop';
-      else if (bookletStation.genre === 'ROAD RAP') fallbackImgUrl = 'https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?q=80&w=400&auto=format&fit=crop';
-      else if (bookletStation.genre === 'UK DRILL') fallbackImgUrl = 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=400&auto=format&fit=crop';
-      else if (bookletStation.genre === 'AFROSWING') fallbackImgUrl = 'https://images.unsplash.com/photo-1518609878373-06d740f60d8b?q=80&w=400&auto=format&fit=crop';
+      const fallbackImgUrl = getFallbackImageUrl(bookletStation.genre, 400);
 
       coverHtml = `
         <div class="magazine-dynamic-fallback" style="--genre-color: ${color}">
@@ -864,7 +874,7 @@ function renderBookletSpread() {
     // Page 2 Editorial text
     const editorialText = bookletStation.desc + " From pirate radio towers to the sticky floors of sweaty warehouses, this musical trajectory is built on raw frequencies and community power. This is an archival scan of the movement's evolution. Stay locked to the lineage.";
 
-    bookletContainer.innerHTML = `
+    bc.innerHTML = `
       <!-- Page 1 (Left) -->
       <div class="booklet-page left-page" style="padding:0;">
         ${coverHtml}
@@ -882,9 +892,9 @@ function renderBookletSpread() {
       </div>
     `;
 
-    prevBtn.disabled = true;
-    nextBtn.disabled = false;
-    pageIndicator.textContent = "SPREAD 1 / 4 (PAGES 1-2)";
+    DOM.bookletPrevBtn.disabled = true;
+    DOM.bookletNextBtn.disabled = false;
+    DOM.bookletPageIndicator.textContent = "SPREAD 1 / 4 (PAGES 1-2)";
 
   } else if (currentSpread === 2) {
     // Spread 2: Page 3 (Tracklisting) & Page 4 (Visual Archive gallery)
@@ -903,21 +913,15 @@ function renderBookletSpread() {
       tracksHtml = '<p class="booklet-text">No transmission log available.</p>';
     }
 
-    // Choose beautiful gallery photo
-    let subcultureImgUrl = 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=500&auto=format&fit=crop';
+    // Choose beautiful gallery photo (reuse shared helper; DRUM & BASS overrides to a crowd shot)
+    let subcultureImgUrl = getFallbackImageUrl(bookletStation.genre, 500);
     if (bookletStation.genre === 'DRUM & BASS') subcultureImgUrl = 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=500&auto=format&fit=crop';
-    else if (bookletStation.genre === 'UK GARAGE') subcultureImgUrl = 'https://images.unsplash.com/photo-1487180142328-054b783fc471?q=80&w=500&auto=format&fit=crop';
-    else if (bookletStation.genre === 'BASSLINE') subcultureImgUrl = 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=500&auto=format&fit=crop';
-    else if (bookletStation.genre === 'UK FUNKY') subcultureImgUrl = 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=500&auto=format&fit=crop';
-    else if (bookletStation.genre === 'ROAD RAP') subcultureImgUrl = 'https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?q=80&w=500&auto=format&fit=crop';
-    else if (bookletStation.genre === 'UK DRILL') subcultureImgUrl = 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=500&auto=format&fit=crop';
-    else if (bookletStation.genre === 'AFROSWING') subcultureImgUrl = 'https://images.unsplash.com/photo-1518609878373-06d740f60d8b?q=80&w=500&auto=format&fit=crop';
 
     // Artist list badges
     const artists = [...new Set(bookletStation.tracks1.map(t => t.title.split(/[\u2013\u2014-]/)[0].trim()))].slice(0, 4);
     const artistsBadges = artists.map(a => `<span class="booklet-artist-badge">${a}</span>`).join('');
 
-    bookletContainer.innerHTML = `
+    bc.innerHTML = `
       <!-- Page 3 (Left) -->
       <div class="booklet-page left-page">
         <h2 class="booklet-title" style="--genre-color: ${color}">TRACKLISTING</h2>
@@ -946,13 +950,13 @@ function renderBookletSpread() {
       </div>
     `;
 
-    prevBtn.disabled = false;
-    nextBtn.disabled = false;
-    pageIndicator.textContent = "SPREAD 2 / 4 (PAGES 3-4)";
+    DOM.bookletPrevBtn.disabled = false;
+    DOM.bookletNextBtn.disabled = false;
+    DOM.bookletPageIndicator.textContent = "SPREAD 2 / 4 (PAGES 3-4)";
 
   } else if (currentSpread === 3) {
     // Spread 3: Page 5 (Tech Specs/Telemetry) & Page 6 (Interview Excerpts Q&A)
-    bookletContainer.innerHTML = `
+    bc.innerHTML = `
       <!-- Page 5 (Left) -->
       <div class="booklet-page left-page">
         <div>
@@ -999,14 +1003,14 @@ function renderBookletSpread() {
       </div>
     `;
 
-    prevBtn.disabled = false;
-    nextBtn.disabled = false;
-    pageIndicator.textContent = "SPREAD 3 / 4 (PAGES 5-6)";
+    DOM.bookletPrevBtn.disabled = false;
+    DOM.bookletNextBtn.disabled = false;
+    DOM.bookletPageIndicator.textContent = "SPREAD 3 / 4 (PAGES 5-6)";
 
   } else if (currentSpread === 4) {
     // Spread 4: Page 7 (Outro credits) & Page 8 (Mixtape Separate player)
-    
-    bookletContainer.innerHTML = `
+
+    bc.innerHTML = `
       <!-- Page 7 (Left) -->
       <div class="booklet-page left-page">
         <div>
@@ -1056,9 +1060,9 @@ function renderBookletSpread() {
       </div>
     `;
 
-    prevBtn.disabled = false;
-    nextBtn.disabled = true;
-    pageIndicator.textContent = "SPREAD 4 / 4 (PAGES 7-8)";
+    DOM.bookletPrevBtn.disabled = false;
+    DOM.bookletNextBtn.disabled = true;
+    DOM.bookletPageIndicator.textContent = "SPREAD 4 / 4 (PAGES 7-8)";
 
     // Wire up booklet special player events
     const bPlayBtn = document.getElementById('special-play-btn');
@@ -1218,14 +1222,14 @@ function wireEvents() {
     closeMBtn.addEventListener('click', closeBookletModal);
   }
 
-  prevBtn.addEventListener('click', () => {
+  DOM.bookletPrevBtn.addEventListener('click', () => {
     if (currentSpread > 1) {
       currentSpread--;
       renderBookletSpread();
     }
   });
 
-  nextBtn.addEventListener('click', () => {
+  DOM.bookletNextBtn.addEventListener('click', () => {
     if (currentSpread < 4) {
       currentSpread++;
       renderBookletSpread();
@@ -1573,6 +1577,9 @@ function updateTubeMapActiveState(genreName) {
   // Initialize London Tube Line elements
   initTimelineNodes();
   drawTubeLines();
+
+  // Cache cassette spines after buildArchiveCards() has run
+  DOM.cassetteSpines = document.querySelectorAll('#cards-grid .cassette-spine');
 
   // Set default station (Jungle)
   const defaultStation = getStationByGenre('JUNGLE') || STATIONS[0];
