@@ -2966,7 +2966,9 @@ footer {
     padding-left: 0;
     padding-top: 24px;
   }
-}.timeline-section-card {
+}
+
+.timeline-section-card {
   padding: 40px 32px;
   position: relative;
   background: #0d0e12;
@@ -3048,17 +3050,12 @@ footer {
   background: #090a0f;
   border: 1px solid #1a202c;
   border-radius: 6px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  scrollbar-width: thin;
+  overflow: hidden;
 }
 
 .tube-grid-bg {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 1250px;
-  height: 100%;
+  inset: 0;
   background-image:
     linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
@@ -3071,7 +3068,7 @@ footer {
   top: 0;
   left: 0;
   height: 100%;
-  width: 1250px;
+  width: 100%;
   pointer-events: none;
   z-index: 1;
 }
@@ -3098,7 +3095,7 @@ footer {
   top: 0;
   left: 0;
   height: 100%;
-  width: 1250px;
+  width: 100%;
   z-index: 2;
 }
 
@@ -3308,4 +3305,3 @@ footer {
   color: rgba(255, 255, 255, 0.25);
   margin-bottom: 3px;
 }
-
