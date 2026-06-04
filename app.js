@@ -39,21 +39,6 @@ function precalculateColors() {
   });
 }
 
-// ── Helper: genre → fallback image URL (single source of truth) ──────────────
-
-function getFallbackImageUrl(genre, size = 400) {
-  const map = {
-    'DRUM & BASS': 'dnb-cover.png',
-    'BASSLINE':    `https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=${size}&auto=format&fit=crop`,
-    'UK FUNKY':    `https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=${size}&auto=format&fit=crop`,
-    'ROAD RAP':    `https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?q=80&w=${size}&auto=format&fit=crop`,
-    'UK DRILL':    `https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=${size}&auto=format&fit=crop`,
-    'AFROSWING':   `https://images.unsplash.com/photo-1518609878373-06d740f60d8b?q=80&w=${size}&auto=format&fit=crop`,
-    'UK GARAGE':   `https://images.unsplash.com/photo-1487180142328-054b783fc471?q=80&w=${size}&auto=format&fit=crop`,
-  };
-  return map[genre] || `https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=${size}&auto=format&fit=crop`;
-}
-
 // ── Build ticker from STATIONS data ──────────────────────────────────────────
 
 function buildTicker() {
@@ -190,76 +175,68 @@ let DOM = {};
 
 function cacheDOMRefs() {
   DOM = {
-    tunerDisplay:    document.getElementById('tuner-display'),
-    tunerNeedle:     document.getElementById('tuner-needle'),
-    tunerStrength:   document.getElementById('tuner-strength'),
+    tunerDisplay: document.getElementById('tuner-display'),
+    tunerNeedle: document.getElementById('tuner-needle'),
+    tunerStrength: document.getElementById('tuner-strength'),
     signalBadgeText: document.getElementById('signal-badge-text'),
-    vinylFrame:      document.getElementById('vinyl-frame'),
-    heroBayPlayBtn:  document.getElementById('hero-play-btn'),
-    epBadge:         document.getElementById('ep-badge'),
-    statLength:      document.getElementById('stat-length'),
-    statGenre:       document.getElementById('stat-genre'),
-    statLocation:    document.getElementById('stat-location'),
-    monitorTitle:    document.getElementById('monitor-title'),
+    vinylFrame: document.getElementById('vinyl-frame'),
+    heroBayPlayBtn: document.getElementById('hero-play-btn'),
+    epBadge: document.getElementById('ep-badge'),
+    statLength: document.getElementById('stat-length'),
+    statGenre: document.getElementById('stat-genre'),
+    statLocation: document.getElementById('stat-location'),
+    monitorTitle: document.getElementById('monitor-title'),
     monitorDuration: document.getElementById('monitor-duration'),
-    monitorFreq:     document.getElementById('monitor-freq'),
-    progSignals:     [null, document.getElementById('prog-signal-1'), document.getElementById('prog-signal-2'), document.getElementById('prog-signal-3')],
-    playBtns:        [null, document.getElementById('play-btn-1'), document.getElementById('play-btn-2'), document.getElementById('play-btn-3')],
-    timeDisplays:    [null, document.getElementById('time-1'), document.getElementById('time-2'), document.getElementById('time-3')],
-    fills:           [null, document.getElementById('fill-1'), document.getElementById('fill-2'), document.getElementById('fill-3')],
-    gainKnob:        document.getElementById('gain-knob'),
-    knobLine:        document.getElementById('knob-line'),
-    recFlicker:      document.querySelector('.rec-row .flicker'),
-    heroBars:        document.querySelectorAll('#hero-wave .wave-bar'),
-    monitorBars:     document.querySelectorAll('#monitor-bars .green-bar'),
-    stationMarks:    null,
-    // Booklet modal elements — cached here so they're not queried at parse time
-    magazineModal:      document.getElementById('magazine-modal'),
-    bookletContainer:   document.getElementById('booklet-container'),
-    bookletPrevBtn:     document.getElementById('booklet-prev-btn'),
-    bookletNextBtn:     document.getElementById('booklet-next-btn'),
-    bookletPageIndicator: document.getElementById('booklet-page-indicator'),
-    // Cassette spines — cached to avoid live DOM query on every animation frame
-    cassetteSpines:     null
+    monitorFreq: document.getElementById('monitor-freq'),
+    progSignals: [null, document.getElementById('prog-signal-1'), document.getElementById('prog-signal-2'), document.getElementById('prog-signal-3')],
+    playBtns: [null, document.getElementById('play-btn-1'), document.getElementById('play-btn-2'), document.getElementById('play-btn-3')],
+    timeDisplays: [null, document.getElementById('time-1'), document.getElementById('time-2'), document.getElementById('time-3')],
+    fills: [null, document.getElementById('fill-1'), document.getElementById('fill-2'), document.getElementById('fill-3')],
+    gainKnob: document.getElementById('gain-knob'),
+    knobLine: document.getElementById('knob-line'),
+    recFlicker: document.querySelector('.rec-row .flicker'),
+    heroBars: document.querySelectorAll('#hero-wave .wave-bar'),
+    monitorBars: document.querySelectorAll('#monitor-bars .green-bar'),
+    stationMarks: null
   };
 }
 
 // ── State ─────────────────────────────────────────────────────────────────────
 
-let currentFreq    = 88.9; 
-let isDragging     = false;
-let activeStation  = null;
+let currentFreq = 88.9;
+let isDragging = false;
+let activeStation = null;
 let lastActiveStation = null;
-let currentPart    = 1;
+let currentPart = 1;
 
-let volumeFactor   = 0.8;
-let staticFactor   = 0.06;
-let currentBand    = 'FM';
-let currentMode    = 'STEREO';
+let volumeFactor = 0.8;
+let staticFactor = 0.06;
+let currentBand = 'FM';
+let currentMode = 'STEREO';
 
-let currentThemeClass   = null;
+let currentThemeClass = null;
 let isVisualizerRunning = false;
 
 // ── Web Audio ─────────────────────────────────────────────────────────────────
 
-let audioCtx           = null;
-let audioEl            = null;
-let audioSource        = null;
-let staticNode         = null;
-let staticGain         = null;
-let musicGain          = null;
-let filterNode         = null;
-let analyserNode       = null;
+let audioCtx = null;
+let audioEl = null;
+let audioSource = null;
+let staticNode = null;
+let staticGain = null;
+let musicGain = null;
+let filterNode = null;
+let analyserNode = null;
 let isAudioInitialized = false;
 
-const SVG_PLAY  = '<path d="M8 5v14l11-7z"/>';
+const SVG_PLAY = '<path d="M8 5v14l11-7z"/>';
 const SVG_PAUSE = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
 
 function initAudio() {
   if (isAudioInitialized) return;
 
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  audioEl  = new Audio();
+  audioEl = new Audio();
   audioEl.crossOrigin = 'anonymous';
   audioEl.loop = true;
 
@@ -319,7 +296,7 @@ function percentToFreq(pct) {
 // ── Tuner UI setup ────────────────────────────────────────────────────────────
 
 function setupTunerUI() {
-  const ticksContainer    = document.getElementById('tuner-ticks');
+  const ticksContainer = document.getElementById('tuner-ticks');
   const stationsContainer = document.getElementById('tuner-stations-container');
 
   const startTick = 88.5, endTick = 110.0;
@@ -377,8 +354,8 @@ function renderTuningState() {
   DOM.tunerNeedle.style.left = freqToPercent(currentFreq) + '%';
   DOM.signalBadgeText.textContent = `SIGNAL: ${currentFreq.toFixed(1)} FM`;
 
-  let nearest  = null;
-  let minDiff  = Infinity;
+  let nearest = null;
+  let minDiff = Infinity;
   STATIONS.forEach(s => {
     const d = Math.abs(currentFreq - s.freq);
     if (d < minDiff) { minDiff = d; nearest = s; }
@@ -388,9 +365,9 @@ function renderTuningState() {
   if (minDiff < 1.5) {
     activeStation = nearest;
     const ratio = minDiff / 1.5;
-    volume      = Math.max(0, 1 - ratio);
-    staticVol   = ratio;
-    filterFreq  = 300 + (1 - ratio) * 19700;
+    volume = Math.max(0, 1 - ratio);
+    staticVol = ratio;
+    filterFreq = 300 + (1 - ratio) * 19700;
   } else {
     activeStation = null;
     staticVol = 1.0;
@@ -448,18 +425,16 @@ function renderTuningState() {
   }
 
   // Update active status classes in mini cassettes shelf
-  if (DOM.cassetteSpines) {
-    DOM.cassetteSpines.forEach(spine => {
-      const label = spine.getAttribute('aria-label');
-      if (activeStation && label.includes(activeStation.genre)) {
-        spine.classList.remove('dimmed');
-      } else if (activeStation) {
-        spine.classList.add('dimmed');
-      } else {
-        spine.classList.remove('dimmed');
-      }
-    });
-  }
+  document.querySelectorAll('#cards-grid .cassette-spine').forEach(spine => {
+    const label = spine.getAttribute('aria-label');
+    if (activeStation && label.includes(activeStation.genre)) {
+      spine.classList.remove('dimmed');
+    } else if (activeStation) {
+      spine.classList.add('dimmed');
+    } else {
+      spine.classList.remove('dimmed');
+    }
+  });
 }
 
 function setSignalStatus(text, color) {
@@ -472,7 +447,7 @@ function setSignalStatus(text, color) {
 // ── Part progress UI helpers ──────────────────────────────────────────────────
 
 function resetPartProgressUI(partNum) {
-  if (DOM.fills[partNum])        DOM.fills[partNum].style.width = '0%';
+  if (DOM.fills[partNum]) DOM.fills[partNum].style.width = '0%';
   if (DOM.timeDisplays[partNum] && activeStation) {
     const dur = activeStation[`duration${partNum}`] || '00:00';
     DOM.timeDisplays[partNum].textContent = `00:00 / ${dur}`;
@@ -497,8 +472,8 @@ function updateUIForStation(station) {
   if (DOM.monitorDuration) DOM.monitorDuration.textContent = station.duration1;
   if (DOM.monitorFreq) DOM.monitorFreq.textContent = `${station.freq.toFixed(1)} FM`;
 
-  DOM.statLength.textContent   = station.duration1;
-  DOM.statGenre.textContent    = station.genre;
+  DOM.statLength.textContent = station.duration1;
+  DOM.statGenre.textContent = station.genre;
   DOM.statLocation.textContent = station.location;
 
   // Center column custom chalkboard title and dynamic magazine cover mount
@@ -545,7 +520,14 @@ function renderMagazineCover(station) {
   if (station.cardImg) {
     mount.innerHTML = `<img src="${station.cardImg}" alt="${station.genre} Magazine Cover" class="magazine-img">`;
   } else {
-    const fallbackImgUrl = getFallbackImageUrl(station.genre, 400);
+    // Generate static Unsplash background based on genre to keep visual fidelity high
+    let fallbackImgUrl = 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=400&auto=format&fit=crop';
+    if (station.genre === 'DRUM & BASS') fallbackImgUrl = 'dnb-cover.png';
+    else if (station.genre === 'BASSLINE') fallbackImgUrl = 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=400&auto=format&fit=crop';
+    else if (station.genre === 'UK FUNKY') fallbackImgUrl = 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=400&auto=format&fit=crop';
+    else if (station.genre === 'ROAD RAP') fallbackImgUrl = 'https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?q=80&w=400&auto=format&fit=crop';
+    else if (station.genre === 'UK DRILL') fallbackImgUrl = 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=400&auto=format&fit=crop';
+    else if (station.genre === 'AFROSWING') fallbackImgUrl = 'https://images.unsplash.com/photo-1518609878373-06d740f60d8b?q=80&w=400&auto=format&fit=crop';
 
     mount.innerHTML = `
       <div class="magazine-dynamic-fallback" style="--genre-color: ${color}">
@@ -651,9 +633,9 @@ function startProgressLoop() {
       return;
     }
     const elapsed = audioEl.currentTime;
-    const durStr  = (activeStation && activeStation[`duration${currentPart}`]) || '00:00';
-    const dur     = audioEl.duration || parseDuration(durStr);
-    const pct     = (elapsed / dur) * 100;
+    const durStr = (activeStation && activeStation[`duration${currentPart}`]) || '00:00';
+    const dur = audioEl.duration || parseDuration(durStr);
+    const pct = (elapsed / dur) * 100;
 
     const fill = DOM.fills[currentPart];
     const time = DOM.timeDisplays[currentPart];
@@ -687,7 +669,7 @@ function startVisualizer() {
     document.querySelectorAll('#mini-wave-3 .mini-bar')
   ];
   bufferLength = analyserNode.frequencyBinCount;
-  dataArray    = new Uint8Array(bufferLength);
+  dataArray = new Uint8Array(bufferLength);
 
   startVisualizerLoop();
 }
@@ -700,7 +682,7 @@ function startVisualizerLoop() {
 
 function drawVisualizer() {
   analyserNode.getByteFrequencyData(dataArray);
-  const playing   = audioEl && !audioEl.paused;
+  const playing = audioEl && !audioEl.paused;
   const staticVol = staticGain ? staticGain.gain.value : 0;
 
   if (!playing && staticVol === 0) {
@@ -716,8 +698,8 @@ function drawVisualizer() {
       return;
     }
   } else {
-    updateBars(DOM.heroBars,    dataArray, 0,  8);
-    updateBars(DOM.monitorBars, dataArray, 4,  12);
+    updateBars(DOM.heroBars, dataArray, 0, 8);
+    updateBars(DOM.monitorBars, dataArray, 4, 12);
     const activeMini = miniBarSets[currentPart - 1];
     if (activeMini) updateBars(activeMini, dataArray, 8, 16);
   }
@@ -727,7 +709,7 @@ function drawVisualizer() {
 
 function updateBars(bars, dataArray, startBin, endBin) {
   if (!bars || !bars.length) return;
-  const count      = bars.length;
+  const count = bars.length;
   const binsPerBar = Math.max(1, Math.floor((endBin - startBin) / count));
   bars.forEach((bar, idx) => {
     let sum = 0;
@@ -754,7 +736,7 @@ function decayBars(bars) {
 
 function updateNeedlePosition(clientX) {
   const rect = DOM.tunerDisplay.getBoundingClientRect();
-  const pct  = ((clientX - rect.left) / rect.width) * 100;
+  const pct = ((clientX - rect.left) / rect.width) * 100;
   currentFreq = Math.round(percentToFreq(pct) * 10) / 10;
   renderTuningState();
 }
@@ -762,8 +744,8 @@ function updateNeedlePosition(clientX) {
 // ── Volume knob (mouse + touch) ───────────────────────────────────────────────
 
 let isAdjustingVolume = false;
-let volumeStartY      = 0;
-let volumeRotation    = 45;
+let volumeStartY = 0;
+let volumeRotation = 45;
 
 function applyKnobDelta(dy) {
   volumeRotation += dy * 2.5;
@@ -772,9 +754,9 @@ function applyKnobDelta(dy) {
   volumeFactor = (volumeRotation + 135) / 270;
 
   if (isAudioInitialized && activeStation) {
-    const diff  = Math.abs(currentFreq - activeStation.freq);
+    const diff = Math.abs(currentFreq - activeStation.freq);
     const ratio = diff / 1.5;
-    const vol   = diff < 1.5 ? Math.max(0, 1 - ratio) : 0;
+    const vol = diff < 1.5 ? Math.max(0, 1 - ratio) : 0;
     musicGain.gain.setTargetAtTime(vol * volumeFactor, audioCtx.currentTime, 0.05);
     startVisualizerLoop();
   }
@@ -788,14 +770,17 @@ let bookletAudio = null;
 let bookletAudioPlaying = false;
 let bookletProgressInterval = null;
 
-// Booklet DOM refs are accessed via DOM.magazineModal, DOM.bookletContainer, etc.
-// (populated by cacheDOMRefs after DOM is ready)
+const magazineModal = document.getElementById('magazine-modal');
+const bookletContainer = document.getElementById('booklet-container');
+const prevBtn = document.getElementById('booklet-prev-btn');
+const nextBtn = document.getElementById('booklet-next-btn');
+const pageIndicator = document.getElementById('booklet-page-indicator');
 
 function openBookletModal(station) {
   if (!station) return;
   bookletStation = station;
   currentSpread = 1;
-  DOM.magazineModal.style.display = 'flex';
+  magazineModal.style.display = 'flex';
   renderBookletSpread();
 
   // Create separate booklet audio instance
@@ -811,7 +796,7 @@ function openBookletModal(station) {
 }
 
 function closeBookletModal() {
-  DOM.magazineModal.style.display = 'none';
+  magazineModal.style.display = 'none';
   stopBookletAudio();
   bookletStation = null;
 }
@@ -830,20 +815,25 @@ function renderBookletSpread() {
 
   const color = bookletStation.colors.neonPink;
   const rgb = bookletStation.colors.rgb;
-  const bc = DOM.bookletContainer;
-  bc.style.setProperty('--genre-color', color);
-  bc.style.setProperty('--genre-color-alpha-light', `rgba(${rgb}, 0.08)`);
-  bc.style.setProperty('--genre-color-alpha-heavy', `rgba(${rgb}, 0.4)`);
+  bookletContainer.style.setProperty('--genre-color', color);
+  bookletContainer.style.setProperty('--genre-color-alpha-light', `rgba(${rgb}, 0.08)`);
+  bookletContainer.style.setProperty('--genre-color-alpha-heavy', `rgba(${rgb}, 0.4)`);
 
   if (currentSpread === 1) {
     // Spread 1: Page 1 (Cover fallback/real cover) & Page 2 (Editorial history)
-    
+
     // Page 1 cover html
     let coverHtml = '';
     if (bookletStation.cardImg) {
       coverHtml = `<img src="${bookletStation.cardImg}" alt="Cover" class="magazine-img">`;
     } else {
-      const fallbackImgUrl = getFallbackImageUrl(bookletStation.genre, 400);
+      let fallbackImgUrl = 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=400&auto=format&fit=crop';
+      if (bookletStation.genre === 'DRUM & BASS') fallbackImgUrl = 'dnb-cover.png';
+      else if (bookletStation.genre === 'BASSLINE') fallbackImgUrl = 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=400&auto=format&fit=crop';
+      else if (bookletStation.genre === 'UK FUNKY') fallbackImgUrl = 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=400&auto=format&fit=crop';
+      else if (bookletStation.genre === 'ROAD RAP') fallbackImgUrl = 'https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?q=80&w=400&auto=format&fit=crop';
+      else if (bookletStation.genre === 'UK DRILL') fallbackImgUrl = 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=400&auto=format&fit=crop';
+      else if (bookletStation.genre === 'AFROSWING') fallbackImgUrl = 'https://images.unsplash.com/photo-1518609878373-06d740f60d8b?q=80&w=400&auto=format&fit=crop';
 
       coverHtml = `
         <div class="magazine-dynamic-fallback" style="--genre-color: ${color}">
@@ -874,7 +864,7 @@ function renderBookletSpread() {
     // Page 2 Editorial text
     const editorialText = bookletStation.desc + " From pirate radio towers to the sticky floors of sweaty warehouses, this musical trajectory is built on raw frequencies and community power. This is an archival scan of the movement's evolution. Stay locked to the lineage.";
 
-    bc.innerHTML = `
+    bookletContainer.innerHTML = `
       <!-- Page 1 (Left) -->
       <div class="booklet-page left-page" style="padding:0;">
         ${coverHtml}
@@ -892,13 +882,13 @@ function renderBookletSpread() {
       </div>
     `;
 
-    DOM.bookletPrevBtn.disabled = true;
-    DOM.bookletNextBtn.disabled = false;
-    DOM.bookletPageIndicator.textContent = "SPREAD 1 / 4 (PAGES 1-2)";
+    prevBtn.disabled = true;
+    nextBtn.disabled = false;
+    pageIndicator.textContent = "SPREAD 1 / 4 (PAGES 1-2)";
 
   } else if (currentSpread === 2) {
     // Spread 2: Page 3 (Tracklisting) & Page 4 (Visual Archive gallery)
-    
+
     // Generate tracklist list html
     let tracksHtml = '';
     if (bookletStation.tracks1 && bookletStation.tracks1.length > 0) {
@@ -913,15 +903,21 @@ function renderBookletSpread() {
       tracksHtml = '<p class="booklet-text">No transmission log available.</p>';
     }
 
-    // Choose beautiful gallery photo (reuse shared helper; DRUM & BASS overrides to a crowd shot)
-    let subcultureImgUrl = getFallbackImageUrl(bookletStation.genre, 500);
+    // Choose beautiful gallery photo
+    let subcultureImgUrl = 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=500&auto=format&fit=crop';
     if (bookletStation.genre === 'DRUM & BASS') subcultureImgUrl = 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=500&auto=format&fit=crop';
+    else if (bookletStation.genre === 'UK GARAGE') subcultureImgUrl = 'https://images.unsplash.com/photo-1487180142328-054b783fc471?q=80&w=500&auto=format&fit=crop';
+    else if (bookletStation.genre === 'BASSLINE') subcultureImgUrl = 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=500&auto=format&fit=crop';
+    else if (bookletStation.genre === 'UK FUNKY') subcultureImgUrl = 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=500&auto=format&fit=crop';
+    else if (bookletStation.genre === 'ROAD RAP') subcultureImgUrl = 'https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?q=80&w=500&auto=format&fit=crop';
+    else if (bookletStation.genre === 'UK DRILL') subcultureImgUrl = 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=500&auto=format&fit=crop';
+    else if (bookletStation.genre === 'AFROSWING') subcultureImgUrl = 'https://images.unsplash.com/photo-1518609878373-06d740f60d8b?q=80&w=500&auto=format&fit=crop';
 
     // Artist list badges
     const artists = [...new Set(bookletStation.tracks1.map(t => t.title.split(/[\u2013\u2014-]/)[0].trim()))].slice(0, 4);
     const artistsBadges = artists.map(a => `<span class="booklet-artist-badge">${a}</span>`).join('');
 
-    bc.innerHTML = `
+    bookletContainer.innerHTML = `
       <!-- Page 3 (Left) -->
       <div class="booklet-page left-page">
         <h2 class="booklet-title" style="--genre-color: ${color}">TRACKLISTING</h2>
@@ -950,13 +946,13 @@ function renderBookletSpread() {
       </div>
     `;
 
-    DOM.bookletPrevBtn.disabled = false;
-    DOM.bookletNextBtn.disabled = false;
-    DOM.bookletPageIndicator.textContent = "SPREAD 2 / 4 (PAGES 3-4)";
+    prevBtn.disabled = false;
+    nextBtn.disabled = false;
+    pageIndicator.textContent = "SPREAD 2 / 4 (PAGES 3-4)";
 
   } else if (currentSpread === 3) {
     // Spread 3: Page 5 (Tech Specs/Telemetry) & Page 6 (Interview Excerpts Q&A)
-    bc.innerHTML = `
+    bookletContainer.innerHTML = `
       <!-- Page 5 (Left) -->
       <div class="booklet-page left-page">
         <div>
@@ -1003,14 +999,14 @@ function renderBookletSpread() {
       </div>
     `;
 
-    DOM.bookletPrevBtn.disabled = false;
-    DOM.bookletNextBtn.disabled = false;
-    DOM.bookletPageIndicator.textContent = "SPREAD 3 / 4 (PAGES 5-6)";
+    prevBtn.disabled = false;
+    nextBtn.disabled = false;
+    pageIndicator.textContent = "SPREAD 3 / 4 (PAGES 5-6)";
 
   } else if (currentSpread === 4) {
     // Spread 4: Page 7 (Outro credits) & Page 8 (Mixtape Separate player)
 
-    bc.innerHTML = `
+    bookletContainer.innerHTML = `
       <!-- Page 7 (Left) -->
       <div class="booklet-page left-page">
         <div>
@@ -1060,9 +1056,9 @@ function renderBookletSpread() {
       </div>
     `;
 
-    DOM.bookletPrevBtn.disabled = false;
-    DOM.bookletNextBtn.disabled = true;
-    DOM.bookletPageIndicator.textContent = "SPREAD 4 / 4 (PAGES 7-8)";
+    prevBtn.disabled = false;
+    nextBtn.disabled = true;
+    pageIndicator.textContent = "SPREAD 4 / 4 (PAGES 7-8)";
 
     // Wire up booklet special player events
     const bPlayBtn = document.getElementById('special-play-btn');
@@ -1073,7 +1069,7 @@ function renderBookletSpread() {
     if (bProgressTrack) {
       bProgressTrack.addEventListener('click', seekBookletAudio);
     }
-    
+
     updateBookletAudioUI();
   }
 }
@@ -1108,10 +1104,10 @@ function startBookletProgressLoop() {
     const elapsed = bookletAudio.currentTime;
     const duration = bookletAudio.duration || parseDuration(bookletStation.duration2);
     const pct = (elapsed / duration) * 100;
-    
+
     const fill = document.getElementById('special-progress-fill');
     const timeDisplay = document.getElementById('special-current-time');
-    
+
     if (fill) fill.style.width = pct + '%';
     if (timeDisplay) timeDisplay.textContent = formatTime(elapsed);
   }, 300);
@@ -1123,7 +1119,7 @@ function seekBookletAudio(e) {
   const pct = (e.clientX - rect.left) / rect.width;
   const duration = bookletAudio.duration || parseDuration(bookletStation.duration2);
   bookletAudio.currentTime = pct * duration;
-  
+
   const fill = document.getElementById('special-progress-fill');
   if (fill) fill.style.width = (pct * 100) + '%';
 }
@@ -1145,7 +1141,7 @@ function wireEvents() {
     updateNeedlePosition(e.clientX);
   });
   window.addEventListener('mousemove', e => { if (isDragging) updateNeedlePosition(e.clientX); });
-  window.addEventListener('mouseup',   ()  => { isDragging = false; });
+  window.addEventListener('mouseup', () => { isDragging = false; });
 
   DOM.tunerDisplay.addEventListener('touchstart', e => {
     isDragging = true;
@@ -1154,7 +1150,7 @@ function wireEvents() {
     updateNeedlePosition(e.touches[0].clientX);
   }, { passive: true });
   window.addEventListener('touchmove', e => { if (isDragging) updateNeedlePosition(e.touches[0].clientX); }, { passive: true });
-  window.addEventListener('touchend',  ()  => { isDragging = false; });
+  window.addEventListener('touchend', () => { isDragging = false; });
 
   DOM.gainKnob.addEventListener('mousedown', e => {
     isAdjustingVolume = true;
@@ -1222,14 +1218,14 @@ function wireEvents() {
     closeMBtn.addEventListener('click', closeBookletModal);
   }
 
-  DOM.bookletPrevBtn.addEventListener('click', () => {
+  prevBtn.addEventListener('click', () => {
     if (currentSpread > 1) {
       currentSpread--;
       renderBookletSpread();
     }
   });
 
-  DOM.bookletNextBtn.addEventListener('click', () => {
+  nextBtn.addEventListener('click', () => {
     if (currentSpread < 4) {
       currentSpread++;
       renderBookletSpread();
@@ -1457,7 +1453,7 @@ function handleSelect(id) {
     activeGenreId = id;
     if (clearBtn) clearBtn.style.display = "block";
     const g = GENRES_METADATA.find(x => x.id === id);
-    
+
     // Auto-tune the main radio player
     const station = STATIONS.find(s => s.genre === g.genreKey);
     if (station) {
@@ -1578,8 +1574,8 @@ function updateTubeMapActiveState(genreName) {
   initTimelineNodes();
   drawTubeLines();
 
-  // Cache cassette spines after buildArchiveCards() has run
-  DOM.cassetteSpines = document.querySelectorAll('#cards-grid .cassette-spine');
+  // Initialize full episode cassette grid
+  initCassettesGrid();
 
   // Set default station (Jungle)
   const defaultStation = getStationByGenre('JUNGLE') || STATIONS[0];
@@ -1603,6 +1599,317 @@ function updateTubeMapActiveState(genreName) {
       if (activeGenreId) {
         handleSelect(activeGenreId);
       }
+    });
+  }
+})();
+
+// ── Episode Cassette Grid ─────────────────────────────────────────────────────
+
+const cassetteGridEls = [];
+let cassetteAudio     = new Audio();
+cassetteAudio.loop    = true;
+let cassetteEpisodeId = null;
+let cassettePartNum   = 1;
+
+function initCassettesGrid() {
+  const container = document.getElementById('cassette-grid');
+  if (!container) return;
+  container.innerHTML = '';
+  cassetteGridEls.length = 0;
+
+  STATIONS.forEach(station => {
+    const genreMeta = GENRES_METADATA.find(g => g.genreKey === station.genre);
+    const color = genreMeta ? genreMeta.color : '#ff00ff';
+    const rgb   = genreMeta ? genreMeta.rgb   : '255, 0, 255';
+
+    const button = document.createElement('button');
+    button.className = 'cassette-spine';
+    button.setAttribute('aria-label', station.title + ' - ' + station.genre);
+    button.style.setProperty('--genre-color',             color);
+    button.style.setProperty('--genre-color-alpha-heavy', 'rgba(' + rgb + ', 0.4)');
+    button.style.setProperty('--genre-color-alpha-glow',  'rgba(' + rgb + ', 0.15)');
+    button.style.setProperty('--genre-color-sticker',     'rgba(' + rgb + ', 0.85)');
+
+    const dashIdx = station.title.indexOf('\u2014');
+    const epShortName    = dashIdx > -1 ? station.title.substring(0, dashIdx).trim() : station.title;
+    const epDisplayTitle = dashIdx > -1 ? station.title.substring(dashIdx + 1).trim() : station.title;
+
+    button.innerHTML = [
+      '<div class="cassette-3d-card">',
+        '<div class="spine-body">',
+          '<div class="spine-label">',
+            '<div class="spine-stripe"></div>',
+            '<div class="spine-text-rotated">',
+              '<div class="rotated-inner">',
+                '<span class="rotated-title">' + epDisplayTitle + '</span>',
+                '<span class="rotated-subtitle">' + epShortName + ' \u00b7 ' + station.genre + '</span>',
+              '</div>',
+            '</div>',
+            '<div class="spine-side">SIDE A</div>',
+          '</div>',
+          '<div class="spine-tape-bottom">',
+            '<div class="tape-block" style="height:10px"></div>',
+            '<div class="tape-block" style="height:8px"></div>',
+            '<div class="tape-block" style="height:9px"></div>',
+          '</div>',
+        '</div>',
+        '<div class="cover-body">',
+          '<div class="cover-jcard">',
+            '<div class="cover-stripe"></div>',
+            '<div class="cover-content">',
+              '<div class="cover-header">',
+                '<span class="cover-genre">' + station.genre + '</span>',
+                '<span class="cover-number">' + epShortName + '</span>',
+              '</div>',
+              '<div class="cover-main">',
+                '<h3 class="cover-title">' + epDisplayTitle + '</h3>',
+                '<span class="cover-dj">PRESIDENT BAILEY</span>',
+              '</div>',
+              '<div class="cover-footer">',
+                '<span class="cover-footer-text">CLANDESTINE TRANSMISSION</span>',
+                '<span class="cover-side">SIDE A</span>',
+              '</div>',
+            '</div>',
+          '</div>',
+          '<div class="case-sheen"></div>',
+        '</div>',
+      '</div>'
+    ].join('');
+
+    button.addEventListener('click', function() { openCassetteModal(station); });
+    container.appendChild(button);
+    cassetteGridEls.push({ el: button, genreMeta: genreMeta });
+  });
+}
+
+function renderCassetteGrid() {
+  cassetteGridEls.forEach(function(item) {
+    var isDimmed = typeof activeGenreId !== 'undefined' && activeGenreId !== null
+      && item.genreMeta && item.genreMeta.id !== activeGenreId;
+    item.el.classList.toggle('dimmed', isDimmed);
+  });
+}
+
+function makeReelSvg(spinning, fillPercent) {
+  var cls = spinning ? 'reel-svg spinning' : 'reel-svg';
+  var fill = 0.35 + fillPercent * 0.45;
+  return [
+    '<svg class="' + cls + '" viewBox="0 0 74 74">',
+      '<circle cx="37" cy="37" r="35" fill="none" stroke="rgba(0,0,0,0.22)" stroke-width="2"/>',
+      '<circle cx="37" cy="37" r="' + (35 * fillPercent) + '" fill="rgba(80,45,15,' + fill + ')"/>',
+      '<line x1="37" y1="12" x2="37" y2="26" stroke="rgba(0,0,0,0.35)" stroke-width="1.8"/>',
+      '<line x1="37" y1="48" x2="37" y2="62" stroke="rgba(0,0,0,0.35)" stroke-width="1.8"/>',
+      '<line x1="12" y1="37" x2="26" y2="37" stroke="rgba(0,0,0,0.35)" stroke-width="1.8"/>',
+      '<line x1="48" y1="37" x2="62" y2="37" stroke="rgba(0,0,0,0.35)" stroke-width="1.8"/>',
+      '<circle cx="37" cy="37" r="12" fill="#c8c0b0" stroke="rgba(0,0,0,0.2)" stroke-width="1"/>',
+      '<circle cx="37" cy="37" r="5" fill="#1a1a1a"/>',
+    '</svg>'
+  ].join('');
+}
+
+function openCassetteModal(station) {
+  var modal     = document.getElementById('player-modal');
+  var container = document.getElementById('modal-container');
+  if (!modal || !container) return;
+
+  var genreMeta = GENRES_METADATA.find(function(g) { return g.genreKey === station.genre; });
+  var color = genreMeta ? genreMeta.color : '#ff00ff';
+  var rgb   = genreMeta ? genreMeta.rgb   : '255, 0, 255';
+
+  container.style.setProperty('--genre-color',             color);
+  container.style.setProperty('--genre-color-alpha',       'rgba(' + rgb + ', 0.15)');
+  container.style.setProperty('--genre-color-alpha-heavy', 'rgba(' + rgb + ', 0.4)');
+  container.style.setProperty('--genre-color-sticker',     'rgba(' + rgb + ', 0.8)');
+  container.style.setProperty('--genre-color-alpha-glow',  'rgba(' + rgb + ', 0.08)');
+
+  var localPart = (cassetteEpisodeId === station.genre) ? cassettePartNum : 1;
+
+  var tabsHtml = [
+    '<button class="inlay-tab ' + (localPart===1?'active':'') + '" data-part="1">PART 1</button>',
+    '<button class="inlay-tab ' + (localPart===2?'active':'') + '" data-part="2">PART 2</button>'
+  ].join('');
+  if (station.tracks3 && station.tracks3.length > 0) {
+    tabsHtml += '<button class="inlay-tab ' + (localPart===3?'active':'') + '" data-part="3">PART 3</button>';
+  }
+
+  var dashIdx = station.title.indexOf('\u2014');
+  var cleanTitle = dashIdx > -1 ? station.title.substring(dashIdx + 1).trim() : station.title;
+
+  container.innerHTML = [
+    '<div style="align-self:flex-end;margin-bottom:12px;">',
+      '<button class="modal-close-btn" id="close-cassette-modal">\u2715 CLOSE</button>',
+    '</div>',
+
+    '<div class="cassette-shell">',
+      '<div class="screw top-left"><div class="screw-slot"></div></div>',
+      '<div class="screw top-right"><div class="screw-slot"></div></div>',
+      '<div class="screw bottom-left"><div class="screw-slot" style="transform:rotate(30deg)"></div></div>',
+      '<div class="screw bottom-right"><div class="screw-slot" style="transform:rotate(-45deg)"></div></div>',
+
+      '<div class="shell-label">',
+        '<div class="label-color-stripe"></div>',
+        '<div style="margin-top:6px;">',
+          '<div class="label-genre">' + station.genre + '</div>',
+          '<div class="label-title" title="' + cleanTitle + '">' + cleanTitle + '</div>',
+        '</div>',
+        '<div class="label-meta-row">',
+          '<div>',
+            '<div class="label-dj">DJ PRESIDENT BAILEY</div>',
+            '<div class="label-duration" id="label-meta-dur">' + station.genre + ' \u00b7 ' + station.duration1 + '</div>',
+          '</div>',
+          '<div class="label-side" id="label-meta-side">SIDE A</div>',
+        '</div>',
+      '</div>',
+
+      '<div class="spindle-hole left" id="spindle-left">' + makeReelSvg(false, 0.72) + '</div>',
+      '<div class="spindle-hole right" id="spindle-right">' + makeReelSvg(false, 0.38) + '</div>',
+
+      '<div class="exposed-window">',
+        '<div class="exposed-tape"></div>',
+        '<div class="exposed-sheen"></div>',
+      '</div>',
+
+      '<div class="shell-brand-label">SOUNDSPACE FM \u00b7 ARCHIVE \u00b7 C60</div>',
+    '</div>',
+
+    '<div class="inlay-card">',
+      '<div class="inlay-divider"></div>',
+      '<div class="inlay-header-row">',
+        '<span class="inlay-header-title">TRACKLISTING</span>',
+        '<span class="inlay-duration" id="inlay-dur-display">' + station.duration1 + '</span>',
+      '</div>',
+      '<div class="inlay-tabs" id="tab-row">' + tabsHtml + '</div>',
+      '<div class="tracklist-container" id="modal-tracklist-list"></div>',
+      '<div class="inlay-footer">',
+        '<div class="inlay-meta-info">',
+          '<span class="inlay-dj">PRESIDENT BAILEY</span>',
+          '<span class="inlay-genre-year">' + station.genre + '</span>',
+        '</div>',
+        '<button class="cassette-play-btn" id="modal-play-btn">',
+          '<span style="font-size:12px;line-height:1;">\u25b6</span>',
+          '<span class="btn-label-text">PLAY</span>',
+        '</button>',
+      '</div>',
+    '</div>'
+  ].join('');
+
+  document.getElementById('close-cassette-modal').addEventListener('click', closeCassetteModal);
+  document.getElementById('modal-play-btn').addEventListener('click', function() { toggleCassetteAudio(station); });
+
+  document.querySelectorAll('.inlay-tab').forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      document.querySelectorAll('.inlay-tab').forEach(function(t) { t.classList.remove('active'); });
+      tab.classList.add('active');
+      selectCassettePart(station, parseInt(tab.getAttribute('data-part')));
+    });
+  });
+
+  selectCassettePart(station, localPart);
+  modal.style.display = 'flex';
+}
+
+function closeCassetteModal() {
+  var modal = document.getElementById('player-modal');
+  if (modal) modal.style.display = 'none';
+}
+
+function selectCassettePart(station, partNum) {
+  var isPlayingCurrent = cassetteEpisodeId === station.genre && cassettePartNum === partNum;
+  var isActive = isPlayingCurrent && cassetteAudio && !cassetteAudio.paused;
+
+  var leftEl  = document.getElementById('spindle-left');
+  var rightEl = document.getElementById('spindle-right');
+  if (leftEl)  leftEl.innerHTML  = makeReelSvg(isActive, 0.72);
+  if (rightEl) rightEl.innerHTML = makeReelSvg(isActive, 0.38);
+
+  var playBtn   = document.getElementById('modal-play-btn');
+  var labelText = playBtn ? playBtn.querySelector('.btn-label-text') : null;
+  var iconSpan  = playBtn ? playBtn.querySelector('span') : null;
+  if (isActive) {
+    if (playBtn)   playBtn.classList.add('playing');
+    if (labelText) labelText.innerText = 'PLAYING';
+    if (iconSpan)  iconSpan.innerText  = '\u25a0';
+  } else {
+    if (playBtn)   playBtn.classList.remove('playing');
+    if (labelText) labelText.innerText = 'PLAY';
+    if (iconSpan)  iconSpan.innerText  = '\u25b6';
+  }
+
+  var durs  = [station.duration1, station.duration2, station.duration3];
+  var sides = ['A', 'B', 'C'];
+  var dur   = durs[partNum - 1] || '';
+  var side  = sides[partNum - 1] || 'A';
+
+  var durEl    = document.getElementById('inlay-dur-display');
+  var metaDur  = document.getElementById('label-meta-dur');
+  var metaSide = document.getElementById('label-meta-side');
+  if (durEl)    durEl.innerText   = dur;
+  if (metaDur)  metaDur.innerText = station.genre + ' \u00b7 ' + dur;
+  if (metaSide) metaSide.innerText = 'SIDE ' + side;
+
+  var trackArrays = [station.tracks1, station.tracks2, station.tracks3];
+  var tracks = trackArrays[partNum - 1] || [];
+  var list = document.getElementById('modal-tracklist-list');
+  if (list) {
+    list.innerHTML = '';
+    tracks.forEach(function(tr, idx) {
+      var item = document.createElement('div');
+      item.className = 'tracklist-item';
+      var text = (tr && typeof tr === 'object') ? (tr.title || '') : (tr || '');
+      item.innerHTML = '<span class="track-num">' + String(idx + 1).padStart(2, '0') + '</span>' +
+                       '<div class="track-info-wrap">' + text + '</div>';
+      list.appendChild(item);
+    });
+  }
+}
+
+function toggleCassetteAudio(station) {
+  var activeTab = document.querySelector('.inlay-tab.active');
+  var partNum = parseInt((activeTab && activeTab.getAttribute('data-part')) || '1');
+
+  var leftEl    = document.getElementById('spindle-left');
+  var rightEl   = document.getElementById('spindle-right');
+  var playBtn   = document.getElementById('modal-play-btn');
+  var labelText = playBtn ? playBtn.querySelector('.btn-label-text') : null;
+  var iconSpan  = playBtn ? playBtn.querySelector('span') : null;
+
+  var isPlayingCurrent = cassetteEpisodeId === station.genre && cassettePartNum === partNum;
+
+  if (isPlayingCurrent && !cassetteAudio.paused) {
+    cassetteAudio.pause();
+    cassetteEpisodeId = null;
+    if (playBtn)   playBtn.classList.remove('playing');
+    if (labelText) labelText.innerText = 'PLAY';
+    if (iconSpan)  iconSpan.innerText  = '\u25b6';
+    if (leftEl)    leftEl.innerHTML    = makeReelSvg(false, 0.72);
+    if (rightEl)   rightEl.innerHTML   = makeReelSvg(false, 0.38);
+  } else {
+    cassetteAudio.pause();
+    var urls = [station.trackUrl1, station.trackUrl2, station.trackUrl3];
+    var url  = urls[partNum - 1];
+    if (!url) return;
+    var absUrl = new URL(url, location.href).href;
+    if (cassetteAudio.src !== absUrl) {
+      cassetteAudio.src = absUrl;
+      cassetteAudio.load();
+    }
+    cassetteAudio.play().catch(function(e) { console.warn('Autoplay blocked:', e); });
+    cassetteEpisodeId = station.genre;
+    cassettePartNum   = partNum;
+    if (playBtn)   playBtn.classList.add('playing');
+    if (labelText) labelText.innerText = 'PLAYING';
+    if (iconSpan)  iconSpan.innerText  = '\u25a0';
+    if (leftEl)    leftEl.innerHTML    = makeReelSvg(true, 0.72);
+    if (rightEl)   rightEl.innerHTML   = makeReelSvg(true, 0.38);
+  }
+}
+
+// Close modal when clicking outside content
+(function() {
+  var playerModal = document.getElementById('player-modal');
+  if (playerModal) {
+    playerModal.addEventListener('click', function(e) {
+      if (e.target.id === 'player-modal') closeCassetteModal();
     });
   }
 })();
