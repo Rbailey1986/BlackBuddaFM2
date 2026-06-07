@@ -75,13 +75,6 @@ function buildArchiveCards() {
     const epShortName = parts[0] ? parts[0].trim() : `EP ${station.epNum}`;
     const epDisplayTitle = parts.slice(1).join('-').trim();
 
-    let tapeSideImg = null;
-    if (station.genre === 'JUNGLE') {
-      tapeSideImg = 'images/Jungle tape side.png';
-    } else if (station.genre === 'DRUM & BASS') {
-      tapeSideImg = 'images/Drum and bass tape side.png';
-    }
-
     button.innerHTML = `
       <div class="cassette-3d-card">
         <!-- Spine Face -->
@@ -90,10 +83,8 @@ function buildArchiveCards() {
             <div class="spine-stripe"></div>
             <div class="spine-text-rotated">
               <div class="rotated-inner">
-                ${tapeSideImg ? `<img src="${tapeSideImg}" class="tape-side-mini-img" alt="Tape Side">` : `
                 <span class="rotated-title">${epDisplayTitle}</span>
                 <span class="rotated-subtitle">${epShortName}</span>
-                `}
               </div>
             </div>
           </div>
@@ -104,8 +95,7 @@ function buildArchiveCards() {
           </div>
         </div>
         <!-- Cover Face (Reverse Spin) -->
-        <div class="cover-body"${tapeSideImg ? ` style="background-image: url('${tapeSideImg}'); background-size: cover; background-position: center; border: none;"` : ''}>
-          ${tapeSideImg ? '' : `
+        <div class="cover-body">
           <div class="cover-jcard">
             <div class="cover-stripe"></div>
             <div class="cover-content">
@@ -119,7 +109,6 @@ function buildArchiveCards() {
               </div>
             </div>
           </div>
-          `}
         </div>
       </div>`;
 
