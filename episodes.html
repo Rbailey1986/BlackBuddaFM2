@@ -185,7 +185,7 @@
         id: "dubstep",
         name: "Dubstep",
         era: "2001–2011",
-        color: "#2B0A3D",
+        color: "#2b21de",
         x: 560, y: 100,
         description: "140bpm. Sub-bass that moved furniture. Croydon's answer to everything. From Plastic People to festival stages — the wobble heard worldwide.",
         artists: ["Benga", "Skream", "Burial", "Digital Mystikz", "Kode9"],
@@ -215,7 +215,7 @@
         id: "roadrap",
         name: "Road Rap",
         era: "2007–2016",
-        color: "#1A1A1A",
+        color: "#2f2e2e",
         x: 920, y: 130,
         description: "Peckham and Brixton street stories slowed down the tempo. Raw baritone flows, mixtape culture, and heavy sub-bass documenting road realities.",
         artists: ["Giggs", "Blade Brown", "Potter Payper", "Casisdead", "Nines"],
@@ -528,6 +528,13 @@
         const epShortName = station.title.split("—")[0].trim();
         const epDisplayTitle = station.title.substring(station.title.indexOf("—") + 1).trim();
 
+        let tapeSideImg = null;
+        if (station.genre === 'JUNGLE') {
+          tapeSideImg = 'images/Jungle tape side.png';
+        } else if (station.genre === 'DRUM & BASS') {
+          tapeSideImg = 'images/Drum and bass tape side.png';
+        }
+
         button.innerHTML = `
           <div class="cassette-3d-card">
             <!-- Spine Face -->
@@ -536,8 +543,10 @@
                 <div class="spine-stripe"></div>
                 <div class="spine-text-rotated">
                   <div class="rotated-inner">
+                    ${tapeSideImg ? `<img src="${tapeSideImg}" class="tape-side-mini-img" alt="Tape Side">` : `
                     <span class="rotated-title">${epDisplayTitle}</span>
                     <span class="rotated-subtitle">${epShortName} · ${station.genre}</span>
+                    `}
                   </div>
                 </div>
                 <div class="spine-side">SIDE A</div>
@@ -550,7 +559,8 @@
             </div>
 
             <!-- Cover Face -->
-            <div class="cover-body">
+            <div class="cover-body"${tapeSideImg ? ` style="background-image: url('${tapeSideImg}'); background-size: cover; background-position: center; border: none;"` : ''}>
+              ${tapeSideImg ? '' : `
               <div class="cover-jcard">
                 <div class="cover-stripe"></div>
                 <div class="cover-content">
@@ -568,6 +578,7 @@
                   </div>
                 </div>
               </div>
+              `}
               <div class="case-sheen"></div>
             </div>
           </div>

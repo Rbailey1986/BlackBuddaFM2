@@ -1059,3 +1059,11 @@
   color: #000;
   box-shadow: 0 0 15px var(--genre-color-alpha-heavy);
 }
+
+/* Tape Side miniature image on cassette spine */
+.rotated-inner .tape-side-mini-img {
+  width: 320px;
+  height: 105px;
+  object-fit: cover;
+  display: block;
+}

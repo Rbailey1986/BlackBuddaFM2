@@ -75,6 +75,13 @@ function buildArchiveCards() {
     const epShortName = parts[0] ? parts[0].trim() : `EP ${station.epNum}`;
     const epDisplayTitle = parts.slice(1).join('-').trim();
 
+    let tapeSideImg = null;
+    if (station.genre === 'JUNGLE') {
+      tapeSideImg = 'images/Jungle tape side.png';
+    } else if (station.genre === 'DRUM & BASS') {
+      tapeSideImg = 'images/Drum and bass tape side.png';
+    }
+
     button.innerHTML = `
       <div class="cassette-3d-card">
         <!-- Spine Face -->
@@ -83,8 +90,10 @@ function buildArchiveCards() {
             <div class="spine-stripe"></div>
             <div class="spine-text-rotated">
               <div class="rotated-inner">
+                ${tapeSideImg ? `<img src="${tapeSideImg}" class="tape-side-mini-img" alt="Tape Side">` : `
                 <span class="rotated-title">${epDisplayTitle}</span>
                 <span class="rotated-subtitle">${epShortName}</span>
+                `}
               </div>
             </div>
           </div>
@@ -95,7 +104,8 @@ function buildArchiveCards() {
           </div>
         </div>
         <!-- Cover Face (Reverse Spin) -->
-        <div class="cover-body">
+        <div class="cover-body"${tapeSideImg ? ` style="background-image: url('${tapeSideImg}'); background-size: cover; background-position: center; border: none;"` : ''}>
+          ${tapeSideImg ? '' : `
           <div class="cover-jcard">
             <div class="cover-stripe"></div>
             <div class="cover-content">
@@ -109,6 +119,7 @@ function buildArchiveCards() {
               </div>
             </div>
           </div>
+          `}
         </div>
       </div>`;
 
@@ -175,68 +186,68 @@ let DOM = {};
 
 function cacheDOMRefs() {
   DOM = {
-    tunerDisplay:    document.getElementById('tuner-display'),
-    tunerNeedle:     document.getElementById('tuner-needle'),
-    tunerStrength:   document.getElementById('tuner-strength'),
+    tunerDisplay: document.getElementById('tuner-display'),
+    tunerNeedle: document.getElementById('tuner-needle'),
+    tunerStrength: document.getElementById('tuner-strength'),
     signalBadgeText: document.getElementById('signal-badge-text'),
-    vinylFrame:      document.getElementById('vinyl-frame'),
-    heroBayPlayBtn:  document.getElementById('hero-play-btn'),
-    epBadge:         document.getElementById('ep-badge'),
-    statLength:      document.getElementById('stat-length'),
-    statGenre:       document.getElementById('stat-genre'),
-    statLocation:    document.getElementById('stat-location'),
-    monitorTitle:    document.getElementById('monitor-title'),
+    vinylFrame: document.getElementById('vinyl-frame'),
+    heroBayPlayBtn: document.getElementById('hero-play-btn'),
+    epBadge: document.getElementById('ep-badge'),
+    statLength: document.getElementById('stat-length'),
+    statGenre: document.getElementById('stat-genre'),
+    statLocation: document.getElementById('stat-location'),
+    monitorTitle: document.getElementById('monitor-title'),
     monitorDuration: document.getElementById('monitor-duration'),
-    monitorFreq:     document.getElementById('monitor-freq'),
-    progSignals:     [null, document.getElementById('prog-signal-1'), document.getElementById('prog-signal-2'), document.getElementById('prog-signal-3')],
-    playBtns:        [null, document.getElementById('play-btn-1'), document.getElementById('play-btn-2'), document.getElementById('play-btn-3')],
-    timeDisplays:    [null, document.getElementById('time-1'), document.getElementById('time-2'), document.getElementById('time-3')],
-    fills:           [null, document.getElementById('fill-1'), document.getElementById('fill-2'), document.getElementById('fill-3')],
-    gainKnob:        document.getElementById('gain-knob'),
-    knobLine:        document.getElementById('knob-line'),
-    recFlicker:      document.querySelector('.rec-row .flicker'),
-    heroBars:        document.querySelectorAll('#hero-wave .wave-bar'),
-    monitorBars:     document.querySelectorAll('#monitor-bars .green-bar'),
-    stationMarks:    null
+    monitorFreq: document.getElementById('monitor-freq'),
+    progSignals: [null, document.getElementById('prog-signal-1'), document.getElementById('prog-signal-2'), document.getElementById('prog-signal-3')],
+    playBtns: [null, document.getElementById('play-btn-1'), document.getElementById('play-btn-2'), document.getElementById('play-btn-3')],
+    timeDisplays: [null, document.getElementById('time-1'), document.getElementById('time-2'), document.getElementById('time-3')],
+    fills: [null, document.getElementById('fill-1'), document.getElementById('fill-2'), document.getElementById('fill-3')],
+    gainKnob: document.getElementById('gain-knob'),
+    knobLine: document.getElementById('knob-line'),
+    recFlicker: document.querySelector('.rec-row .flicker'),
+    heroBars: document.querySelectorAll('#hero-wave .wave-bar'),
+    monitorBars: document.querySelectorAll('#monitor-bars .green-bar'),
+    stationMarks: null
   };
 }
 
 // ── State ─────────────────────────────────────────────────────────────────────
 
-let currentFreq    = 88.9; 
-let isDragging     = false;
-let activeStation  = null;
+let currentFreq = 88.9;
+let isDragging = false;
+let activeStation = null;
 let lastActiveStation = null;
-let currentPart    = 1;
+let currentPart = 1;
 
-let volumeFactor   = 0.8;
-let staticFactor   = 0.06;
-let currentBand    = 'FM';
-let currentMode    = 'STEREO';
+let volumeFactor = 0.8;
+let staticFactor = 0.06;
+let currentBand = 'FM';
+let currentMode = 'STEREO';
 
-let currentThemeClass   = null;
+let currentThemeClass = null;
 let isVisualizerRunning = false;
 
 // ── Web Audio ─────────────────────────────────────────────────────────────────
 
-let audioCtx           = null;
-let audioEl            = null;
-let audioSource        = null;
-let staticNode         = null;
-let staticGain         = null;
-let musicGain          = null;
-let filterNode         = null;
-let analyserNode       = null;
+let audioCtx = null;
+let audioEl = null;
+let audioSource = null;
+let staticNode = null;
+let staticGain = null;
+let musicGain = null;
+let filterNode = null;
+let analyserNode = null;
 let isAudioInitialized = false;
 
-const SVG_PLAY  = '<path d="M8 5v14l11-7z"/>';
+const SVG_PLAY = '<path d="M8 5v14l11-7z"/>';
 const SVG_PAUSE = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
 
 function initAudio() {
   if (isAudioInitialized) return;
 
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  audioEl  = new Audio();
+  audioEl = new Audio();
   audioEl.crossOrigin = 'anonymous';
   audioEl.loop = true;
 
@@ -296,7 +307,7 @@ function percentToFreq(pct) {
 // ── Tuner UI setup ────────────────────────────────────────────────────────────
 
 function setupTunerUI() {
-  const ticksContainer    = document.getElementById('tuner-ticks');
+  const ticksContainer = document.getElementById('tuner-ticks');
   const stationsContainer = document.getElementById('tuner-stations-container');
 
   const startTick = 88.5, endTick = 110.0;
@@ -354,8 +365,8 @@ function renderTuningState() {
   DOM.tunerNeedle.style.left = freqToPercent(currentFreq) + '%';
   DOM.signalBadgeText.textContent = `SIGNAL: ${currentFreq.toFixed(1)} FM`;
 
-  let nearest  = null;
-  let minDiff  = Infinity;
+  let nearest = null;
+  let minDiff = Infinity;
   STATIONS.forEach(s => {
     const d = Math.abs(currentFreq - s.freq);
     if (d < minDiff) { minDiff = d; nearest = s; }
@@ -365,9 +376,9 @@ function renderTuningState() {
   if (minDiff < 1.5) {
     activeStation = nearest;
     const ratio = minDiff / 1.5;
-    volume      = Math.max(0, 1 - ratio);
-    staticVol   = ratio;
-    filterFreq  = 300 + (1 - ratio) * 19700;
+    volume = Math.max(0, 1 - ratio);
+    staticVol = ratio;
+    filterFreq = 300 + (1 - ratio) * 19700;
   } else {
     activeStation = null;
     staticVol = 1.0;
@@ -447,7 +458,7 @@ function setSignalStatus(text, color) {
 // ── Part progress UI helpers ──────────────────────────────────────────────────
 
 function resetPartProgressUI(partNum) {
-  if (DOM.fills[partNum])        DOM.fills[partNum].style.width = '0%';
+  if (DOM.fills[partNum]) DOM.fills[partNum].style.width = '0%';
   if (DOM.timeDisplays[partNum] && activeStation) {
     const dur = activeStation[`duration${partNum}`] || '00:00';
     DOM.timeDisplays[partNum].textContent = `00:00 / ${dur}`;
@@ -472,8 +483,8 @@ function updateUIForStation(station) {
   if (DOM.monitorDuration) DOM.monitorDuration.textContent = station.duration1;
   if (DOM.monitorFreq) DOM.monitorFreq.textContent = `${station.freq.toFixed(1)} FM`;
 
-  DOM.statLength.textContent   = station.duration1;
-  DOM.statGenre.textContent    = station.genre;
+  DOM.statLength.textContent = station.duration1;
+  DOM.statGenre.textContent = station.genre;
   DOM.statLocation.textContent = station.location;
 
   // Center column custom chalkboard title and dynamic magazine cover mount
@@ -639,9 +650,9 @@ function startProgressLoop() {
       return;
     }
     const elapsed = audioEl.currentTime;
-    const durStr  = (activeStation && activeStation[`duration${currentPart}`]) || '00:00';
-    const dur     = audioEl.duration || parseDuration(durStr);
-    const pct     = (elapsed / dur) * 100;
+    const durStr = (activeStation && activeStation[`duration${currentPart}`]) || '00:00';
+    const dur = audioEl.duration || parseDuration(durStr);
+    const pct = (elapsed / dur) * 100;
 
     const fill = DOM.fills[currentPart];
     const time = DOM.timeDisplays[currentPart];
@@ -675,7 +686,7 @@ function startVisualizer() {
     document.querySelectorAll('#mini-wave-3 .mini-bar')
   ];
   bufferLength = analyserNode.frequencyBinCount;
-  dataArray    = new Uint8Array(bufferLength);
+  dataArray = new Uint8Array(bufferLength);
 
   startVisualizerLoop();
 }
@@ -688,7 +699,7 @@ function startVisualizerLoop() {
 
 function drawVisualizer() {
   analyserNode.getByteFrequencyData(dataArray);
-  const playing   = audioEl && !audioEl.paused;
+  const playing = audioEl && !audioEl.paused;
   const staticVol = staticGain ? staticGain.gain.value : 0;
 
   if (!playing && staticVol === 0) {
@@ -704,8 +715,8 @@ function drawVisualizer() {
       return;
     }
   } else {
-    updateBars(DOM.heroBars,    dataArray, 0,  8);
-    updateBars(DOM.monitorBars, dataArray, 4,  12);
+    updateBars(DOM.heroBars, dataArray, 0, 8);
+    updateBars(DOM.monitorBars, dataArray, 4, 12);
     const activeMini = miniBarSets[currentPart - 1];
     if (activeMini) updateBars(activeMini, dataArray, 8, 16);
   }
@@ -715,7 +726,7 @@ function drawVisualizer() {
 
 function updateBars(bars, dataArray, startBin, endBin) {
   if (!bars || !bars.length) return;
-  const count      = bars.length;
+  const count = bars.length;
   const binsPerBar = Math.max(1, Math.floor((endBin - startBin) / count));
   bars.forEach((bar, idx) => {
     let sum = 0;
@@ -742,7 +753,7 @@ function decayBars(bars) {
 
 function updateNeedlePosition(clientX) {
   const rect = DOM.tunerDisplay.getBoundingClientRect();
-  const pct  = ((clientX - rect.left) / rect.width) * 100;
+  const pct = ((clientX - rect.left) / rect.width) * 100;
   currentFreq = Math.round(percentToFreq(pct) * 10) / 10;
   renderTuningState();
 }
@@ -750,8 +761,8 @@ function updateNeedlePosition(clientX) {
 // ── Volume knob (mouse + touch) ───────────────────────────────────────────────
 
 let isAdjustingVolume = false;
-let volumeStartY      = 0;
-let volumeRotation    = 45;
+let volumeStartY = 0;
+let volumeRotation = 45;
 
 function applyKnobDelta(dy) {
   volumeRotation += dy * 2.5;
@@ -760,9 +771,9 @@ function applyKnobDelta(dy) {
   volumeFactor = (volumeRotation + 135) / 270;
 
   if (isAudioInitialized && activeStation) {
-    const diff  = Math.abs(currentFreq - activeStation.freq);
+    const diff = Math.abs(currentFreq - activeStation.freq);
     const ratio = diff / 1.5;
-    const vol   = diff < 1.5 ? Math.max(0, 1 - ratio) : 0;
+    const vol = diff < 1.5 ? Math.max(0, 1 - ratio) : 0;
     musicGain.gain.setTargetAtTime(vol * volumeFactor, audioCtx.currentTime, 0.05);
     startVisualizerLoop();
   }
@@ -827,7 +838,7 @@ function renderBookletSpread() {
 
   if (currentSpread === 1) {
     // Spread 1: Page 1 (Cover fallback/real cover) & Page 2 (Editorial history)
-    
+
     // Page 1 cover html
     let coverHtml = '';
     if (bookletStation.cardImg) {
@@ -894,7 +905,7 @@ function renderBookletSpread() {
 
   } else if (currentSpread === 2) {
     // Spread 2: Page 3 (Tracklisting) & Page 4 (Visual Archive gallery)
-    
+
     // Generate tracklist list html
     let tracksHtml = '';
     if (bookletStation.tracks1 && bookletStation.tracks1.length > 0) {
@@ -1011,7 +1022,7 @@ function renderBookletSpread() {
 
   } else if (currentSpread === 4) {
     // Spread 4: Page 7 (Outro credits) & Page 8 (Mixtape Separate player)
-    
+
     bookletContainer.innerHTML = `
       <!-- Page 7 (Left) -->
       <div class="booklet-page left-page">
@@ -1075,7 +1086,7 @@ function renderBookletSpread() {
     if (bProgressTrack) {
       bProgressTrack.addEventListener('click', seekBookletAudio);
     }
-    
+
     updateBookletAudioUI();
   }
 }
@@ -1110,10 +1121,10 @@ function startBookletProgressLoop() {
     const elapsed = bookletAudio.currentTime;
     const duration = bookletAudio.duration || parseDuration(bookletStation.duration2);
     const pct = (elapsed / duration) * 100;
-    
+
     const fill = document.getElementById('special-progress-fill');
     const timeDisplay = document.getElementById('special-current-time');
-    
+
     if (fill) fill.style.width = pct + '%';
     if (timeDisplay) timeDisplay.textContent = formatTime(elapsed);
   }, 300);
@@ -1125,7 +1136,7 @@ function seekBookletAudio(e) {
   const pct = (e.clientX - rect.left) / rect.width;
   const duration = bookletAudio.duration || parseDuration(bookletStation.duration2);
   bookletAudio.currentTime = pct * duration;
-  
+
   const fill = document.getElementById('special-progress-fill');
   if (fill) fill.style.width = (pct * 100) + '%';
 }
@@ -1147,7 +1158,7 @@ function wireEvents() {
     updateNeedlePosition(e.clientX);
   });
   window.addEventListener('mousemove', e => { if (isDragging) updateNeedlePosition(e.clientX); });
-  window.addEventListener('mouseup',   ()  => { isDragging = false; });
+  window.addEventListener('mouseup', () => { isDragging = false; });
 
   DOM.tunerDisplay.addEventListener('touchstart', e => {
     isDragging = true;
@@ -1156,7 +1167,7 @@ function wireEvents() {
     updateNeedlePosition(e.touches[0].clientX);
   }, { passive: true });
   window.addEventListener('touchmove', e => { if (isDragging) updateNeedlePosition(e.touches[0].clientX); }, { passive: true });
-  window.addEventListener('touchend',  ()  => { isDragging = false; });
+  window.addEventListener('touchend', () => { isDragging = false; });
 
   DOM.gainKnob.addEventListener('mousedown', e => {
     isAdjustingVolume = true;
@@ -1459,7 +1470,7 @@ function handleSelect(id) {
     activeGenreId = id;
     if (clearBtn) clearBtn.style.display = "block";
     const g = GENRES_METADATA.find(x => x.id === id);
-    
+
     // Auto-tune the main radio player
     const station = STATIONS.find(s => s.genre === g.genreKey);
     if (station) {

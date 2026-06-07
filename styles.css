@@ -1804,7 +1804,7 @@ footer {
   justify-content: flex-start;
   align-items: flex-end;
   gap: 4px;
-  padding: 10px 0;
+  padding: 20px 0;
   min-height: 100px;
   overflow-x: auto;
   scrollbar-width: none;
@@ -3304,4 +3304,17 @@ footer {
   font-size: 11px;
   color: rgba(255, 255, 255, 0.25);
   margin-bottom: 3px;
+}
+
+/* Tape Side miniature image on cassette spine */
+.rotated-inner .tape-side-mini-img {
+  width: 320px;
+  height: 105px;
+  object-fit: cover;
+  display: block;
+}
+
+.player-left .rotated-inner .tape-side-mini-img {
+  width: 80px;
+  height: 24px;
 }
