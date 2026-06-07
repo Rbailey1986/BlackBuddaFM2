@@ -479,7 +479,13 @@ function updateUIForStation(station) {
   // Center column custom chalkboard title and dynamic magazine cover mount
   const customTitle = document.getElementById('ep-title-custom');
   if (customTitle) {
-    customTitle.textContent = `EP ${station.epNum} - ${station.genre}: ${station.title.split(/[\u2013\u2014-]/).slice(1).join('-').trim()}`;
+    let cleanTitle = '';
+    if (station.title.includes(':')) {
+      cleanTitle = station.title.split(':').slice(1).join(':').trim();
+    } else {
+      cleanTitle = station.title.split(/[\u2013\u2014-]/).slice(1).join('-').trim();
+    }
+    customTitle.textContent = `EP ${station.epNum} - ${station.genre}: ${cleanTitle}`;
   }
 
   renderMagazineCover(station);
@@ -522,7 +528,7 @@ function renderMagazineCover(station) {
   } else {
     // Generate static Unsplash background based on genre to keep visual fidelity high
     let fallbackImgUrl = 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=400&auto=format&fit=crop';
-    if (station.genre === 'DRUM & BASS') fallbackImgUrl = 'dnb-cover.png';
+    if (station.genre === 'DRUM & BASS') fallbackImgUrl = 'images/Drum n Bass Magazine.png';
     else if (station.genre === 'BASSLINE') fallbackImgUrl = 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=400&auto=format&fit=crop';
     else if (station.genre === 'UK FUNKY') fallbackImgUrl = 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=400&auto=format&fit=crop';
     else if (station.genre === 'ROAD RAP') fallbackImgUrl = 'https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?q=80&w=400&auto=format&fit=crop';
@@ -828,7 +834,7 @@ function renderBookletSpread() {
       coverHtml = `<img src="${bookletStation.cardImg}" alt="Cover" class="magazine-img">`;
     } else {
       let fallbackImgUrl = 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=400&auto=format&fit=crop';
-      if (bookletStation.genre === 'DRUM & BASS') fallbackImgUrl = 'dnb-cover.png';
+      if (bookletStation.genre === 'DRUM & BASS') fallbackImgUrl = 'images/Drum n Bass Magazine.png';
       else if (bookletStation.genre === 'BASSLINE') fallbackImgUrl = 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=400&auto=format&fit=crop';
       else if (bookletStation.genre === 'UK FUNKY') fallbackImgUrl = 'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=80&w=400&auto=format&fit=crop';
       else if (bookletStation.genre === 'ROAD RAP') fallbackImgUrl = 'https://images.unsplash.com/photo-1498038432885-c6f3f1b912ee?q=80&w=400&auto=format&fit=crop';
@@ -1284,7 +1290,7 @@ const GENRES_METADATA = [
     id: "dubstep",
     name: "Dubstep",
     era: "2001–2011",
-    color: "#2B0A3D",
+    color: "#2b21de",
     x: 560, y: 100,
     description: "140bpm. Sub-bass that moved furniture. Croydon's answer to everything. From Plastic People to festival stages — the wobble heard worldwide.",
     artists: ["Benga", "Skream", "Burial", "Digital Mystikz", "Kode9"],
@@ -1314,7 +1320,7 @@ const GENRES_METADATA = [
     id: "roadrap",
     name: "Road Rap",
     era: "2007–2016",
-    color: "#1A1A1A",
+    color: "#2f2e2e",
     x: 920, y: 130,
     description: "Peckham and Brixton street stories slowed down the tempo. Raw baritone flows, mixtape culture, and heavy sub-bass documenting road realities.",
     artists: ["Giggs", "Blade Brown", "Potter Payper", "Casisdead", "Nines"],

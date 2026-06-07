@@ -39,8 +39,8 @@ body.theme-ep04 {
 }
 
 body.theme-ep05 {
-  --theme-primary: #7B00FF;
-  --theme-primary-rgb: 123, 0, 255;
+  --theme-primary: #2b21de;
+  --theme-primary-rgb: 43, 33, 222;
 }
 
 body.theme-ep06 {
@@ -54,8 +54,8 @@ body.theme-ep07 {
 }
 
 body.theme-ep08 {
-  --theme-primary: #5A5F6E;
-  --theme-primary-rgb: 90, 95, 110;
+  --theme-primary: #2f2e2e;
+  --theme-primary-rgb: 47, 46, 46;
 }
 
 body.theme-ep09 {
@@ -1493,8 +1493,8 @@ footer {
   width: 100%;
   height: 100%;
   background-color: var(--theme-primary);
-  -webkit-mask: url('logo.png') no-repeat center;
-  mask: url('logo.png') no-repeat center;
+  -webkit-mask: url('images/logo.png') no-repeat center;
+  mask: url('images/logo.png') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   display: block;

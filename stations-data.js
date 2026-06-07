@@ -22,7 +22,7 @@ const STATIONS = [
       surfaceLow: "#1c1b18"
     },
     vinylImg: "https://images.unsplash.com/photo-1539625319135-882b8340c1d6?q=80&w=400&auto=format&fit=crop",
-    cardImg: "https://lh3.googleusercontent.com/aida-public/AB6AXuC6lGGSPZGaVWzarUhkinA7DMgTL7LVqQ2p6hVxpwaDEKKpIhabhUMekM3nThhPZ-6Eny95LqzBEDrH4cPWDsIELcrQMZALzWSI1vmEMzowNwWydnIJizqrMNZ2kI9kDomuDPFdc9iq4LjrX_nD9bXiwhzXOZ5r9yq-XeAgV2zTnSfCXqO9pkAKAFPU-tYW3n2lCC7TRzDFykbj5Xd8mKegd5CJfoeynCYgMEyesdbRWAxXhm3ABvfOoPZdZ06IQZBEVCwL3cs",
+    cardImg: "images/Jungle Magazine.png",
     cardDate: "11.10.25",
     cardEp: "EP 01 / SYSTEM",
     tracks1: [
@@ -64,7 +64,7 @@ const STATIONS = [
       surfaceLow: "#1d1919"
     },
     vinylImg: "https://images.unsplash.com/photo-1542208998-f6dbbb27a72f?q=80&w=400&auto=format&fit=crop",
-    cardImg: null,
+    cardImg: "images/Drum n Bass Magazine.png",
     cardDate: "28.11.25",
     cardEp: "EP 02 / MOTION",
     tracks1: [
@@ -112,7 +112,7 @@ const STATIONS = [
       surfaceLow: "#1c1b1b"
     },
     vinylImg: "https://lh3.googleusercontent.com/aida-public/AB6AXuB_wEXSaYe5BZlrbBz85FsiQPhXYuNmtsceeT8911HmmvBcYb70OvO05QR6z0iBcVhFC6BkaeY2rkmdWMmtTiP4_60J5CEXvMFVrO7gTG5ElV40pvpCdtt_gDmDP4XJVZHxNlLfB2ybldd71gezzBsalGNrMCebFuNSHxa3bAb7zzqBKPJHhtFLQPRys7jCtHasO0X8SDn0yStshoHpgrUatItDnucGtsFMBk44IN_eo9QVEXRlITTyCRXFvREzsoIfs7OgEhHu5qQ",
-    cardImg: "https://lh3.googleusercontent.com/aida-public/AB6AXuDIKRABW_9JptrXoEh_5mSkw0MBe0LQnwxz_BFfI6w5nfU1yr19vI5squNltxEUFb08aWvXIeLD84k1vqOslmab4n41jrHDsBi0qM5GEuag_YWBZASUSFqoVnOC99Pt-U5NcaAMqmrjgvIAS7997liYOQgk4sr0gLwCbXxzZNapxLBwqKYKwn2M9XS75w7oBbYyWlRXjumGZKPqeh32HexhB9U2kHLHu1RbDYhu84tPTp9XTxTywobXWnoVXl_j47h33t3YZvbrbtQ",
+    cardImg: "images/Garage Magazine.png",
     cardDate: "04.12.25",
     cardEp: "EP 03 / SOUTH",
     tracks1: [
@@ -158,7 +158,7 @@ const STATIONS = [
       surfaceLow: "#1c1c1a"
     },
     vinylImg: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=400&auto=format&fit=crop",
-    cardImg: "https://lh3.googleusercontent.com/aida-public/AB6AXuCirJv0ziKZIxHGN9mP0i-0yTNHzmOsRTyEPw8UGYX0SGrtMKUspKBzoEbvO_a7wvKUPVlBolOOjIqpquq8fF4ypo1wurA2cVJ-Ql_FdaG8nKsQceePseWEtHJ0Mydj9pPHaCkH71OX0wCg2Kd2fICz-0lzoe4aQXqW5j87Z_U2tBhpXxZMnn_HP_UAOPoWMBVTcMgMgSUQKOYS5rbaXElP4TvgQ_N_dkCrd8QrJKFCmglyW_zPiALdY5x0ZIGyku_5FeIc6DgwZ28",
+    cardImg: "images/Grime magazine.png",
     cardDate: "28.11.25",
     cardEp: "EP 04 / SKYLINE",
     tracks1: [
@@ -203,13 +203,13 @@ const STATIONS = [
     trackUrl1: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3",
     trackUrl2: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3",
     colors: {
-      neonPink: "#7B00FF",
+      neonPink: "#2b21de",
       neonGreen: "#a1fb00",
       surfaceLowest: "#0a0d0e",
       surfaceLow: "#181a1c"
     },
     vinylImg: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=400&auto=format&fit=crop",
-    cardImg: "https://lh3.googleusercontent.com/aida-public/AB6AXuBOwDLoxm9p14JPUUMXX_Y8MlLrIHZ-sMjZj7rdpUpzNmuL4KnSfcFAajbEAdRgJkXQLIzdsEe3H-3eyKZBOy1dURGGK2eKsGzbDt6LyJ0wUP-sgRnwksSQ0stmJ3BT7XuPNjOlzDHRJOChmLA0YkAFdMtp4HIFyYRv2Dq4nXOQVDurXvOppxvN_BaBVrlHSFKoTyVm9xLOsr3E6ekoVpLowGVzotKLAizkQ1KMIddUUsFBGy4DEdqFxYitWXKVIiX46xEEv10gz_c",
+    cardImg: "images/Dubstep Magazine .png",
     cardDate: "15.12.25",
     cardEp: "EP 05 / SUB LOW",
     tracks1: [
@@ -250,7 +250,7 @@ const STATIONS = [
       surfaceLow: "#1c181b"
     },
     vinylImg: "https://images.unsplash.com/photo-1603048588665-791ca8aea617?q=80&w=400&auto=format&fit=crop",
-    cardImg: null,
+    cardImg: "images/Baseline magazine.png",
     cardDate: "08.01.26",
     cardEp: "EP 06 / NORTH",
     tracks1: [
@@ -290,7 +290,7 @@ const STATIONS = [
       surfaceLow: "#181c18"
     },
     vinylImg: "https://images.unsplash.com/photo-1487180142328-054b783fc471?q=80&w=400&auto=format&fit=crop",
-    cardImg: null,
+    cardImg: "images/Funky house magazine.png",
     cardDate: "19.01.26",
     cardEp: "EP 07 / TRIBAL",
     tracks1: [
@@ -326,13 +326,13 @@ const STATIONS = [
     trackUrl1: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3",
     trackUrl2: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3",
     colors: {
-      neonPink: "#5A5F6E",
+      neonPink: "#2f2e2e",
       neonGreen: "#a1fb00",
       surfaceLowest: "#0d0a0a",
       surfaceLow: "#1a1515"
     },
     vinylImg: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=400&auto=format&fit=crop",
-    cardImg: null,
+    cardImg: "images/Road Rap magazine.png",
     cardDate: "02.02.26",
     cardEp: "EP 08 / ROAD",
     tracks1: [
@@ -373,7 +373,7 @@ const STATIONS = [
       surfaceLow: "#15101c"
     },
     vinylImg: "https://images.unsplash.com/photo-1571330735066-03add572b786?q=80&w=400&auto=format&fit=crop",
-    cardImg: null,
+    cardImg: "images/Drill Magazine.png",
     cardDate: "16.02.26",
     cardEp: "EP 09 / BRIXTON",
     tracks1: [
@@ -415,7 +415,7 @@ const STATIONS = [
       surfaceLow: "#1c1216"
     },
     vinylImg: "https://images.unsplash.com/photo-1518609878373-06d740f60d8b?q=80&w=400&auto=format&fit=crop",
-    cardImg: null,
+    cardImg: "images/Afro swing Magazine.png",
     cardDate: "02.03.26",
     cardEp: "EP 10 / ROYAL",
     tracks1: [
