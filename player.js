@@ -1169,6 +1169,26 @@ function wireEvents() {
     if (typeof drawTubeLines === 'function') drawTubeLines();
   });
 
+  const navHamburger = document.getElementById('nav-hamburger');
+  const mobileDrawer = document.getElementById('mobile-drawer');
+  const drawerAboutLink = document.getElementById('drawer-about-link');
+
+  if (navHamburger && mobileDrawer) {
+    navHamburger.addEventListener('click', () => {
+      const isExpanded = navHamburger.getAttribute('aria-expanded') === 'true';
+      navHamburger.setAttribute('aria-expanded', !isExpanded);
+      mobileDrawer.setAttribute('aria-hidden', isExpanded);
+    });
+
+    // Auto collapse menu drawer panel frame layer when link trigger maps anchor target location
+    document.querySelectorAll('.mobile-drawer-link').forEach(link => {
+      link.addEventListener('click', () => {
+        navHamburger.setAttribute('aria-expanded', 'false');
+        mobileDrawer.setAttribute('aria-hidden', 'true');
+      });
+    });
+  }
+
   // Cleanup on page unload to prevent AudioContext / static node leaks
   window.addEventListener('beforeunload', teardownAudio);
 }
@@ -1194,7 +1214,7 @@ const GENRES_METADATA = [
     artists: ['Goldie', 'LTJ Bukem', 'Roni Size', 'J Majik', 'Dillinja'],
   },
   {
-    id: 'ukgarage', name: 'UK Garage & 2-Step', era: '1996–2002', color: '#D4AF37',
+    id: 'ukgarage', name: 'UK Garage', era: '1996–2002', color: '#D4AF37',
     x: 320, y: 130, genreKey: 'UK GARAGE',
     location: 'Champagne Square',
     description: "At Black Buddha HQ Soho, UK Garage captures the glamorous and stylish side of late-1990s London nightlife. " +
@@ -1221,7 +1241,7 @@ const GENRES_METADATA = [
     artists: ['Benga', 'Skream', 'Burial', 'Digital Mystikz', 'Kode9'],
   },
   {
-    id: 'bassline', name: 'Bassline & Niche', era: '2003–2008', color: '#FF2DAA',
+    id: 'bassline', name: 'Bassline', era: '2003–2008', color: '#FF2DAA',
     x: 680, y: 70, genreKey: 'BASSLINE',
     location: 'Sheffield Exchange',
     description: "Black Buddha HQ Sheffield celebrates Bassline's rise in northern England. " +
@@ -1428,7 +1448,7 @@ function renderInfoPanel() {
       <p class="info-description">${genre.description}</p>
       <div class="info-metadata-row">
         <div>
-          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#a0aec0;display:block;margin-bottom:8px;text-transform:uppercase;">KEY OPERATING TRANSMITTERS</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#a0aec0;display:block;margin-bottom:8px;text-transform:uppercase;">GENRE ARCHITECTS</span>
           <div style="display:flex;flex-wrap:wrap;gap:8px;">${tagsHtml}</div>
         </div>
       </div>

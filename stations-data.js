@@ -16,8 +16,8 @@ const STATIONS = [
     trackUrl1: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
     trackUrl2: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
     colors: {
-      neonPink: "#ff00ff",
-      neonGreen: "#a1fb00",
+      neonGreen: "#39FF14",
+      neonPink: "#FF2DAA",
       surfaceLowest: "#0e0d0a",
       surfaceLow: "#1c1b18"
     },

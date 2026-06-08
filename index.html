@@ -16,38 +16,42 @@
 <body>
   <div class="crt"></div>
 
-  <!-- Ticker — populated dynamically from STATIONS in player.js -->
   <div class="ticker-wrap">
     <div class="ticker" id="ticker"></div>
   </div>
 
-  <!-- Header -->
   <header>
     <div class="header-inner">
       <div class="logo-block">
         <span class="logo-name">BLACK BUDDHA FM</span>
         <span class="logo-sub">PIRATE BROADCASTING 24/7</span>
       </div>
-      <nav id="main-nav">
+      <nav id="main-nav" class="desktop-nav">
         <a href="episodes.html">Mixes</a>
-        <a href="#player">About</a>
+        <a href="about.html">About</a>
       </nav>
       <div class="header-right">
         <div class="signal-badge">
           <span class="flicker"></span>
           <span id="signal-badge-text">SIGNAL: 93.5 FM</span>
         </div>
+        <button class="nav-hamburger" id="nav-hamburger" aria-label="Toggle navigation" aria-expanded="false" aria-controls="mobile-drawer">
+          <span></span><span></span><span></span>
+        </button>
       </div>
     </div>
+    <nav class="mobile-drawer" id="mobile-drawer" aria-hidden="true">
+      <a href="episodes.html" class="mobile-drawer-link">Mixes</a>
+      <a href="about.html" class="mobile-drawer-link" id="drawer-about-link">About</a>
+    </nav>
   </header>
 
   <main>
-    <!-- Hero -->
     <section class="hero">
       <div class="hero-bg"></div>
-      <div class="section-inner" style="padding-top:8px;padding-bottom:48px;">
+      <div class="section-inner">
         <div class="hero-grid">
-          <div>
+          <div class="hero-content">
             <div class="on-air-box"><span>ON AIR</span></div>
             <h1 class="hero-title">BLACK<br>BUDDHA FM</h1>
             <div class="waveform" id="hero-wave">
@@ -70,13 +74,12 @@
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M8 5v14l11-7z" />
                 </svg>
-                LISTEN TO LATEST BROADCAST
+                <span>LISTEN TO LATEST BROADCAST</span>
               </button>
               <a class="btn-outline" href="#player">BUDDHA HQ</a>
             </div>
           </div>
 
-          <!-- Tactical monitor -->
           <div class="tactical-monitor">
             <div class="monitor-logo-wrap">
               <img src="images/logo.png" alt="Black Buddha FM Logo" class="monitor-logo">
@@ -84,100 +87,86 @@
             <div class="monitor-bio">
               <p class="about-quote">"This is not a history lesson. This is a vibration."</p>
             </div>
-            <!--
-              NOTE: monitor-title, monitor-duration, monitor-freq, monitor-bars are
-              queried by player.js but guarded with null checks — no shim divs needed.
-            -->
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Redesigned Player -->
     <section id="player">
-      <div class="section-inner" style="max-width:1400px;">
+      <div class="section-inner">
         <div class="player-outer">
           <div class="player-inner">
             <div class="player-grid">
 
-              <!-- Left: Stats & Cassette Shelf -->
-              <div class="player-left">
+              <div class="player-column player-left">
                 <div class="on-air-large"><span>ON AIR</span></div>
-                <div class="stat-row">
-                  <span class="stat-key">LENGTH</span>
-                  <span class="stat-big" id="stat-length">52:14</span>
-                </div>
-                <div class="stat-row">
-                  <span class="stat-key">GENRE</span>
-                  <span class="stat-big stat-green" id="stat-genre">JUNGLE</span>
-                </div>
-                <div class="stat-row">
-                  <span class="stat-key">BITRATE</span>
-                  <span class="stat-big">320 KBPS</span>
-                </div>
-                <div class="stat-row">
-                  <span class="stat-key">LOCATION</span>
-                  <span class="stat-location" id="stat-location">BLACK BUDDHA HQ CHARING CROSS, LONDON</span>
+                <div class="stats-panel-layout">
+                  <div class="stat-row">
+                    <span class="stat-key">LENGTH</span>
+                    <span class="stat-big" id="stat-length">52:14</span>
+                  </div>
+                  <div class="stat-row">
+                    <span class="stat-key">GENRE</span>
+                    <span class="stat-big stat-green" id="stat-genre">JUNGLE</span>
+                  </div>
+                  <div class="stat-row">
+                    <span class="stat-key">BITRATE</span>
+                    <span class="stat-big">320 KBPS</span>
+                  </div>
+                  <div class="stat-row full-width-stat">
+                    <span class="stat-key">LOCATION</span>
+                    <span class="stat-location" id="stat-location">BLACK BUDDHA HQ CHARING CROSS, LONDON</span>
+                  </div>
                 </div>
 
-                <!-- Cassette Spine Shelf -->
                 <div class="tape-shelf-container">
                   <div class="tape-shelf-row" id="cards-grid">
-                    <!-- Dynamic cassette spines populated by player.js -->
-                  </div>
+                    </div>
                 </div>
               </div>
 
-              <!-- Center: Now Transmitting & Clickable Magazine Cover -->
-              <div class="player-center">
+              <div class="player-column player-center">
                 <div class="now-tx-label">
-                  <span class="flicker"
-                    style="width:8px;height:8px;background:#ff00ff;box-shadow:0 0 8px #ff00ff;"></span>
+                  <span class="flicker" style="width:8px;height:8px;background:#ff00ff;box-shadow:0 0 8px #ff00ff;"></span>
                   • NOW TRANSMITTING
                 </div>
                 <h2 class="ep-title-custom" id="ep-title-custom">EP 01 - JUNGLE: ORIGINAL</h2>
 
                 <div id="magazine-cover-mount" class="magazine-cover-mount" style="cursor: pointer;">
-                  <!-- Injected by player.js -->
-                </div>
+                  </div>
               </div>
 
-              <!-- Right: Case Sleeve Graphic & Controls -->
-              <div class="player-right">
+              <div class="player-column player-right">
                 <div class="vinyl-frame" id="vinyl-frame">
                   <div class="vinyl-disc-graphic" id="vinyl-disc-graphic">
                     <div class="vinyl-label-center" id="vinyl-label-center"></div>
                   </div>
                   <div class="ep-badge" id="ep-badge">EP JUNGLE LIVE</div>
                 </div>
-                <!-- Controls panels 1–3 injected here by player.js -->
                 <div id="controls-container"></div>
               </div>
 
             </div>
 
-            <!-- Tuner section -->
             <div class="tuner-section">
-              <!-- Basquiat Crown SVG decoration -->
               <svg class="crown-icon" viewBox="0 0 100 80">
-                <path d="M10 70 L25 20 L50 45 L75 20 L90 70 Z M10 70 L90 70" fill="none" stroke-linecap="round"
-                  stroke-linejoin="round" />
+                <path d="M10 70 L25 20 L50 45 L75 20 L90 70 Z M10 70 L90 70" fill="none" stroke-linecap="round" stroke-linejoin="round" />
               </svg>
 
-              <!-- Wildstyle Arrow SVG decoration -->
               <svg class="graffiti-arrow" viewBox="0 0 100 100">
-                <path d="M10 50 L70 50 L50 30 M70 50 L50 70 M80 50 L90 50" stroke="#00ffcc" stroke-linecap="round"
-                  fill="none" />
+                <path d="M10 50 L70 50 L50 30 M70 50 L50 70 M80 50 L90 50" stroke="#00ffcc" stroke-linecap="round" fill="none" />
               </svg>
 
               <div class="tuner-header">
                 <span class="tuner-label">PIRATE FREQUENCIES</span>
                 <span class="tuner-strength" id="tuner-strength">STRENGTH: 97%</span>
               </div>
-              <div class="tuner-display" id="tuner-display">
-                <div class="tuner-ticks" id="tuner-ticks"></div>
-                <div class="tuner-stations-container" id="tuner-stations-container"></div>
-                <div class="tuner-needle" id="tuner-needle"></div>
+              <div class="tuner-display-wrapper">
+                <div class="tuner-display" id="tuner-display">
+                  <div class="tuner-ticks" id="tuner-ticks"></div>
+                  <div class="tuner-stations-container" id="tuner-stations-container"></div>
+                  <div class="tuner-needle" id="tuner-needle"></div>
+                </div>
               </div>
               <div class="tuner-controls">
                 <div class="tuner-ctrl-group">
@@ -196,7 +185,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="ctrl-item">
+                <div class="ctrl-item analog-dial-wrapper">
                   <span class="ctrl-key">BASS</span>
                   <div class="gain-knob" id="gain-knob">
                     <div class="knob-line" id="knob-line"></div>
@@ -210,11 +199,10 @@
       </div>
     </section>
 
-    <!-- Tube Map Timeline Section -->
-    <section class="archive-container" style="max-width: 1400px; margin: 40px auto; padding: 0 20px;">
+    <section class="archive-container">
       <div class="timeline-section-card">
         <div class="timeline-header">
-          <div style="display: flex; align-items: center;">
+          <div class="timeline-header-main">
             <div class="header-bar-indicator"></div>
             <div class="timeline-header-text">
               <div class="timeline-micro-label">THE UK NATIONAL BASS SYSTEM · SOUND MAP</div>
@@ -227,48 +215,42 @@
           </div>
         </div>
 
-        <div class="nodes-track" id="nodes-track-wrap">
-          <div class="tube-grid-bg"></div>
+        <div class="nodes-track-scroll-frame">
+          <div class="nodes-track" id="nodes-track-wrap">
+            <div class="tube-grid-bg"></div>
 
-          <svg class="tube-lines-svg" id="tube-lines-svg-el">
-            <!-- SVG paths injected dynamically -->
-          </svg>
+            <svg class="tube-lines-svg" id="tube-lines-svg-el">
+              </svg>
 
-          <div class="tube-zone-marker" style="left: 40px;">ZZone 1: The Foundations</div>
-          <div class="tube-zone-marker" style="left: 450px;">Zone 2: The Bass Corridor</div>
-          <div class="tube-zone-marker" style="left: 950px;">Zone 3: The New Wave</div>
+            <div class="tube-zone-marker" style="left: 40px;">Zone 1: The Foundations</div>
+            <div class="tube-zone-marker" style="left: 450px;">Zone 2: The Bass Corridor</div>
+            <div class="tube-zone-marker" style="left: 950px;">Zone 3: The New Wave</div>
 
-          <div class="tube-stations-container" id="tube-stations-mount">
-            <!-- Node buttons injected dynamically -->
+            <div class="tube-stations-container" id="tube-stations-mount">
+              </div>
           </div>
         </div>
 
         <div id="info-panel-mount"></div>
 
-        <div
-          style="margin-top: 20px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.04); display: flex; align-items: center; justify-content: space-between;">
-          <span
-            style="font-family: 'Hanken Grotesk', sans-serif; font-size: 11px; letter-spacing: 0.12em; color: rgba(255,255,255,0.3); text-transform: uppercase; font-weight: 700;">
-            30 YEARS OF UK MUSIC EVOLUTION
-          </span>
-          <button id="clear-signal-footer" class="info-close-btn"
-            style="display: none; border-color: var(--genre-color, #ff00ff); color: var(--genre-color, #ff00ff);">CLEAR
-            CONNECTION</button>
+        <div class="timeline-footer-actions">
+          <span class="timeline-footer-note">30 YEARS OF UK MUSIC EVOLUTION</span>
+          <button id="clear-signal-footer" class="info-close-btn" style="display: none;">CLEAR CONNECTION</button>
         </div>
       </div>
     </section>
   </main>
 
   <footer>
-    <span class="footer-text">Black Buddha FM // Live Transmissions 1986&ndash;2025</span>
+    <span class="footer-text">Black Buddha FM // Live Transmissions 1986&ndash;2026</span>
   </footer>
 
-  <!-- Interactive Magazine Modal overlay -->
-  <div id="magazine-modal" class="magazine-modal-overlay">
+  <div id="magazine-modal" class="magazine-modal-overlay" role="dialog" aria-modal="true">
     <div class="magazine-modal-content">
       <button class="magazine-close-btn" id="magazine-close-btn">✕ CLOSE BOOKLET</button>
-      <div class="booklet-container" id="booklet-container">
-        <!-- Inside pages rendered dynamically -->
+      <div class="booklet-scroll-container">
+        <div class="booklet-container" id="booklet-container">
+          </div>
       </div>
       <div class="booklet-nav-bar">
         <button class="booklet-nav-btn" id="booklet-prev-btn" disabled>← PREV PAGE</button>

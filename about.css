@@ -1,0 +1,374 @@
+/* Stylesheet for Black Buddha FM "About" Page */
+
+/* ─── Hero Section ─── */
+.about-hero {
+  position: relative;
+  min-height: 50vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  border-bottom: 4px solid rgba(var(--theme-primary-rgb), 0.2);
+  padding: 80px 0 60px 0;
+}
+
+/* ─── Manifesto Grid ─── */
+.manifesto-section {
+  padding: 60px 0;
+  position: relative;
+}
+
+.manifesto-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+  margin-top: 40px;
+}
+
+@media (min-width: 900px) {
+  .manifesto-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.manifesto-card {
+  background: rgba(18, 21, 28, 0.92);
+  backdrop-filter: blur(12px);
+  padding: 32px;
+  border: 2px solid rgba(var(--theme-primary-rgb), 0.3);
+  border-left: 12px solid var(--neon-pink);
+  box-shadow: 0 0 20px rgba(var(--theme-primary-rgb), 0.15);
+  position: relative;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+}
+
+.manifesto-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 0 25px rgba(var(--theme-primary-rgb), 0.35);
+  border-color: rgba(var(--theme-primary-rgb), 0.6);
+}
+
+.manifesto-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('https://www.transparenttextures.com/patterns/stardust.png');
+  opacity: 0.05;
+  pointer-events: none;
+}
+
+.manifesto-card.alt-border {
+  border-left-color: var(--neon-green);
+}
+
+.manifesto-card-title {
+  font-family: 'Permanent Marker', cursive;
+  font-size: 1.6rem;
+  color: #fff;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+}
+
+.manifesto-card-desc {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  color: rgba(240, 240, 245, 0.85);
+  line-height: 1.7;
+}
+
+/* ─── Transmission Timeline ─── */
+.timeline-section {
+  padding: 60px 0;
+  border-top: 2px dashed rgba(var(--theme-primary-rgb), 0.2);
+  border-bottom: 2px dashed rgba(var(--theme-primary-rgb), 0.2);
+  background: rgba(5, 7, 10, 0.5);
+  position: relative;
+}
+
+.timeline-vertical {
+  max-width: 800px;
+  margin: 40px auto 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.timeline-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 600px;
+  background: rgba(13, 14, 18, 0.9);
+  border: 2px solid #2a313d;
+  border-radius: 8px;
+  padding: 20px 24px;
+  text-align: center;
+  position: relative;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.timeline-step:hover {
+  border-color: var(--neon-pink);
+  transform: scale(1.02);
+  box-shadow: 0 0 20px rgba(var(--theme-primary-rgb), 0.25);
+}
+
+.timeline-step.special-root {
+  border-color: var(--neon-green);
+}
+
+.timeline-step.special-root:hover {
+  box-shadow: 0 0 20px rgba(161, 251, 0, 0.25);
+}
+
+.timeline-step-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.timeline-step-title {
+  font-family: 'Permanent Marker', cursive;
+  font-size: 1.3rem;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.timeline-step.special-root .timeline-step-title {
+  color: var(--neon-green);
+  text-shadow: 0 0 8px rgba(161, 251, 0, 0.3);
+}
+
+.timeline-step-era {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--neon-pink);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.timeline-step.special-root .timeline-step-era {
+  color: #ffd700;
+}
+
+.timeline-step-desc {
+  font-family: 'Hanken Grotesk', sans-serif;
+  font-size: 0.85rem;
+  color: rgba(240, 240, 245, 0.75);
+  line-height: 1.5;
+}
+
+.timeline-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  position: relative;
+}
+
+.timeline-arrow svg {
+  width: 24px;
+  height: 24px;
+  fill: none;
+  stroke: var(--neon-pink);
+  stroke-width: 3;
+  animation: pulse-arrow 1.5s infinite alternate;
+}
+
+.timeline-arrow.alt svg {
+  stroke: var(--neon-green);
+}
+
+@keyframes pulse-arrow {
+  0% {
+    transform: translateY(0);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(8px);
+    opacity: 1;
+    filter: drop-shadow(0 0 5px var(--neon-pink));
+  }
+}
+
+/* ─── Interactive Terminal ─── */
+.terminal-section {
+  padding: 60px 0;
+}
+
+.terminal-panel {
+  width: 100%;
+  max-width: 800px;
+  margin: 40px auto 0 auto;
+  background: #05070a;
+  border: 3px solid #1a202c;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
+}
+
+.terminal-header {
+  background: #141722;
+  border-bottom: 2px solid #1a202c;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.terminal-dots {
+  display: flex;
+  gap: 8px;
+}
+
+.terminal-dots .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.terminal-dots .dot.red { background: #ff5f56; }
+.terminal-dots .dot.yellow { background: #ffbd2e; }
+.terminal-dots .dot.green { background: #27c93f; }
+
+.terminal-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: #718096;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.terminal-body {
+  padding: 24px;
+  height: 240px;
+  overflow-y: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: #cbd5e0;
+  background: #000;
+}
+
+.terminal-line {
+  margin-bottom: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.terminal-cursor {
+  display: inline-block;
+  width: 8px;
+  height: 14px;
+  background: var(--neon-green);
+  animation: blink 0.8s infinite;
+  vertical-align: middle;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+.text-green { color: var(--neon-green); text-shadow: 0 0 5px rgba(161, 251, 0, 0.4); }
+.text-pink { color: var(--neon-pink); text-shadow: 0 0 5px rgba(255, 0, 255, 0.4); }
+.text-gold { color: #ffd700; }
+
+.terminal-controls {
+  background: #05070a;
+  border-top: 1px solid #1a202c;
+  padding: 16px 24px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-terminal {
+  background: transparent;
+  border: 2px solid var(--neon-green);
+  color: var(--neon-green);
+  font-family: 'Permanent Marker', cursive;
+  font-size: 0.9rem;
+  padding: 10px 24px;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(161, 251, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.btn-terminal:hover {
+  background: var(--neon-green);
+  color: #000;
+  box-shadow: 0 0 18px rgba(161, 251, 0, 0.6);
+}
+
+/* ─── Technical Spec Panel ─── */
+.tech-spec-section {
+  padding: 60px 0 100px 0;
+}
+
+.tech-spec-panel {
+  background: #050505;
+  border: 3px solid var(--neon-pink);
+  border-radius: 12px;
+  box-shadow: 0 0 25px rgba(var(--theme-primary-rgb), 0.2);
+  padding: 32px;
+  max-width: 800px;
+  margin: 40px auto 0 auto;
+}
+
+.tech-spec-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.8rem;
+  color: #00ffcc;
+  letter-spacing: 2px;
+  margin-bottom: 24px;
+  border-bottom: 2px dashed rgba(var(--theme-primary-rgb), 0.2);
+  padding-bottom: 8px;
+  text-shadow: 0 0 8px rgba(0, 255, 204, 0.4);
+}
+
+.tech-spec-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+@media (min-width: 600px) {
+  .tech-spec-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.tech-spec-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+  padding-bottom: 12px;
+}
+
+.tech-spec-key {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.tech-spec-val {
+  font-family: 'Permanent Marker', cursive;
+  font-size: 1.25rem;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.tech-spec-val.active-cyan {
+  color: #00ffcc;
+  text-shadow: 0 0 8px rgba(0, 255, 204, 0.6);
+}
