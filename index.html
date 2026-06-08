@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BLACK BUDDHA FM | TACTICAL BROADCAST DECK</title>
+  <title>BLACK BUDDHA FM | Black British Music</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
@@ -16,7 +16,7 @@
 <body>
   <div class="crt"></div>
 
-  <!-- Ticker — populated dynamically from STATIONS in app.js -->
+  <!-- Ticker — populated dynamically from STATIONS in player.js -->
   <div class="ticker-wrap">
     <div class="ticker" id="ticker"></div>
   </div>
@@ -29,8 +29,8 @@
         <span class="logo-sub">PIRATE BROADCASTING 24/7</span>
       </div>
       <nav id="main-nav">
-        <a href="episodes.html">EPISODES</a>
-        <a href="#player">MIXES</a>
+        <a href="episodes.html">Mixes</a>
+        <a href="#player">About</a>
       </nav>
       <div class="header-right">
         <div class="signal-badge">
@@ -84,22 +84,10 @@
             <div class="monitor-bio">
               <p class="about-quote">"This is not a history lesson. This is a vibration."</p>
             </div>
-            <!-- Hidden DOM elements to satisfy app.js references -->
-            <div style="display: none;">
-              <span id="monitor-title"></span>
-              <span id="monitor-duration"></span>
-              <span id="monitor-freq"></span>
-              <div id="monitor-bars">
-                <div class="green-bar"></div>
-                <div class="green-bar"></div>
-                <div class="green-bar"></div>
-                <div class="green-bar"></div>
-                <div class="green-bar"></div>
-                <div class="green-bar"></div>
-                <div class="green-bar"></div>
-                <div class="green-bar"></div>
-              </div>
-            </div>
+            <!--
+              NOTE: monitor-title, monitor-duration, monitor-freq, monitor-bars are
+              queried by player.js but guarded with null checks — no shim divs needed.
+            -->
           </div>
         </div>
       </div>
@@ -129,13 +117,13 @@
                 </div>
                 <div class="stat-row">
                   <span class="stat-key">LOCATION</span>
-                  <span class="stat-location" id="stat-location">JUNGLE CLANDESTINE HQ</span>
+                  <span class="stat-location" id="stat-location">BLACK BUDDHA HQ CHARING CROSS, LONDON</span>
                 </div>
 
-                <!-- Cassette Spine Shelf (integrated directly in column) -->
+                <!-- Cassette Spine Shelf -->
                 <div class="tape-shelf-container">
                   <div class="tape-shelf-row" id="cards-grid">
-                    <!-- Dynamic cassette spines populated by player-test.js -->
+                    <!-- Dynamic cassette spines populated by player.js -->
                   </div>
                 </div>
               </div>
@@ -150,7 +138,7 @@
                 <h2 class="ep-title-custom" id="ep-title-custom">EP 01 - JUNGLE: ORIGINAL</h2>
 
                 <div id="magazine-cover-mount" class="magazine-cover-mount" style="cursor: pointer;">
-                  <!-- Injected by player-test.js -->
+                  <!-- Injected by player.js -->
                 </div>
               </div>
 
@@ -162,7 +150,7 @@
                   </div>
                   <div class="ep-badge" id="ep-badge">EP JUNGLE LIVE</div>
                 </div>
-                <!-- Controls panels 1–3 injected here by player-test.js -->
+                <!-- Controls panels 1–3 injected here by player.js -->
                 <div id="controls-container"></div>
               </div>
 
@@ -183,7 +171,7 @@
               </svg>
 
               <div class="tuner-header">
-                <span class="tuner-label">TUNING THE UNDERGROUND</span>
+                <span class="tuner-label">PIRATE FREQUENCIES</span>
                 <span class="tuner-strength" id="tuner-strength">STRENGTH: 97%</span>
               </div>
               <div class="tuner-display" id="tuner-display">
@@ -209,7 +197,7 @@
                   </div>
                 </div>
                 <div class="ctrl-item">
-                  <span class="ctrl-key">GAIN</span>
+                  <span class="ctrl-key">BASS</span>
                   <div class="gain-knob" id="gain-knob">
                     <div class="knob-line" id="knob-line"></div>
                   </div>
@@ -222,58 +210,57 @@
       </div>
     </section>
 
-    <!-- Tube Map Timeline Section at the bottom of the page -->
+    <!-- Tube Map Timeline Section -->
     <section class="archive-container" style="max-width: 1400px; margin: 40px auto; padding: 0 20px;">
-      <!-- Timeline evolution Tube Map Card -->
       <div class="timeline-section-card">
         <div class="timeline-header">
           <div style="display: flex; align-items: center;">
             <div class="header-bar-indicator"></div>
             <div class="timeline-header-text">
-              <div class="timeline-micro-label">UK UNDERGROUND BASS SYSTEM · ROUTE MAP</div>
+              <div class="timeline-micro-label">THE UK NATIONAL BASS SYSTEM · SOUND MAP</div>
               <h2 class="timeline-title">Bass Transit Network</h2>
             </div>
           </div>
           <div class="timeline-status" id="timeline-radar-status">
             <div class="status-pulse-dot" id="radar-pulse"></div>
-            <span id="radar-status-text">1992 → PRESENT</span>
+            <span id="radar-status-text">1991 → PRESENT</span>
           </div>
         </div>
 
-        <!-- London Underground Tube Map Nodes Track -->
         <div class="nodes-track" id="nodes-track-wrap">
           <div class="tube-grid-bg"></div>
 
           <svg class="tube-lines-svg" id="tube-lines-svg-el">
-            <!-- SVG Paths for tube lines connecting stations will be injected here dynamically -->
+            <!-- SVG paths injected dynamically -->
           </svg>
 
-          <!-- Zone Indicators behind nodes -->
-          <div class="tube-zone-marker" style="left: 40px;">Zone 1: Hardcore Roots</div>
-          <div class="tube-zone-marker" style="left: 450px;">Zone 2: 2000s Sub-Evolution</div>
-          <div class="tube-zone-marker" style="left: 950px;">Zone 3: Modern Street Era</div>
+          <div class="tube-zone-marker" style="left: 40px;">ZZone 1: The Foundations</div>
+          <div class="tube-zone-marker" style="left: 450px;">Zone 2: The Bass Corridor</div>
+          <div class="tube-zone-marker" style="left: 950px;">Zone 3: The New Wave</div>
 
           <div class="tube-stations-container" id="tube-stations-mount">
-            <!-- Node buttons injected here dynamically -->
+            <!-- Node buttons injected dynamically -->
           </div>
         </div>
 
-        <!-- Injected Info Panel for selected genre evolution -->
         <div id="info-panel-mount"></div>
 
-        <!-- Section footer control bar -->
-        <div style="margin-top: 20px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.04); display: flex; align-items: center; justify-content: space-between;">
-          <span style="font-family: 'Hanken Grotesk', sans-serif; font-size: 11px; letter-spacing: 0.12em; color: rgba(255,255,255,0.3); text-transform: uppercase; font-weight: 700;">
+        <div
+          style="margin-top: 20px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.04); display: flex; align-items: center; justify-content: space-between;">
+          <span
+            style="font-family: 'Hanken Grotesk', sans-serif; font-size: 11px; letter-spacing: 0.12em; color: rgba(255,255,255,0.3); text-transform: uppercase; font-weight: 700;">
             30 YEARS OF UK MUSIC EVOLUTION
           </span>
-          <button id="clear-signal-footer" class="info-close-btn" style="display: none; border-color: var(--genre-color); color: var(--genre-color);">CLEAR CONNECTION</button>
+          <button id="clear-signal-footer" class="info-close-btn"
+            style="display: none; border-color: var(--genre-color, #ff00ff); color: var(--genre-color, #ff00ff);">CLEAR
+            CONNECTION</button>
         </div>
       </div>
     </section>
   </main>
 
   <footer>
-    <span class="footer-text">Black Buddha FM // Clandestine Transmissions 1994&ndash;2025</span>
+    <span class="footer-text">Black Buddha FM // Live Transmissions 1986&ndash;2025</span>
   </footer>
 
   <!-- Interactive Magazine Modal overlay -->
@@ -281,18 +268,18 @@
     <div class="magazine-modal-content">
       <button class="magazine-close-btn" id="magazine-close-btn">✕ CLOSE BOOKLET</button>
       <div class="booklet-container" id="booklet-container">
-        <!-- Inside pages will be rendered here dynamically -->
+        <!-- Inside pages rendered dynamically -->
       </div>
       <div class="booklet-nav-bar">
         <button class="booklet-nav-btn" id="booklet-prev-btn" disabled>← PREV PAGE</button>
-        <span class="booklet-page-indicator" id="booklet-page-indicator">SPREAD 1 / 2</span>
+        <span class="booklet-page-indicator" id="booklet-page-indicator">SPREAD 1 / 4</span>
         <button class="booklet-nav-btn" id="booklet-next-btn">NEXT PAGE →</button>
       </div>
     </div>
   </div>
 
   <script src="stations-data.js"></script>
-  <script src="app.js" defer></script>
+  <script src="player.js" defer></script>
 </body>
 
 </html>

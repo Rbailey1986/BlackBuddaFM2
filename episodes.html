@@ -147,8 +147,10 @@
         era: "1991–1995",
         color: "#39FF14",
         x: 80, y: 100, // Grid coordinates
-        description: "Born in the raves. Breakbeat science meets sound system culture — ragga vocals over amen breaks at 160bpm. The original signal.",
-        artists: ["Goldie", "Shy FX", "LTJ Bukem", "DJ Hype"],
+        location: "Amen Park",
+        description: "At Black Buddha HQ Charing Cross, the story begins with Jungle, the sound that erupted from London’s early-1990s rave underground. Built on chopped breakbeats, heavy basslines, reggae influences, and multicultural energy, Jungle reflected the fast-moving pulse of the capital. Positioned in the heart of the city, Charing Cross symbolizes the genre’s role as the meeting point of Britain's emerging rave cultures.
+",
+        artists: ["Goldies", "Shy FX", "LTJ Bukem", "DJ Hype"],
         genreKey: "JUNGLE"
       },
       {
@@ -157,16 +159,18 @@
         era: "1996–2005",
         color: "#0066FF",
         x: 200, y: 70,
+        location: "Sub Pressure",
         description: "Jungle evolved, refined, exported. The amen break went global. Rollers, liquid, neurofunk — a genre fracturing into movements.",
         artists: ["Goldie", "LTJ Bukem", "Roni Size", "J Majik", "Dillinja"],
         genreKey: "DRUM & BASS"
       },
       {
         id: "ukgarage",
-        name: "UK Garage",
+        name: "UK Garage & 2-Step",
         era: "1996–2002",
         color: "#D4AF37",
         x: 320, y: 130,
+        location: "Champagne Square",
         description: "US house through a South London filter. 2-step rhythms, pitched-up vocals, champagne in the club. Speed garage gave way to something smoother.",
         artists: ["Craig David", "MJ Cole", "Artful Dodger", "So Solid Crew"],
         genreKey: "UK GARAGE"
@@ -177,6 +181,7 @@
         color: "#B0B7C3",
         era: "2002–2010",
         x: 440, y: 130,
+        location: "Eskimo Central",
         description: "8-bar frequencies from E3. Pirate radio, Nokia ringtones, clashing MCs. Wiley's eskibeat rewired the cultural mainframe.",
         artists: ["Wiley", "Dizzee Rascal", "Skepta", "JME", "Tinchy Stryder"],
         genreKey: "GRIME"
@@ -187,16 +192,18 @@
         era: "2001–2011",
         color: "#2b21de",
         x: 560, y: 100,
+        location: "Croydon South",
         description: "140bpm. Sub-bass that moved furniture. Croydon's answer to everything. From Plastic People to festival stages — the wobble heard worldwide.",
         artists: ["Benga", "Skream", "Burial", "Digital Mystikz", "Kode9"],
         genreKey: "DUBSTEP"
       },
       {
         id: "bassline",
-        name: "Bassline",
+        name: "Bassline & Niche",
         era: "2003–2008",
         color: "#FF2DAA",
         x: 680, y: 70,
+        location: "Sheffield Exchange",
         description: "Sheffield's contribution. 4x4 kicks, pitched basslines, speed garage's northern cousin. Underground but felt everywhere.",
         artists: ["DJ Q", "T2", "Virus Syndicate", "Chunky"],
         genreKey: "BASSLINE"
@@ -207,6 +214,7 @@
         era: "2006–2012",
         color: "#FF6B1A",
         x: 800, y: 130,
+        location: "Tribal Square",
         description: "Warmth returned to the underground. Soulful house merged with syncopated Afro-Caribbean soca rhythms, tribal bongo loops, and euphoric vocals.",
         artists: ["Donae'o", "Crazy Cousinz", "Roska", "Lil Silva", "Kyla"],
         genreKey: "UK FUNKY"
@@ -217,6 +225,7 @@
         era: "2007–2016",
         color: "#2f2e2e",
         x: 920, y: 130,
+        location: "Roadman Junction",
         description: "Peckham and Brixton street stories slowed down the tempo. Raw baritone flows, mixtape culture, and heavy sub-bass documenting road realities.",
         artists: ["Giggs", "Blade Brown", "Potter Payper", "Casisdead", "Nines"],
         genreKey: "ROAD RAP"
@@ -227,6 +236,7 @@
         era: "2014–2023",
         color: "#B3001B",
         x: 1040, y: 100,
+        location: "Brixton Central",
         description: "South London's sliding 808 glides and brutalist narratives. Chicago's drill blueprints re-engineered for the estates, conquering global charts.",
         artists: ["67", "Harlem Spartans", "Loski", "MizOrMac", "Unknown T"],
         genreKey: "UK DRILL"
@@ -237,6 +247,7 @@
         era: "2015–2023",
         color: "#00C2B2",
         x: 1160, y: 100,
+        location: "Summer Heights",
         description: "Melodic fusions of British bass weight, West African highlife, and Jamaican dancehall. Joyous, cross-continental diaspora waves.",
         artists: ["J Hus", "Kojo Funds", "Not3s", "Dave", "MoStack"],
         genreKey: "AFROSWING"
@@ -479,7 +490,8 @@
                 <div class="info-status-dot"></div>
                 <span class="info-status-text">ROUTE CONNECTED</span>
               </div>
-              <h3 class="info-panel-title">${genre.name} Station</h3>
+              <h3 >${genre.name} Station</h3>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--genre-color);margin-top:4px;font-weight:700;letter-spacing:0.05em;">LOCATION: ${genre.location.toUpperCase()}</div>
               <span class="info-panel-era">${genre.era} Era</span>
             </div>
             <button class="info-close-btn" id="info-close-trigger">✕ DISCONNECT</button>

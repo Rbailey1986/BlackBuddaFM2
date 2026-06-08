@@ -12,7 +12,7 @@ const STATIONS = [
     duration1: "52:14",
     duration2: "35:20",
     bitrate: "320 KBPS",
-    location: "JUNGLE CLANDESTINE HQ",
+    location: "BLACK BUDDHA HQ CHARING CROSS, LONDON",
     trackUrl1: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
     trackUrl2: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
     colors: {
@@ -53,7 +53,7 @@ const STATIONS = [
     duration2: "40:15",
     duration3: "45:30",
     bitrate: "320 KBPS",
-    location: "METROPOLIS ARCHES",
+    location: "BLACK BUDDHA HQ HOXTON",
     trackUrl1: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
     trackUrl2: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
     trackUrl3: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-11.mp3",
@@ -102,7 +102,7 @@ const STATIONS = [
     duration1: "42:17",
     duration2: "38:40",
     bitrate: "320 KBPS",
-    location: "BLACK BUDDHA HQ",
+    location: "BLACK BUDDHA HQ SOHO",
     trackUrl1: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
     trackUrl2: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3",
     colors: {
@@ -147,7 +147,7 @@ const STATIONS = [
     duration2: "35:10",
     duration3: "32:15",
     bitrate: "320 KBPS",
-    location: "ROOFTOP TRANSMITTER 14",
+    location: "BLACK BUDDHA HQ BOW E3",
     trackUrl1: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3",
     trackUrl2: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3",
     trackUrl3: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-12.mp3",
@@ -199,7 +199,7 @@ const STATIONS = [
     duration1: "48:32",
     duration2: "32:45",
     bitrate: "320 KBPS",
-    location: "SUB-TEMPLE SOUTH",
+    location: "BLACK BUDDHA HQ CROYDON",
     trackUrl1: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3",
     trackUrl2: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3",
     colors: {
@@ -240,7 +240,7 @@ const STATIONS = [
     duration1: "45:30",
     duration2: "31:15",
     bitrate: "320 KBPS",
-    location: "NICHE CLUB SHEFFIELD",
+    location: "BLACK BUDDHA HQ SHEFFIELD",
     trackUrl1: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
     trackUrl2: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
     colors: {
@@ -280,7 +280,7 @@ const STATIONS = [
     duration1: "50:11",
     duration2: "34:50",
     bitrate: "320 KBPS",
-    location: "SOULSHINE STUDIO SW",
+    location: "BLACK BUDDHA HQ STRATFORD, EAST LONDON",
     trackUrl1: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3",
     trackUrl2: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3",
     colors: {
@@ -322,7 +322,7 @@ const STATIONS = [
     duration1: "48:12",
     duration2: "33:20",
     bitrate: "320 KBPS",
-    location: "PECKHAM RADIO ARCHIVE",
+    location: "BLACK BUDDHA HQ BRIXTON",
     trackUrl1: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3",
     trackUrl2: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3",
     colors: {
@@ -363,7 +363,7 @@ const STATIONS = [
     duration1: "44:50",
     duration2: "30:40",
     bitrate: "320 KBPS",
-    location: "BRIXTON ESTATE TRANSMITTER",
+    location: "BLACK BUDDHA HQ KENNINGTON",
     trackUrl1: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3",
     trackUrl2: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3",
     colors: {
