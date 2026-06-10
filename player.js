@@ -1173,6 +1173,35 @@ function wireEvents() {
   });
   DOM.heroBayPlayBtn?.addEventListener('click', togglePlay);
 
+  // Skip back 30 seconds
+  document.getElementById('skip-back-btn')?.addEventListener('click', () => {
+    if (!audioEl || !isAudioInitialized) return;
+    audioEl.currentTime = Math.max(0, audioEl.currentTime - 30);
+  });
+
+  // Skip forward 30 seconds
+  document.getElementById('skip-forward-btn')?.addEventListener('click', () => {
+    if (!audioEl || !isAudioInitialized) return;
+    audioEl.currentTime = Math.min(audioEl.duration || Infinity, audioEl.currentTime + 30);
+  });
+
+  // Share current station URL
+  document.getElementById('share-btn')?.addEventListener('click', () => {
+    const url = window.location.href;
+    navigator.clipboard.writeText(url).then(() => {
+      const shareText = document.querySelector('.share-text');
+      if (shareText) {
+        const originalText = shareText.textContent;
+        shareText.textContent = 'COPIED!';
+        setTimeout(() => {
+          shareText.textContent = originalText;
+        }, 1500);
+      }
+    }).catch(err => {
+      console.error('Failed to copy: ', err);
+    });
+  });
+
   // Band / mode toggles
   document.getElementById('band-group')?.querySelectorAll('.btn-tab').forEach(btn => {
     btn.addEventListener('click', () => {
