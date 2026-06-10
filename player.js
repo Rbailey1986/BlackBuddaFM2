@@ -301,6 +301,9 @@ let staticGain = null;
 let musicGain = null;
 let filterNode = null;
 let analyserNode = null;
+let bassFilter = null;
+let midFilter = null;
+let trebleFilter = null;
 let isAudioInitialized = false;
 
 function initAudio() {
@@ -312,6 +315,24 @@ function initAudio() {
   audioEl.loop = true;
 
   audioSource = audioCtx.createMediaElementSource(audioEl);
+  
+  // Initialize EQ filters
+  bassFilter = audioCtx.createBiquadFilter();
+  bassFilter.type = 'lowshelf';
+  bassFilter.frequency.value = 150;
+  bassFilter.gain.value = 0;
+
+  midFilter = audioCtx.createBiquadFilter();
+  midFilter.type = 'peaking';
+  midFilter.frequency.value = 1000;
+  midFilter.Q.value = 1.0;
+  midFilter.gain.value = 0;
+
+  trebleFilter = audioCtx.createBiquadFilter();
+  trebleFilter.type = 'highshelf';
+  trebleFilter.frequency.value = 4000;
+  trebleFilter.gain.value = 0;
+
   filterNode = audioCtx.createBiquadFilter();
   filterNode.type = 'lowpass';
   filterNode.frequency.value = 20000;
@@ -331,8 +352,13 @@ function initAudio() {
   staticNode.buffer = noiseBuffer;
   staticNode.loop = true;
 
-  audioSource.connect(filterNode);
+  // Connect EQ nodes in series: audioSource -> Bass -> Mid -> Treble -> lowpass -> musicGain -> Analyser -> destination
+  audioSource.connect(bassFilter);
+  bassFilter.connect(midFilter);
+  midFilter.connect(trebleFilter);
+  trebleFilter.connect(filterNode);
   filterNode.connect(musicGain);
+  
   musicGain.connect(analyserNode);
   staticNode.connect(staticGain);
   staticGain.connect(analyserNode);
@@ -554,6 +580,63 @@ function resetPartProgressUI(partNum) {
   }
 }
 
+// ── Cassette animation helpers ────────────────────────────────────────────────
+function animateCassetteLoading(station) {
+  const door = document.getElementById('tape-door-lid');
+  const tapeWrap = document.getElementById('cassette-tape-wrap');
+  
+  if (!door || !tapeWrap) return;
+
+  // 1. Open the door
+  door.classList.add('open');
+  
+  // 2. Slide the tape out
+  tapeWrap.classList.remove('slide-in');
+  tapeWrap.classList.add('slide-out');
+  
+  setTimeout(() => {
+    // 3. Update the labels while the tape is hidden
+    const epLabel = document.getElementById('cassette-ep-label');
+    const genreLabel = document.getElementById('cassette-genre-label');
+    const titleLabel = document.getElementById('cassette-title-label');
+    
+    if (epLabel) epLabel.textContent = `EP 0${station.epNum || 1}`;
+    if (genreLabel) genreLabel.textContent = station.genre || 'PIRATE';
+    if (titleLabel) {
+      const cleanTitle = station.title.includes(':')
+        ? station.title.split(':').slice(1).join(':').trim()
+        : station.title.split(/[\u2013\u2014-]/).slice(1).join('-').trim();
+      titleLabel.textContent = cleanTitle;
+    }
+    
+    // 4. Slide the new tape in
+    tapeWrap.classList.remove('slide-out');
+    tapeWrap.classList.add('slide-in');
+    
+    setTimeout(() => {
+      // 5. Close the door
+      door.classList.remove('open');
+    }, 600);
+  }, 400);
+}
+
+function updateTapeReels(percent) {
+  const rollLeft = document.getElementById('tape-roll-left');
+  const rollRight = document.getElementById('tape-roll-right');
+  if (!rollLeft || !rollRight) return;
+
+  const minSize = 16;
+  const maxSize = 34;
+  
+  const leftSize = maxSize - (percent / 100) * (maxSize - minSize);
+  const rightSize = minSize + (percent / 100) * (maxSize - minSize);
+  
+  rollLeft.style.width = `${leftSize}px`;
+  rollLeft.style.height = `${leftSize}px`;
+  rollRight.style.width = `${rightSize}px`;
+  rollRight.style.height = `${rightSize}px`;
+}
+
 // ── Full UI update when station changes ───────────────────────────────────────
 function updateUIForStation(station) {
   // Theme class swap
@@ -570,7 +653,7 @@ function updateUIForStation(station) {
   DOM.statLength.textContent = station.duration1;
   DOM.statGenre.textContent = station.genre;
   DOM.statLocation.textContent = station.location;
-  DOM.epBadge.textContent = `EP ${station.genre} LIVE`;
+  if (DOM.epBadge) DOM.epBadge.textContent = `EP ${station.genre} LIVE`;
 
   // Optional monitor elements (null-guarded — no shim divs required)
   if (DOM.monitorTitle) DOM.monitorTitle.textContent = station.genre;
@@ -585,6 +668,9 @@ function updateUIForStation(station) {
       : station.title.split(/[\u2013\u2014-]/).slice(1).join('-').trim();
     customTitle.textContent = `EP ${station.epNum} - ${station.genre}: ${cleanTitle}`;
   }
+
+  // Animate physical cassette load sequence
+  animateCassetteLoading(station);
 
   renderMagazineCover(station);
 
@@ -611,10 +697,6 @@ function updateUIForStation(station) {
   if (part3Panel) part3Panel.style.display = hasPart3 ? 'flex' : 'none';
   if (hasPart3 && DOM.timeDisplays[3]) DOM.timeDisplays[3].textContent = `00:00 / ${station.duration3}`;
   if (DOM.fills[3]) DOM.fills[3].style.width = '0%';
-
-  // Vinyl label colour
-  const labelCenter = document.getElementById('vinyl-label-center');
-  if (labelCenter) labelCenter.style.background = station.colors.neonPink;
 }
 
 // ── Magazine cover renderer ───────────────────────────────────────────────────
@@ -721,6 +803,23 @@ function updatePlayStateUI(isPlaying) {
   DOM.vinylFrame?.classList.toggle('playing', isPlaying);
   if (DOM.recFlicker) DOM.recFlicker.style.animationPlayState = isPlaying ? 'running' : 'paused';
 
+  // Spin spindles
+  const rLeft = document.getElementById('reel-left');
+  const rRight = document.getElementById('reel-right');
+  if (rLeft) rLeft.classList.toggle('spinning', isPlaying);
+  if (rRight) rRight.classList.toggle('spinning', isPlaying);
+
+  // Update physical transport buttons pressed states
+  const tPlay = document.getElementById('t-btn-play');
+  const tPause = document.getElementById('t-btn-pause');
+  if (tPlay) {
+    tPlay.classList.toggle('active-pressed', isPlaying || (isAudioInitialized && !audioEl.paused));
+  }
+  if (tPause) {
+    const isPaused = isAudioInitialized && audioEl.paused && audioEl.src !== '';
+    tPause.classList.toggle('active-pressed', isPaused);
+  }
+
   // Feature 1: Restore CSS idle bounce when paused
   const heroWave = document.getElementById('hero-wave');
   if (heroWave) {
@@ -748,6 +847,9 @@ function startProgressLoop() {
 
     if (DOM.fills[currentPart]) DOM.fills[currentPart].style.width = pct + '%';
     if (DOM.timeDisplays[currentPart]) DOM.timeDisplays[currentPart].textContent = `${formatTime(elapsed)} / ${durStr}`;
+
+    // Update tape reels wrapping rolls
+    updateTapeReels(pct);
 
     progressRafId = requestAnimationFrame(tick);
   };
@@ -786,6 +888,9 @@ function drawVisualizer() {
   const playing = audioEl && !audioEl.paused;
   const staticVol = staticGain ? staticGain.gain.value : 0;
 
+  const segmentsLeft = document.querySelectorAll('#vu-meter-left .vu-segment');
+  const segmentsRight = document.querySelectorAll('#vu-meter-right .vu-segment');
+
   if (!playing && staticVol === 0) {
     const stillDecaying = [
       decayBars(DOM.heroBars),
@@ -793,15 +898,47 @@ function drawVisualizer() {
       ...miniBarSets.map(decayBars),
     ].some(Boolean);
 
+    decayVUMeter(segmentsLeft);
+    decayVUMeter(segmentsRight);
+
     if (!stillDecaying) { isVisualizerRunning = false; return; }
   } else {
     updateBars(DOM.heroBars, dataArray, 0, 8);
     updateBars(DOM.monitorBars, dataArray, 4, 12);
     const activeMini = miniBarSets[currentPart - 1];
     if (activeMini) updateBars(activeMini, dataArray, 8, 16);
+
+    // Calculate dynamic channel Left and Right VU levels
+    let sumL = 0;
+    for (let i = 0; i < 8; i++) sumL += dataArray[i] || 0;
+    const avgL = sumL / 8;
+
+    let sumR = 0;
+    for (let i = 4; i < 12; i++) sumR += dataArray[i] || 0;
+    const avgR = sumR / 8;
+
+    updateVUMeter(segmentsLeft, avgL);
+    updateVUMeter(segmentsRight, avgR);
   }
 
   requestAnimationFrame(drawVisualizer);
+}
+
+function updateVUMeter(segments, average) {
+  if (!segments || !segments.length) return;
+  const numSegments = segments.length;
+  // Convert 0-255 average to active segments (0-10) with some sensitivity headroom
+  const activeCount = Math.min(numSegments, Math.floor((average / 230) * numSegments));
+
+  segments.forEach((seg, idx) => {
+    const isLit = (numSegments - 1 - idx) < activeCount;
+    seg.classList.toggle('active', isLit);
+  });
+}
+
+function decayVUMeter(segments) {
+  if (!segments || !segments.length) return;
+  segments.forEach(seg => seg.classList.remove('active'));
 }
 
 function updateBars(bars, dataArr, startBin, endBin) {
@@ -1173,32 +1310,116 @@ function wireEvents() {
   });
   DOM.heroBayPlayBtn?.addEventListener('click', togglePlay);
 
-  // Skip back 30 seconds
-  document.getElementById('skip-back-btn')?.addEventListener('click', () => {
+  // Mechanical Cassette Deck Transport Controls
+  document.getElementById('t-btn-rew')?.addEventListener('click', () => {
     if (!audioEl || !isAudioInitialized) return;
     audioEl.currentTime = Math.max(0, audioEl.currentTime - 30);
   });
 
-  // Skip forward 30 seconds
-  document.getElementById('skip-forward-btn')?.addEventListener('click', () => {
+  document.getElementById('t-btn-ffw')?.addEventListener('click', () => {
     if (!audioEl || !isAudioInitialized) return;
     audioEl.currentTime = Math.min(audioEl.duration || Infinity, audioEl.currentTime + 30);
   });
 
-  // Share current station URL
-  document.getElementById('share-btn')?.addEventListener('click', () => {
-    const url = window.location.href;
-    navigator.clipboard.writeText(url).then(() => {
-      const shareText = document.querySelector('.share-text');
-      if (shareText) {
-        const originalText = shareText.textContent;
-        shareText.textContent = 'COPIED!';
-        setTimeout(() => {
-          shareText.textContent = originalText;
-        }, 1500);
-      }
-    }).catch(err => {
-      console.error('Failed to copy: ', err);
+  document.getElementById('t-btn-play')?.addEventListener('click', () => {
+    initAudio();
+    if (audioCtx) audioCtx.resume();
+    if (audioEl.paused) {
+      audioEl.play().then(() => updatePlayStateUI(true)).catch(e => console.warn(e));
+    }
+  });
+
+  document.getElementById('t-btn-pause')?.addEventListener('click', () => {
+    if (!audioEl || !isAudioInitialized) return;
+    if (!audioEl.paused) {
+      audioEl.pause();
+      updatePlayStateUI(false);
+    }
+  });
+
+  document.getElementById('t-btn-stop')?.addEventListener('click', () => {
+    if (!audioEl || !isAudioInitialized) return;
+    audioEl.pause();
+    audioEl.currentTime = 0;
+    resetPartProgressUI(currentPart);
+    updatePlayStateUI(false);
+  });
+  document.getElementById('t-btn-eject')?.addEventListener('click', () => {
+    if (audioEl && isAudioInitialized) {
+      audioEl.pause();
+      updatePlayStateUI(false);
+    }
+    const door = document.getElementById('tape-door-lid');
+    const tapeWrap = document.getElementById('cassette-tape-wrap');
+    if (door && tapeWrap) {
+      door.classList.add('open');
+      tapeWrap.classList.remove('slide-in');
+      tapeWrap.classList.add('slide-out');
+    }
+  });
+
+  // EQ Knobs vertical drag logic
+  ['bass', 'mid', 'treble'].forEach(param => {
+    const knob = document.getElementById(`knob-${param}`);
+    if (!knob) return;
+
+    let isDraggingKnob = false;
+    let startY = 0;
+    let currentAngle = 0; // starts at 0 (center)
+
+    knob.addEventListener('mousedown', e => {
+      isDraggingKnob = true;
+      startY = e.clientY;
+      initAudio();
+      if (audioCtx) audioCtx.resume();
+    });
+
+    window.addEventListener('mousemove', e => {
+      if (!isDraggingKnob) return;
+      const dy = startY - e.clientY; // upward drag increases value
+      startY = e.clientY;
+
+      // Update angle (approx 1.5 deg per pixel drag)
+      currentAngle = Math.max(-135, Math.min(135, currentAngle + dy * 1.5));
+      knob.style.transform = `rotate(${currentAngle}deg)`;
+
+      // Map angle (-135 to 135) to Gain (-12 to 12 dB)
+      const gainVal = (currentAngle / 135) * 12;
+      
+      // Update filter node gain
+      if (param === 'bass' && bassFilter) bassFilter.gain.value = gainVal;
+      if (param === 'mid' && midFilter) midFilter.gain.value = gainVal;
+      if (param === 'treble' && trebleFilter) trebleFilter.gain.value = gainVal;
+    });
+
+    window.addEventListener('mouseup', () => {
+      isDraggingKnob = false;
+    });
+
+    // Mobile touch support
+    knob.addEventListener('touchstart', e => {
+      isDraggingKnob = true;
+      startY = e.touches[0].clientY;
+      initAudio();
+      if (audioCtx) audioCtx.resume();
+    }, { passive: true });
+
+    window.addEventListener('touchmove', e => {
+      if (!isDraggingKnob) return;
+      const dy = startY - e.touches[0].clientY;
+      startY = e.touches[0].clientY;
+
+      currentAngle = Math.max(-135, Math.min(135, currentAngle + dy * 1.5));
+      knob.style.transform = `rotate(${currentAngle}deg)`;
+
+      const gainVal = (currentAngle / 135) * 12;
+      if (param === 'bass' && bassFilter) bassFilter.gain.value = gainVal;
+      if (param === 'mid' && midFilter) midFilter.gain.value = gainVal;
+      if (param === 'treble' && trebleFilter) trebleFilter.gain.value = gainVal;
+    }, { passive: true });
+
+    window.addEventListener('touchend', () => {
+      isDraggingKnob = false;
     });
   });
 
@@ -1537,10 +1758,140 @@ function updateTubeMapActiveState(genreName) {
   updateRadarStatus();
 }
 
+// ── Sticker Bombing Engine ────────────────────────────────────────────────────
+let selectedStickerType = null;
+const STICKER_KEY = 'bb_fm_placed_stickers';
+
+function initStickerBombEngine() {
+  const options = document.querySelectorAll('.sticker-option');
+  const zone = document.getElementById('sticker-placement-zone');
+  const canvas = document.getElementById('deck-sticker-canvas');
+  const clearBtn = document.getElementById('clear-stickers-btn');
+  
+  if (!canvas || !zone) return;
+
+  loadPersistedStickers();
+
+  options.forEach(opt => {
+    opt.addEventListener('click', e => {
+      e.stopPropagation();
+      const type = opt.getAttribute('data-sticker');
+      
+      if (selectedStickerType === type) {
+        selectedStickerType = null;
+        opt.classList.remove('active-selected');
+        document.body.classList.remove('sticker-bomb-active');
+        zone.classList.remove('active-capture');
+      } else {
+        options.forEach(o => o.classList.remove('active-selected'));
+        selectedStickerType = type;
+        opt.classList.add('active-selected');
+        document.body.classList.add('sticker-bomb-active');
+        zone.classList.add('active-capture');
+      }
+    });
+  });
+
+  zone.addEventListener('click', e => {
+    if (!selectedStickerType) return;
+    
+    const rect = zone.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    const rotation = Math.floor(Math.random() * 60) - 30;
+    
+    placeStickerElement(selectedStickerType, x, y, rotation);
+    saveSticker(selectedStickerType, x, y, rotation);
+  });
+
+  clearBtn?.addEventListener('click', () => {
+    document.querySelectorAll('.placed-sticker').forEach(s => s.remove());
+    localStorage.removeItem(STICKER_KEY);
+  });
+}
+
+function placeStickerElement(type, x, y, rotation) {
+  const container = document.getElementById('deck-sticker-canvas');
+  if (!container) return;
+
+  const emojiMap = {
+    smiley: '☺',
+    radio: '📻',
+    skull: '☠',
+    bolt: '⚡',
+    tape: '📼'
+  };
+
+  const sticker = document.createElement('div');
+  sticker.className = 'placed-sticker';
+  sticker.textContent = emojiMap[type] || '⚡';
+  sticker.style.left = `${x}%`;
+  sticker.style.top = `${y}%`;
+  sticker.style.transform = `translate(-50%, -50%) rotate(${rotation}deg)`;
+  
+  sticker.addEventListener('contextmenu', e => {
+    e.preventDefault();
+    sticker.remove();
+    removeStickerFromStorage(x, y);
+  });
+
+  container.appendChild(sticker);
+}
+
+function saveSticker(type, x, y, rotation) {
+  try {
+    const list = JSON.parse(localStorage.getItem(STICKER_KEY) || '[]');
+    list.push({ type, x, y, rotation });
+    localStorage.setItem(STICKER_KEY, JSON.stringify(list));
+  } catch (err) {
+    console.warn(err);
+  }
+}
+
+function removeStickerFromStorage(x, y) {
+  try {
+    let list = JSON.parse(localStorage.getItem(STICKER_KEY) || '[]');
+    list = list.filter(item => Math.abs(item.x - x) > 0.01 || Math.abs(item.y - y) > 0.01);
+    localStorage.setItem(STICKER_KEY, JSON.stringify(list));
+  } catch (err) {
+    console.warn(err);
+  }
+}
+
+function loadPersistedStickers() {
+  try {
+    const list = JSON.parse(localStorage.getItem(STICKER_KEY) || '[]');
+    list.forEach(item => {
+      placeStickerElement(item.type, item.x, item.y, item.rotation);
+    });
+  } catch (err) {
+    console.warn(err);
+  }
+}
+
+// ── CRT Glitch Engine ─────────────────────────────────────────────────────────
+function initCrtGlitchEngine() {
+  const mount = document.getElementById('magazine-cover-mount');
+  if (!mount) return;
+
+  // Set up periodic random glitches
+  setInterval(() => {
+    // 30% chance to trigger glitch every 3 seconds
+    if (Math.random() < 0.3) {
+      mount.classList.add('crt-monitor-glitch');
+      setTimeout(() => {
+        mount.classList.remove('crt-monitor-glitch');
+      }, 250 + Math.random() * 200); // glitch duration between 250ms and 450ms
+    }
+  }, 3000);
+}
+
 // ── Boot sequence ─────────────────────────────────────────────────────────────
 (function init() {
   precalculateColors();
   buildTicker();
+  initStickerBombEngine();
+  initCrtGlitchEngine();
 
   // Build dynamic DOM first, then cache refs to it
   buildControlsPanels();
