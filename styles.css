@@ -1535,6 +1535,8 @@ h1.hero-title {
 
 .reel-spindle.spinning {
   animation: spindle-spin 3.5s linear infinite;
+  will-change: transform;
+  backface-visibility: hidden;
 }
 
 @keyframes spindle-spin {
@@ -2975,4 +2977,41 @@ body.glitch-entering {
 
 .img-skeleton.loaded img {
   opacity: 1;
+}
+
+/* Tape Parts Selector on Index Player */
+.tape-parts-selector {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  width: 100%;
+}
+
+.tape-part-btn {
+  flex: 1;
+  background: rgba(10, 12, 16, 0.95);
+  border: 2px solid var(--outline);
+  color: var(--on-surface-variant);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 8px 12px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.tape-part-btn:hover {
+  border-color: var(--theme-primary);
+  color: var(--theme-primary);
+  box-shadow: 0 0 8px rgba(var(--theme-primary-rgb), 0.25);
+}
+
+.tape-part-btn.active {
+  background: var(--theme-primary);
+  color: #000;
+  border-color: var(--theme-primary);
+  box-shadow: 0 0 12px rgba(var(--theme-primary-rgb), 0.45);
 }

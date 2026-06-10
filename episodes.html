@@ -134,11 +134,43 @@
     <span class="footer-text">Black Buddha FM // Clandestine Transmissions 1994–2025</span>
   </footer>
 
+  <div id="global-mini-player">
+    <div class="mini-player-inner">
+      <div class="mini-meta-section">
+        <div class="mini-status-dot" id="mini-indicator"></div>
+        <div class="mini-text-wrap">
+          <span class="mini-title" id="mini-track-title">EPISODE ACTIVE</span>
+          <span class="mini-subtitle" id="mini-genre-label">STATION TUNED</span>
+        </div>
+      </div>
+      <div class="mini-controls-section">
+        <button class="mini-btn" id="mini-play-btn" aria-label="Play/Pause">▶</button>
+      </div>
+      <div class="mini-progress-section">
+        <span class="mini-time" id="mini-time-current">00:00</span>
+        <div class="mini-progress-container" id="mini-progress-container-bar">
+          <div class="mini-progress-bar" id="mini-progress-bar-fill"></div>
+        </div>
+        <span class="mini-time" id="mini-time-total">00:00</span>
+      </div>
+      <div class="mini-vu-section" id="mini-vu-display">
+        <div class="vu-bar"><div class="vu-bar-fill"></div></div>
+        <div class="vu-bar"><div class="vu-bar-fill"></div></div>
+        <div class="vu-bar"><div class="vu-bar-fill"></div></div>
+        <div class="vu-bar"><div class="vu-bar-fill"></div></div>
+        <div class="vu-bar"><div class="vu-bar-fill"></div></div>
+        <div class="vu-bar"><div class="vu-bar-fill"></div></div>
+        <div class="vu-bar"><div class="vu-bar-fill"></div></div>
+        <div class="vu-bar"><div class="vu-bar-fill"></div></div>
+      </div>
+    </div>
+  </div>
+
   <div class="modal-overlay" id="player-modal">
     <div class="modal-content-wrap" id="modal-container"></div>
   </div>
 
-  <script src="stations-data.js"></script>
+  <script src="episodes-data.js"></script>
 
   <script>
     const GENRES_METADATA = [
@@ -256,14 +288,17 @@
 
     let activeGenreId = null;
     const playingAudio = new Audio();
-    playingAudio.loop = true;
+    playingAudio.loop = false; // Disable loop to support auto-advance to next station
     let playingEpisodeId = null;
-    let playingPartNum = 1;
     let stateLogs = [];
 
     // Cached elements arrays
     const timelineNodeEls = [];
     const cassetteEls = [];
+    let cachedMiniFills = null;
+    let cachedModalFills = null;
+    let lastElapsedSecond = -1;
+    let lastProgressPct = -1;
 
     // Pre-calculate hex colors to RGB format once
     function precalculateGenreColors() {
@@ -537,8 +572,8 @@
         button.style.setProperty("--genre-color-alpha-glow", `rgba(${rgb}, 0.15)`);
         button.style.setProperty("--genre-color-sticker", `rgba(${rgb}, 0.85)`);
 
-        const epShortName = station.title.split("—")[0].trim();
-        const epDisplayTitle = station.title.substring(station.title.indexOf("—") + 1).trim();
+        const epShortName = station.title.split("—")[0].split("–")[0].trim();
+        const epDisplayTitle = station.title.substring(station.title.indexOf("–") !== -1 ? station.title.indexOf("–") + 1 : station.title.indexOf("—") + 1).trim();
 
         button.innerHTML = `
           <div class="cassette-3d-card">
@@ -604,7 +639,7 @@
       return `
         <svg class="${isSpinningClass}" viewBox="0 0 74 74">
           <circle cx="37" cy="37" r="35" fill="none" stroke="rgba(0,0,0,0.22)" stroke-width="2" />
-          <circle cx="37" cy="37" r="${35 * fillPercent}" fill="rgba(80,45,15,${0.35 + fillPercent * 0.45})" />
+          <circle cx="37" cy="37" r="${35 * fillPercent}" class="tape-roll-circle" fill="rgba(80,45,15,${0.35 + fillPercent * 0.45})" />
           <line x1="37" y1="12" x2="37" y2="26" stroke="rgba(0,0,0,0.35)" stroke-width="1.8" />
           <line x1="37" y1="48" x2="37" y2="62" stroke="rgba(0,0,0,0.35)" stroke-width="1.8" />
           <line x1="12" y1="37" x2="26" y2="37" stroke="rgba(0,0,0,0.35)" stroke-width="1.8" />
@@ -628,20 +663,7 @@
       container.style.setProperty("--genre-color-sticker", `rgba(${rgb}, 0.8)`);
       container.style.setProperty("--bg-alpha", `rgba(${rgb}, 0.04)`);
 
-      let localPartNum = 1;
-      if (playingEpisodeId === station.genre) {
-        localPartNum = playingPartNum;
-      }
-
-      let tabsHtml = `
-        <button class="inlay-tab ${localPartNum === 1 ? 'active' : ''}" data-part="1">PART 1</button>
-        <button class="inlay-tab ${localPartNum === 2 ? 'active' : ''}" data-part="2">PART 2</button>
-      `;
-      if (station.tracks3 && station.tracks3.length > 0) {
-        tabsHtml += `<button class="inlay-tab ${localPartNum === 3 ? 'active' : ''}" data-part="3">PART 3</button>`;
-      }
-
-      const cleanTitle = station.title.substring(station.title.indexOf("—") + 1).trim();
+      const cleanTitle = station.title.substring(station.title.indexOf("—") !== -1 ? station.title.indexOf("—") + 1 : station.title.indexOf("–") + 1).trim();
 
       container.innerHTML = `
         <div style="align-self: flex-end; margin-bottom: 12px;">
@@ -670,10 +692,10 @@
           </div>
 
           <div class="spindle-hole left" id="spindle-left">
-            ${makeReelSvg(false, 0.72, color)}
+            <!-- Rendered by updateSpindles -->
           </div>
           <div class="spindle-hole right" id="spindle-right">
-            ${makeReelSvg(false, 0.38, color)}
+            <!-- Rendered by updateSpindles -->
           </div>
 
           <div class="exposed-window">
@@ -691,11 +713,23 @@
             <span class="inlay-duration" id="inlay-dur-display">${station.duration1}</span>
           </div>
 
-          <div class="inlay-tabs" id="tab-row">
-            ${tabsHtml}
+          <!-- VU Meter Visualizer inside Modal J-Card -->
+          <div class="modal-vu-meter-glow" id="modal-vu-display">
+            <div class="modal-vu-bar"><div class="modal-vu-fill"></div></div>
+            <div class="modal-vu-bar"><div class="modal-vu-fill"></div></div>
+            <div class="modal-vu-bar"><div class="modal-vu-fill"></div></div>
+            <div class="modal-vu-bar"><div class="modal-vu-fill"></div></div>
+            <div class="modal-vu-bar"><div class="modal-vu-fill"></div></div>
+            <div class="modal-vu-bar"><div class="modal-vu-fill"></div></div>
+            <div class="modal-vu-bar"><div class="modal-vu-fill"></div></div>
+            <div class="modal-vu-bar"><div class="modal-vu-fill"></div></div>
+            <div class="modal-vu-bar"><div class="modal-vu-fill"></div></div>
+            <div class="modal-vu-bar"><div class="modal-vu-fill"></div></div>
           </div>
 
-          <div class="tracklist-container" id="modal-tracklist-list"></div>
+          <div class="modal-tracklist-wrapper" style="margin-top: 16px;">
+            <div class="tracklist-container" id="modal-tracklist-list"></div>
+          </div>
 
           <div class="inlay-footer">
             <div class="inlay-meta-info">
@@ -715,70 +749,67 @@
       const playBtn = document.getElementById("modal-play-btn");
       playBtn.addEventListener("click", () => toggleAudio(station));
 
-      const tabElements = document.querySelectorAll(".inlay-tab");
-      tabElements.forEach(tab => {
-        tab.addEventListener("click", () => {
-          tabElements.forEach(t => t.classList.remove("active"));
-          tab.classList.add("active");
-          const partNum = parseInt(tab.getAttribute("data-part"));
-          selectPart(station, partNum);
-        });
-      });
-
-      selectPart(station, localPartNum);
-      modal.style.display = "flex";
-    }
-
-    function selectPart(station, partNum) {
-      const isPlayingCurrentPart = (playingEpisodeId === station.genre && playingPartNum === partNum);
-      const isAudioActive = isPlayingCurrentPart && playingAudio && !playingAudio.paused;
-      const genreMeta = GENRES_METADATA.find(g => g.genreKey === station.genre);
-
-      const leftSpindle = document.getElementById("spindle-left");
-      const rightSpindle = document.getElementById("spindle-right");
-      leftSpindle.innerHTML = makeReelSvg(isAudioActive, 0.72, genreMeta.color);
-      rightSpindle.innerHTML = makeReelSvg(isAudioActive, 0.38, genreMeta.color);
-
-      const playBtn = document.getElementById("modal-play-btn");
-      const labelText = playBtn.querySelector(".btn-label-text");
-      const iconSpan = playBtn.querySelector("span");
-
-      if (isAudioActive) {
-        playBtn.classList.add("playing");
-        labelText.innerText = "PLAYING";
-        iconSpan.innerText = "■";
-      } else {
-        playBtn.classList.remove("playing");
-        labelText.innerText = "PLAY";
-        iconSpan.innerText = "▶";
-      }
-
-      const durationVal = partNum === 1 ? station.duration1 : (partNum === 2 ? station.duration2 : station.duration3);
-      const sideLetter = partNum === 1 ? "A" : (partNum === 2 ? "B" : "C");
-
-      document.getElementById("inlay-dur-display").innerText = durationVal;
-      document.getElementById("label-meta-dur").innerText = `${station.genre} · ${durationVal}`;
-      document.getElementById("label-meta-side").innerText = `SIDE ${sideLetter}`;
-
+      // Build tracklist
       const tracklistContainer = document.getElementById("modal-tracklist-list");
       tracklistContainer.innerHTML = "";
 
-      const activeTracksArray = partNum === 1 ? station.tracks1 : (partNum === 2 ? station.tracks2 : station.tracks3);
-
-      activeTracksArray.forEach((trackHtmlString, idx) => {
+      station.tracks1.forEach((trackObj, idx) => {
         const item = document.createElement("div");
         item.className = "tracklist-item";
+        
+        const trackTitle = trackObj.title || "";
+        const trackNote = trackObj.note ? `<div class="track-note" style="font-size: 10px; color: rgba(0, 0, 0, 0.45); margin-top: 2px;">${trackObj.note}</div>` : "";
+        const timeBtn = trackObj.time ? `<button class="track-time-btn" data-time="${trackObj.time}">${trackObj.time}</button>` : "";
+
         item.innerHTML = `
           <span class="track-num">${String(idx + 1).padStart(2, "0")}</span>
-          <div class="track-info-wrap">${trackHtmlString}</div>
+          <div class="track-info-wrap">
+            <div style="display: flex; align-items: center;">
+              ${timeBtn}
+              <span class="track-title-text" style="font-weight: 500;">${trackTitle}</span>
+            </div>
+            ${trackNote}
+          </div>
         `;
+
+        // Add event listener to time button
+        if (trackObj.time) {
+          item.querySelector(".track-time-btn").addEventListener("click", (e) => {
+            e.stopPropagation(); // prevent modal click closures
+            const targetSeconds = parseTimestamp(trackObj.time);
+            
+            // If we are already playing this station, seek
+            if (playingEpisodeId === station.genre) {
+              playingAudio.currentTime = targetSeconds;
+              if (playingAudio.paused) {
+                playingAudio.play().then(() => updatePlayerUI()).catch(err => console.warn(err));
+              }
+            } else {
+              // Load and seek
+              playStation(station);
+              // Wait for metadata loaded to seek
+              const onMetadata = () => {
+                playingAudio.currentTime = targetSeconds;
+                playingAudio.removeEventListener('loadedmetadata', onMetadata);
+              };
+              playingAudio.addEventListener('loadedmetadata', onMetadata);
+            }
+          });
+        }
+
         tracklistContainer.appendChild(item);
       });
+
+      // Update active state in UI
+      updatePlayerUI();
+      cachedModalFills = document.querySelectorAll(".modal-vu-fill");
+      modal.style.display = "flex";
     }
 
     function closeModal() {
       const modal = document.getElementById("player-modal");
       modal.style.display = "none";
+      cachedModalFills = null;
     }
 
     document.getElementById("player-modal").addEventListener("click", (e) => {
@@ -787,57 +818,210 @@
       }
     });
 
-    function toggleAudio(station) {
-      const activeTab = document.querySelector(".inlay-tab.active");
-      const partNum = parseInt(activeTab.getAttribute("data-part"));
+    function formatTime(seconds) {
+      if (isNaN(seconds)) return "00:00";
+      const m = Math.floor(seconds / 60);
+      const s = Math.floor(seconds % 60);
+      return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
 
-      const playBtn = document.getElementById("modal-play-btn");
-      const labelText = playBtn.querySelector(".btn-label-text");
-      const iconSpan = playBtn.querySelector("span");
+    function parseTimestamp(timeStr) {
+      if (!timeStr) return 0;
+      const parts = timeStr.split(':');
+      if (parts.length === 2) {
+        return parseInt(parts[0], 10) * 60 + parseInt(parts[1], 10);
+      }
+      return 0;
+    }
+
+    // Update spindles inside modal
+    function updateSpindles(isPlaying) {
       const leftSpindle = document.getElementById("spindle-left");
       const rightSpindle = document.getElementById("spindle-right");
-      const genreMeta = GENRES_METADATA.find(g => g.genreKey === station.genre);
-      const color = genreMeta.color;
+      if (!leftSpindle || !rightSpindle || !playingEpisodeId) return;
 
-      const isPlayingCurrentPart = (playingEpisodeId === station.genre && playingPartNum === partNum);
+      const currentStation = STATIONS.find(s => s.genre === playingEpisodeId);
+      if (!currentStation) return;
+      const genreMeta = GENRES_METADATA.find(g => g.genreKey === currentStation.genre);
+      if (!genreMeta) return;
 
-      if (isPlayingCurrentPart) {
-        if (!playingAudio.paused) {
-          playingAudio.pause();
+      const duration = playingAudio.duration || 3000; // fallback C50 duration
+      const progress = Math.min(1, Math.max(0, playingAudio.currentTime / duration));
+      
+      // Left reel shrinks from 0.72 to 0.20
+      const leftFill = 0.72 - (0.72 - 0.20) * progress;
+      // Right reel grows from 0.20 to 0.72
+      const rightFill = 0.20 + (0.72 - 0.20) * progress;
+
+      let leftSvg = leftSpindle.querySelector("svg");
+      let rightSvg = rightSpindle.querySelector("svg");
+
+      if (!leftSvg) {
+        leftSpindle.innerHTML = makeReelSvg(isPlaying, leftFill, genreMeta.color);
+        leftSvg = leftSpindle.querySelector("svg");
+      }
+      if (!rightSvg) {
+        rightSpindle.innerHTML = makeReelSvg(isPlaying, rightFill, genreMeta.color);
+        rightSvg = rightSpindle.querySelector("svg");
+      }
+
+      if (leftSvg) {
+        leftSvg.className.baseVal = isPlaying ? "reel-svg spinning" : "reel-svg";
+        const circle = leftSvg.querySelector(".tape-roll-circle");
+        if (circle) {
+          circle.setAttribute("r", 35 * leftFill);
+          circle.setAttribute("fill", `rgba(80,45,15,${0.35 + leftFill * 0.45})`);
         }
-        playingEpisodeId = null;
-        playBtn.classList.remove("playing");
-        labelText.innerText = "PLAY";
-        iconSpan.innerText = "▶";
+      }
+      if (rightSvg) {
+        rightSvg.className.baseVal = isPlaying ? "reel-svg spinning" : "reel-svg";
+        const circle = rightSvg.querySelector(".tape-roll-circle");
+        if (circle) {
+          circle.setAttribute("r", 35 * rightFill);
+          circle.setAttribute("fill", `rgba(80,45,15,${0.35 + rightFill * 0.45})`);
+        }
+      }
+    }
 
-        leftSpindle.innerHTML = makeReelSvg(false, 0.72, color);
-        rightSpindle.innerHTML = makeReelSvg(false, 0.38, color);
+    // CENTRALIZED UI UPDATE FUNCTION
+    function updatePlayerUI() {
+      const isPlaying = !playingAudio.paused && playingEpisodeId !== null;
+      
+      // 1. Sync modal play button (if open)
+      const modalPlayBtn = document.getElementById("modal-play-btn");
+      if (modalPlayBtn) {
+        const labelText = modalPlayBtn.querySelector(".btn-label-text");
+        const iconSpan = modalPlayBtn.querySelector("span");
+        if (isPlaying) {
+          modalPlayBtn.classList.add("playing");
+          if (labelText) labelText.innerText = "PLAYING";
+          if (iconSpan) iconSpan.innerText = "■";
+        } else {
+          modalPlayBtn.classList.remove("playing");
+          if (labelText) labelText.innerText = "PLAY";
+          if (iconSpan) iconSpan.innerText = "▶";
+        }
+      }
+
+      // 2. Sync mini-player play button and container state
+      const miniPlayer = document.getElementById("global-mini-player");
+      const miniPlayBtn = document.getElementById("mini-play-btn");
+      const miniIndicator = document.getElementById("mini-indicator");
+      
+      if (playingEpisodeId) {
+        const currentStation = STATIONS.find(s => s.genre === playingEpisodeId);
+        const genreMeta = GENRES_METADATA.find(g => g.genreKey === playingEpisodeId);
+        
+        if (currentStation && genreMeta) {
+          // Apply station specific colors to mini-player variables
+          miniPlayer.style.setProperty("--genre-color", genreMeta.color);
+          miniPlayer.style.setProperty("--genre-color-alpha-heavy", `rgba(${genreMeta.rgb}, 0.45)`);
+          
+          document.getElementById("mini-track-title").innerText = currentStation.title;
+          document.getElementById("mini-genre-label").innerText = `${currentStation.genre} STATION TUNED`;
+          
+          miniPlayer.classList.add("active");
+          
+          if (isPlaying) {
+            miniPlayBtn.innerText = "■";
+            miniIndicator.classList.add("playing");
+            miniIndicator.style.background = genreMeta.color;
+            miniIndicator.style.boxShadow = `0 0 10px ${genreMeta.color}`;
+            startVUMeter();
+          } else {
+            miniPlayBtn.innerText = "▶";
+            miniIndicator.classList.remove("playing");
+            miniIndicator.style.boxShadow = "none";
+            stopVUMeter();
+          }
+        }
       } else {
-        if (!playingAudio.paused) {
-          playingAudio.pause();
+        // If nothing is loaded, slide down mini player
+        miniPlayer.classList.remove("active");
+        stopVUMeter();
+      }
+
+      // 3. Update spindles inside modal if open
+      updateSpindles(isPlaying);
+    }
+
+    // Simulated VU Meter animation loop (immune to CORS)
+    let vuInterval = null;
+    function startVUMeter() {
+      if (vuInterval) clearInterval(vuInterval);
+      vuInterval = setInterval(() => {
+        if (playingAudio.paused) {
+          stopVUMeter();
+          return;
+        }
+        
+        // Update mini VU bars using cache
+        if (cachedMiniFills) {
+          cachedMiniFills.forEach(fill => {
+            const height = Math.floor(Math.random() * 85) + 15; // 15% to 100%
+            fill.style.height = height + "%";
+          });
         }
 
-        const streamUrl = partNum === 1 ? station.trackUrl1 : (partNum === 2 ? station.trackUrl2 : station.trackUrl3);
-        const targetAbsUrl = new URL(streamUrl, window.location.href).href;
-
-        if (playingAudio.src !== targetAbsUrl) {
-          playingAudio.src = targetAbsUrl;
-          playingAudio.load();
+        // Update modal VU bars using cache
+        if (cachedModalFills) {
+          cachedModalFills.forEach(fill => {
+            const height = Math.floor(Math.random() * 85) + 15;
+            fill.style.height = height + "%";
+          });
         }
+      }, 80);
+    }
 
-        playingAudio.play().catch(err => {
-          console.warn("Autoplay block: ", err);
+    function stopVUMeter() {
+      if (vuInterval) {
+        clearInterval(vuInterval);
+        vuInterval = null;
+      }
+      if (cachedMiniFills) {
+        cachedMiniFills.forEach(fill => {
+          fill.style.height = "0%";
         });
+      }
+      if (cachedModalFills) {
+        cachedModalFills.forEach(fill => {
+          fill.style.height = "0%";
+        });
+      }
+    }
 
+    function playStation(station) {
+      const targetAbsUrl = new URL(station.trackUrl1, window.location.href).href;
+
+      if (playingAudio.src !== targetAbsUrl) {
+        playingAudio.src = targetAbsUrl;
+        playingAudio.load();
+      }
+
+      lastElapsedSecond = -1;
+      lastProgressPct = -1;
+
+      playingAudio.play().then(() => {
         playingEpisodeId = station.genre;
-        playingPartNum = partNum;
+        updatePlayerUI();
+        addStateLog(`→ Playing Mix: ${station.genre}`);
+      }).catch(err => {
+        console.warn("Autoplay block: ", err);
+      });
+    }
 
-        playBtn.classList.add("playing");
-        labelText.innerText = "PLAYING";
-        iconSpan.innerText = "■";
-
-        leftSpindle.innerHTML = makeReelSvg(true, 0.72, color);
-        rightSpindle.innerHTML = makeReelSvg(true, 0.38, color);
+    function toggleAudio(station) {
+      if (playingEpisodeId === station.genre) {
+        if (playingAudio.paused) {
+          playingAudio.play().then(() => {
+            updatePlayerUI();
+          }).catch(err => console.warn(err));
+        } else {
+          playingAudio.pause();
+          updatePlayerUI();
+        }
+      } else {
+        playStation(station);
       }
     }
 
@@ -849,10 +1033,88 @@
       drawTubeLines();
       renderTimelineNodes();
       renderCassettes();
+      
+      cachedMiniFills = document.querySelectorAll("#mini-vu-display .vu-bar-fill");
 
+      // Hook up audio event listeners
+      playingAudio.addEventListener("timeupdate", () => {
+        if (!playingEpisodeId) return;
+        const current = playingAudio.currentTime;
+        const elapsedSecRounded = Math.floor(current);
+        const total = playingAudio.duration || 1;
+        const pct = (current / total) * 100;
+        
+        const progressBar = document.getElementById("mini-progress-bar-fill");
+        const timeCurrent = document.getElementById("mini-time-current");
+        
+        if (Math.abs(pct - lastProgressPct) >= 0.25) {
+          if (progressBar) progressBar.style.width = pct + "%";
+          lastProgressPct = pct;
+        }
+
+        if (elapsedSecRounded !== lastElapsedSecond) {
+          if (timeCurrent) timeCurrent.innerText = formatTime(current);
+          lastElapsedSecond = elapsedSecRounded;
+        }
+        
+        updateSpindles(!playingAudio.paused);
+      });
+
+      const onDurationChange = () => {
+        const timeTotal = document.getElementById("mini-time-total");
+        if (timeTotal && playingAudio.duration) {
+          timeTotal.innerText = formatTime(playingAudio.duration);
+        }
+      };
+      playingAudio.addEventListener("durationchange", onDurationChange);
+      playingAudio.addEventListener("loadedmetadata", onDurationChange);
+
+      playingAudio.addEventListener("play", () => {
+        updatePlayerUI();
+      });
+      playingAudio.addEventListener("pause", () => {
+        updatePlayerUI();
+      });
+
+      playingAudio.addEventListener("ended", () => {
+        const currentIndex = STATIONS.findIndex(s => s.genre === playingEpisodeId);
+        if (currentIndex !== -1 && currentIndex + 1 < STATIONS.length) {
+          const nextStation = STATIONS[currentIndex + 1];
+          addStateLog(`→ Trans: EP ${STATIONS[currentIndex].epNum} finished. Loading EP ${nextStation.epNum} (${nextStation.genre})`);
+          playStation(nextStation);
+        } else {
+          playingEpisodeId = null;
+          updatePlayerUI();
+          addStateLog("→ Finished Playback Archive");
+        }
+      });
+
+      // Hook up mini player controls
+      document.getElementById("mini-play-btn").addEventListener("click", () => {
+        if (!playingEpisodeId) return;
+        const currentStation = STATIONS.find(s => s.genre === playingEpisodeId);
+        if (currentStation) {
+          toggleAudio(currentStation);
+        }
+      });
+
+      const miniProgressBar = document.getElementById("mini-progress-container-bar");
+      miniProgressBar.addEventListener("click", (e) => {
+        if (!playingEpisodeId || !playingAudio.duration) return;
+        const rect = miniProgressBar.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        const width = rect.width;
+        const pct = clickX / width;
+        playingAudio.currentTime = pct * playingAudio.duration;
+      });
+
+      let resizeTimeout = null;
       window.addEventListener("resize", () => {
-        recalculateCoordinates();
-        drawTubeLines();
+        if (resizeTimeout) clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          recalculateCoordinates();
+          drawTubeLines();
+        }, 100);
       });
 
       document.getElementById("clear-signal-footer").addEventListener("click", () => {

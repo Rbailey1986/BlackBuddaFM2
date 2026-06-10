@@ -277,12 +277,16 @@ function cacheDOMRefs() {
       2: document.getElementById('fill-2'),
       3: document.getElementById('fill-3'),
     },
+    vuSegmentsLeft: document.querySelectorAll('#vu-meter-left .vu-segment'),
+    vuSegmentsRight: document.querySelectorAll('#vu-meter-right .vu-segment'),
   };
 }
 
 // ── Player state ──────────────────────────────────────────────────────────────
 let currentFreq = 88.9;
 let isDragging = false;
+let lastElapsedSecond = -1;
+let lastProgressPct = -1;
 let activeStation = null;
 let lastActiveStation = null;
 let currentPart = 1;
@@ -578,6 +582,10 @@ function resetPartProgressUI(partNum) {
   if (DOM.timeDisplays[partNum] && activeStation) {
     DOM.timeDisplays[partNum].textContent = `00:00 / ${activeStation[`duration${partNum}`] || '00:00'}`;
   }
+  if (partNum === currentPart) {
+    lastElapsedSecond = -1;
+    lastProgressPct = -1;
+  }
 }
 
 // ── Cassette animation helpers ────────────────────────────────────────────────
@@ -635,6 +643,17 @@ function updateTapeReels(percent) {
   rollLeft.style.height = `${leftSize}px`;
   rollRight.style.width = `${rightSize}px`;
   rollRight.style.height = `${rightSize}px`;
+}
+
+function updatePartSelectorUI(partNum) {
+  document.querySelectorAll('.tape-part-btn').forEach(btn => {
+    const p = parseInt(btn.getAttribute('data-part'), 10);
+    if (p === partNum) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
 }
 
 // ── Full UI update when station changes ───────────────────────────────────────
@@ -697,6 +716,12 @@ function updateUIForStation(station) {
   if (part3Panel) part3Panel.style.display = hasPart3 ? 'flex' : 'none';
   if (hasPart3 && DOM.timeDisplays[3]) DOM.timeDisplays[3].textContent = `00:00 / ${station.duration3}`;
   if (DOM.fills[3]) DOM.fills[3].style.width = '0%';
+
+  const part3Btn = document.getElementById('tape-part-btn-3');
+  if (part3Btn) {
+    part3Btn.style.display = hasPart3 ? 'block' : 'none';
+  }
+  updatePartSelectorUI(1);
 }
 
 // ── Magazine cover renderer ───────────────────────────────────────────────────
@@ -766,6 +791,7 @@ function playPart(partNum) {
   if (currentPart !== partNum || audioEl.src !== targetAbsUrl) {
     resetPartProgressUI(currentPart);
     currentPart = partNum;
+    updatePartSelectorUI(partNum);
     audioEl.src = targetAbsUrl;
     audioEl.load();
     audioEl.play().then(() => updatePlayStateUI(true)).catch(e => console.warn(e));
@@ -840,16 +866,22 @@ function startProgressLoop() {
     if (!audioEl || audioEl.paused) { progressRafId = null; return; }
 
     const elapsed = audioEl.currentTime;
+    const elapsedSecRounded = Math.floor(elapsed);
     const durStr = (activeStation && activeStation[`duration${currentPart}`]) || '00:00';
     const durSecs = parseDuration(durStr);
     const dur = (durSecs !== null) ? durSecs : (audioEl.duration || 0);
     const pct = dur > 0 ? (elapsed / dur) * 100 : 0;
 
-    if (DOM.fills[currentPart]) DOM.fills[currentPart].style.width = pct + '%';
-    if (DOM.timeDisplays[currentPart]) DOM.timeDisplays[currentPart].textContent = `${formatTime(elapsed)} / ${durStr}`;
+    if (Math.abs(pct - lastProgressPct) >= 0.25) {
+      if (DOM.fills[currentPart]) DOM.fills[currentPart].style.width = pct + '%';
+      updateTapeReels(pct);
+      lastProgressPct = pct;
+    }
 
-    // Update tape reels wrapping rolls
-    updateTapeReels(pct);
+    if (elapsedSecRounded !== lastElapsedSecond) {
+      if (DOM.timeDisplays[currentPart]) DOM.timeDisplays[currentPart].textContent = `${formatTime(elapsed)} / ${durStr}`;
+      lastElapsedSecond = elapsedSecRounded;
+    }
 
     progressRafId = requestAnimationFrame(tick);
   };
@@ -888,8 +920,8 @@ function drawVisualizer() {
   const playing = audioEl && !audioEl.paused;
   const staticVol = staticGain ? staticGain.gain.value : 0;
 
-  const segmentsLeft = document.querySelectorAll('#vu-meter-left .vu-segment');
-  const segmentsRight = document.querySelectorAll('#vu-meter-right .vu-segment');
+  const segmentsLeft = DOM.vuSegmentsLeft;
+  const segmentsRight = DOM.vuSegmentsRight;
 
   if (!playing && staticVol === 0) {
     const stillDecaying = [
@@ -1310,6 +1342,14 @@ function wireEvents() {
   });
   DOM.heroBayPlayBtn?.addEventListener('click', togglePlay);
 
+  // Tape Parts Selector Buttons
+  document.querySelectorAll('.tape-part-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const partNum = parseInt(btn.getAttribute('data-part'), 10);
+      playPart(partNum);
+    });
+  });
+
   // Mechanical Cassette Deck Transport Controls
   document.getElementById('t-btn-rew')?.addEventListener('click', () => {
     if (!audioEl || !isAudioInitialized) return;
@@ -1456,8 +1496,12 @@ function wireEvents() {
     if (currentSpread < 4) { currentSpread++; renderBookletSpread(); }
   });
 
+  let resizeTimeout = null;
   window.addEventListener('resize', () => {
-    if (typeof drawTubeLines === 'function') drawTubeLines();
+    if (resizeTimeout) clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+      if (typeof drawTubeLines === 'function') drawTubeLines();
+    }, 100);
   });
 
   const navHamburger = document.getElementById('nav-hamburger');
