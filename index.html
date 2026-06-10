@@ -140,136 +140,148 @@
               </div>
 
               <div class="player-column player-right">
-                <div class="deck-sticker-canvas" id="deck-sticker-canvas">
-                  <!-- Placement overlay for sticker bombs -->
-                  <div id="sticker-placement-zone" class="sticker-placement-zone"></div>
+                
+                <!-- Cassette Deck Assembly -->
+                <div class="tape-deck-casing" id="tape-deck-casing">
+                  
+                  <!-- Left and Right Vertical VU Meters -->
+                  <div class="stereo-vu-meters">
+                    <div class="vu-meter" id="vu-meter-left">
+                      <div class="vu-segment vu-peak"></div>
+                      <div class="vu-segment vu-peak"></div>
+                      <div class="vu-segment vu-high"></div>
+                      <div class="vu-segment vu-high"></div>
+                      <div class="vu-segment vu-mid"></div>
+                      <div class="vu-segment vu-mid"></div>
+                      <div class="vu-segment vu-low"></div>
+                      <div class="vu-segment vu-low"></div>
+                      <div class="vu-segment vu-low"></div>
+                      <div class="vu-segment vu-low"></div>
+                    </div>
+                    <div class="vu-meter" id="vu-meter-right">
+                      <div class="vu-segment vu-peak"></div>
+                      <div class="vu-segment vu-peak"></div>
+                      <div class="vu-segment vu-high"></div>
+                      <div class="vu-segment vu-high"></div>
+                      <div class="vu-segment vu-mid"></div>
+                      <div class="vu-segment vu-mid"></div>
+                      <div class="vu-segment vu-low"></div>
+                      <div class="vu-segment vu-low"></div>
+                      <div class="vu-segment vu-low"></div>
+                      <div class="vu-segment vu-low"></div>
+                    </div>
+                    <div class="vu-label">VU</div>
+                  </div>
 
-                  <!-- Cassette Deck Assembly -->
-                  <div class="tape-deck-casing" id="tape-deck-casing">
+                  <!-- Main Tape Pocket Window -->
+                  <div class="tape-deck-window" id="tape-deck-window">
+                    <!-- CRT/Static Line Filter Overlay -->
+                    <div class="crt-scanlines"></div>
+                    
+                    <!-- Animated Cassette Tape Body -->
+                    <div class="cassette-tape-wrap" id="cassette-tape-wrap">
+                      <div class="cassette-body">
+                        <div class="cassette-screws">
+                          <span class="screw st-l"></span>
+                          <span class="screw st-r"></span>
+                          <span class="screw sb-l"></span>
+                          <span class="screw sb-r"></span>
+                        </div>
+                        
+                        <!-- Label on Cassette -->
+                        <div class="cassette-label-plate">
+                          <div class="cassette-ep-info">
+                            <span class="lbl-ep" id="cassette-ep-label">EP 01</span>
+                            <span class="lbl-genre" id="cassette-genre-label">JUNGLE</span>
+                          </div>
+                          <div class="cassette-station-title" id="cassette-title-label">JUNGLE SOUNDS</div>
+                        </div>
 
-                    <!-- Main Tape Pocket Window -->
-                    <div class="tape-deck-window" id="tape-deck-window">
-                      <!-- CRT/Static Line Filter Overlay -->
-                      <div class="crt-scanlines"></div>
-                      
-                      <!-- Animated Cassette Tape Body -->
-                      <div class="cassette-tape-wrap" id="cassette-tape-wrap">
-                        <div class="cassette-body">
-                          <div class="cassette-screws">
-                            <span class="screw st-l"></span>
-                            <span class="screw st-r"></span>
-                            <span class="screw sb-l"></span>
-                            <span class="screw sb-r"></span>
-                          </div>
-                          
-                          <!-- Label on Cassette -->
-                          <div class="cassette-label-plate">
-                            <div class="cassette-ep-info">
-                              <span class="lbl-ep" id="cassette-ep-label">EP 01</span>
-                              <span class="lbl-genre" id="cassette-genre-label">JUNGLE</span>
+                        <!-- Rotating Reels & Tape Spindles -->
+                        <div class="cassette-window-cutout">
+                          <div class="spindle-hub hub-left">
+                            <div class="reel-spindle" id="reel-left">
+                              <div class="spoke-lines"></div>
                             </div>
-                            <div class="cassette-station-title" id="cassette-title-label">JUNGLE SOUNDS</div>
+                            <div class="tape-reel-roll" id="tape-roll-left"></div>
                           </div>
-
-                          <!-- Rotating Reels & Tape Spindles -->
-                          <div class="cassette-window-cutout">
-                            <div class="spindle-hub hub-left">
-                              <div class="reel-spindle" id="reel-left">
-                                <div class="spoke-lines"></div>
-                              </div>
-                              <div class="tape-reel-roll" id="tape-roll-left"></div>
+                          <div class="spindle-hub hub-right">
+                            <div class="reel-spindle" id="reel-right">
+                              <div class="spoke-lines"></div>
                             </div>
-                            <div class="spindle-hub hub-right">
-                              <div class="reel-spindle" id="reel-right">
-                                <div class="spoke-lines"></div>
-                              </div>
-                              <div class="tape-reel-roll" id="tape-roll-right"></div>
-                            </div>
-                          </div>
-                          
-                          <!-- Cassette Bottom Details -->
-                          <div class="cassette-bottom-holes">
-                            <span class="hole"></span>
-                            <span class="hole-wide"></span>
-                            <span class="hole"></span>
+                            <div class="tape-reel-roll" id="tape-roll-right"></div>
                           </div>
                         </div>
-                      </div>
-
-                      <!-- Mechanical Tape Door Lid overlay -->
-                      <div class="tape-door-lid" id="tape-door-lid">
-                        <div class="door-glass-reflection"></div>
-                        <span class="door-brand">BLACK BUDDHA FM</span>
-                        <div class="tape-door-window-cutout"></div>
+                        
+                        <!-- Cassette Bottom Details -->
+                        <div class="cassette-bottom-holes">
+                          <span class="hole"></span>
+                          <span class="hole-wide"></span>
+                          <span class="hole"></span>
+                        </div>
                       </div>
                     </div>
 
-                  </div>
-
-                  <!-- Mechanical Tape Transport Keys -->
-                  <div class="tape-transport-panel">
-                    <button class="transport-btn" id="t-btn-rew" title="Rewind 30s">
-                      <span class="btn-phys"></span>
-                      <span class="btn-cap">REW</span>
-                    </button>
-                    <button class="transport-btn" id="t-btn-ffw" title="Fast Forward 30s">
-                      <span class="btn-phys"></span>
-                      <span class="btn-cap">FF</span>
-                    </button>
-                    <button class="transport-btn" id="t-btn-play" title="Play">
-                      <span class="btn-phys"></span>
-                      <span class="btn-cap">PLAY</span>
-                    </button>
-                    <button class="transport-btn" id="t-btn-pause" title="Pause">
-                      <span class="btn-phys"></span>
-                      <span class="btn-cap">PAUSE</span>
-                    </button>
-                    <button class="transport-btn" id="t-btn-stop" title="Stop">
-                      <span class="btn-phys"></span>
-                      <span class="btn-cap">STOP</span>
-                    </button>
-                    <button class="transport-btn" id="t-btn-eject" title="Eject Tape">
-                      <span class="btn-phys"></span>
-                      <span class="btn-cap">EJECT</span>
-                    </button>
-                  </div>
-
-                  <!-- Parametric EQ / Filter Dials -->
-                  <div class="tape-eq-panel">
-                    <div class="eq-knob-wrapper">
-                      <div class="eq-knob" id="knob-bass" data-param="bass">
-                        <div class="knob-marker"></div>
-                      </div>
-                      <span class="knob-label">BASS</span>
+                    <!-- Mechanical Tape Door Lid overlay -->
+                    <div class="tape-door-lid" id="tape-door-lid">
+                      <div class="door-glass-reflection"></div>
+                      <span class="door-brand">BLACK BUDDHA FM</span>
+                      <div class="tape-door-window-cutout"></div>
                     </div>
-                    <div class="eq-knob-wrapper">
-                      <div class="eq-knob" id="knob-mid" data-param="mid">
-                        <div class="knob-marker"></div>
-                      </div>
-                      <span class="knob-label">MID</span>
-                    </div>
-                    <div class="eq-knob-wrapper">
-                      <div class="eq-knob" id="knob-treble" data-param="treble">
-                        <div class="knob-marker"></div>
-                      </div>
-                      <span class="knob-label">TREBLE</span>
-                    </div>
-                  </div>
-
-                  <!-- Sticker Selector & Clean Board panel -->
-                  <div class="sticker-selector-tray">
-                    <span class="tray-title">TAG STICKERS:</span>
-                    <div class="sticker-options">
-                      <div class="sticker-option" data-sticker="smiley" title="Smiley Face">☺</div>
-                      <div class="sticker-option" data-sticker="radio" title="Radio Boombox">📻</div>
-                      <div class="sticker-option" data-sticker="skull" title="Pirate Skull">☠</div>
-                      <div class="sticker-option" data-sticker="bolt" title="Neon Bolt">⚡</div>
-                      <div class="sticker-option" data-sticker="tape" title="Cassette Tag">📼</div>
-                    </div>
-                    <button class="clear-stickers-btn" id="clear-stickers-btn">CLEAN DECK</button>
                   </div>
 
                 </div>
+
+                <!-- Mechanical Tape Transport Keys -->
+                <div class="tape-transport-panel">
+                  <button class="transport-btn" id="t-btn-rew" title="Rewind 30s">
+                    <span class="btn-phys"></span>
+                    <span class="btn-cap">REW</span>
+                  </button>
+                  <button class="transport-btn" id="t-btn-ffw" title="Fast Forward 30s">
+                    <span class="btn-phys"></span>
+                    <span class="btn-cap">FF</span>
+                  </button>
+                  <button class="transport-btn" id="t-btn-play" title="Play">
+                    <span class="btn-phys"></span>
+                    <span class="btn-cap">PLAY</span>
+                  </button>
+                  <button class="transport-btn" id="t-btn-pause" title="Pause">
+                    <span class="btn-phys"></span>
+                    <span class="btn-cap">PAUSE</span>
+                  </button>
+                  <button class="transport-btn" id="t-btn-stop" title="Stop">
+                    <span class="btn-phys"></span>
+                    <span class="btn-cap">STOP</span>
+                  </button>
+                  <button class="transport-btn" id="t-btn-eject" title="Eject Tape">
+                    <span class="btn-phys"></span>
+                    <span class="btn-cap">EJECT</span>
+                  </button>
+                </div>
+
+                <!-- Parametric EQ / Filter Dials -->
+                <div class="tape-eq-panel">
+                  <div class="eq-knob-wrapper">
+                    <div class="eq-knob" id="knob-bass" data-param="bass">
+                      <div class="knob-marker"></div>
+                    </div>
+                    <span class="knob-label">BASS</span>
+                  </div>
+                  <div class="eq-knob-wrapper">
+                    <div class="eq-knob" id="knob-mid" data-param="mid">
+                      <div class="knob-marker"></div>
+                    </div>
+                    <span class="knob-label">MID</span>
+                  </div>
+                  <div class="eq-knob-wrapper">
+                    <div class="eq-knob" id="knob-treble" data-param="treble">
+                      <div class="knob-marker"></div>
+                    </div>
+                    <span class="knob-label">TREBLE</span>
+                  </div>
+                </div>
+
               </div>
 
             </div>

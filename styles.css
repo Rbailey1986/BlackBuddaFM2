@@ -1257,12 +1257,6 @@ h1.hero-title {
   }
 }
 
-.deck-sticker-canvas {
-  position: relative;
-  width: 100%;
-  box-sizing: border-box;
-}
-
 .tape-deck-casing {
   position: relative;
   width: 100%;
@@ -1279,6 +1273,68 @@ h1.hero-title {
   gap: 12px;
   overflow: hidden;
   margin-bottom: 16px;
+}
+
+/* Vertical LED VU Meters */
+.stereo-vu-meters {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+  height: 100%;
+  padding: 4px;
+  background: #050505;
+  border: 1px solid #222;
+  border-radius: 4px;
+  align-items: center;
+  position: relative;
+  width: 26px;
+  box-sizing: border-box;
+}
+
+.vu-meter {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 3px;
+  height: 124px;
+  width: 6px;
+}
+
+.vu-segment {
+  flex: 1;
+  background: #111;
+  border-radius: 1px;
+  transition: background-color 0.05s ease, box-shadow 0.05s ease;
+}
+
+.vu-segment.vu-low.active {
+  background: var(--neon-green, #00ffcc);
+  box-shadow: 0 0 4px var(--neon-green, #00ffcc);
+}
+
+.vu-segment.vu-mid.active {
+  background: #ffaa00;
+  box-shadow: 0 0 4px #ffaa00;
+}
+
+.vu-segment.vu-high.active {
+  background: #ff5500;
+  box-shadow: 0 0 4px #ff5500;
+}
+
+.vu-segment.vu-peak.active {
+  background: var(--neon-pink, #ff00ff);
+  box-shadow: 0 0 6px var(--neon-pink, #ff00ff);
+}
+
+.vu-label {
+  position: absolute;
+  bottom: 0px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 6px;
+  color: #444;
+  font-weight: 700;
 }
 
 
@@ -1633,110 +1689,7 @@ h1.hero-title {
   font-weight: 700;
 }
 
-/* Stickers Panel */
-.sticker-selector-tray {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  background: #050505;
-  border: 1px dashed rgba(255, 255, 255, 0.15);
-  padding: 8px 10px;
-  border-radius: 4px;
-  margin-bottom: 16px;
-}
 
-.tray-title {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 7px;
-  color: #666;
-  font-weight: 700;
-}
-
-.sticker-options {
-  display: flex;
-  gap: 6px;
-}
-
-.sticker-option {
-  width: 22px;
-  height: 22px;
-  border: 1px solid #333;
-  border-radius: 3px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 12px;
-  color: #aaa;
-  background: #111;
-  transition: all 0.2s;
-  user-select: none;
-}
-
-.sticker-option:hover {
-  border-color: var(--neon-pink);
-  color: var(--neon-pink);
-  background: rgba(var(--theme-primary-rgb), 0.1);
-}
-
-.sticker-option.active-selected {
-  border-color: var(--neon-pink);
-  color: #000;
-  background: var(--neon-pink);
-  box-shadow: 0 0 8px var(--neon-pink);
-}
-
-.clear-stickers-btn {
-  background: none;
-  border: 1px solid rgba(255,0,0,0.5);
-  color: rgba(255,50,50,0.8);
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 8px;
-  font-weight: 700;
-  padding: 4px 8px;
-  border-radius: 2px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.clear-stickers-btn:hover {
-  background: rgba(255,0,0,0.1);
-  color: #ff5555;
-  border-color: #ff5555;
-}
-
-/* Placed Stickers overlay */
-.sticker-placement-zone {
-  position: absolute;
-  inset: 0;
-  z-index: 40;
-  pointer-events: none;
-}
-
-.sticker-placement-zone.active-capture {
-  pointer-events: auto;
-}
-
-.placed-sticker {
-  position: absolute;
-  z-index: 45;
-  font-size: 26px;
-  color: var(--neon-pink);
-  text-shadow: 0 0 5px var(--neon-pink), 0 0 10px rgba(0,0,0,0.5);
-  cursor: pointer;
-  user-select: none;
-  pointer-events: auto;
-  transform-origin: center;
-}
-
-body.sticker-bomb-active {
-  cursor: crosshair !important;
-}
-
-body.sticker-bomb-active .player-outer {
-  border-color: var(--neon-pink) !important;
-}
 
 /* CRT monitor scanlines & Glitches overlay */
 .crt-scanlines {
