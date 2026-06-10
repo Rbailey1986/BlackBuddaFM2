@@ -78,6 +78,7 @@ body.theme-ep10 {
 
 html {
   scroll-behavior: smooth;
+  scroll-snap-type: y mandatory;
 }
 
 body {
@@ -349,6 +350,12 @@ header.scrolled {
 
 .mobile-drawer-link:hover {
   color: var(--neon-pink);
+}
+
+section {
+  scroll-snap-align: start;
+  scroll-margin-top: var(--header-height);
+  scroll-snap-stop: always;
 }
 
 /* ─── Main Section Content Container ─── */
