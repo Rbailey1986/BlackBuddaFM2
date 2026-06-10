@@ -4,6 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="view-transition" content="same-origin">
   <title>BLACK BUDDHA FM | THE FREQUENCY MANIFESTO</title>
   <meta name="description" content="Founded on the principles of pirate radio, Black Buddha FM is a non-commercial archival broadcast dedicated to the preservation and celebration of Black British music subcultures.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -473,6 +474,45 @@
         typeNextLine();
       });
     }
+
+    // Scroll-aware Header & Ticker
+    window.addEventListener('scroll', () => {
+      const ticker = document.querySelector('.ticker-wrap');
+      const header = document.querySelector('header');
+      if (window.scrollY > 40) {
+        ticker?.classList.add('scrolled');
+        header?.classList.add('scrolled');
+      } else {
+        ticker?.classList.remove('scrolled');
+        header?.classList.remove('scrolled');
+      }
+    });
+
+    // Feature 4: JS-driven glitch page transitions
+    const transOverlay = document.createElement('div');
+    transOverlay.className = 'page-transition-overlay';
+    document.body.appendChild(transOverlay);
+
+    document.body.classList.add('glitch-entering');
+    document.body.addEventListener('animationend', function handler(e) {
+      if (e.animationName === 'glitch-in') {
+        document.body.classList.remove('glitch-entering');
+        document.body.removeEventListener('animationend', handler);
+      }
+    });
+
+    document.querySelectorAll('a[href]').forEach(link => {
+      const href = link.getAttribute('href');
+      if (!href || href.startsWith('#') || href.startsWith('http') || href.startsWith('mailto:')) return;
+      link.addEventListener('click', e => {
+        e.preventDefault();
+        const target = link.href;
+        document.body.style.animation = 'glitch-out 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards';
+        transOverlay.style.opacity = '1';
+        transOverlay.style.background = '#000';
+        setTimeout(() => { window.location.href = target; }, 280);
+      });
+    });
   </script>
 </body>
 

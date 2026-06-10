@@ -96,6 +96,23 @@ function buildTicker() {
   ticker.innerHTML = [...items, ...items].map(t => `<span>${t}</span>`).join('');
 }
 
+/** Feature 2: Update ticker text dynamically when station changes */
+function updateTickerForStation(station) {
+  const ticker = document.getElementById('ticker');
+  if (!ticker || !station) return;
+  const items = [
+    `NOW TRANSMITTING: EP ${station.epNum} — ${station.genre}`,
+    `LIVE ON ${station.freq.toFixed(1)} FM`,
+    'BLACK BUDDHA FM',
+    'PIRATE BROADCASTING 24/7',
+    `${station.title}`,
+    `HOSTED BY DJ PRESIDENT BAILEY`,
+    '30 YEARS OF BLACK BRITISH MUSIC',
+    `SIGNAL LOCKED: ${station.freq.toFixed(1)} MHz`,
+  ];
+  ticker.innerHTML = [...items, ...items].map(t => `<span>${t}</span>`).join('');
+}
+
 // ── Build miniature cassette shelf ───────────────────────────────────────────
 function buildArchiveCards() {
   const grid = document.getElementById('cards-grid');
@@ -571,6 +588,14 @@ function updateUIForStation(station) {
 
   renderMagazineCover(station);
 
+  // Feature 2: Live dynamic ticker
+  updateTickerForStation(station);
+
+  // Feature 6: Deep linking — update URL without reload
+  const url = new URL(window.location);
+  url.searchParams.set('station', station.freq.toFixed(1));
+  window.history.replaceState(null, '', url);
+
   if (typeof updateTubeMapActiveState === 'function') {
     updateTubeMapActiveState(station.genre);
   }
@@ -625,7 +650,13 @@ function renderMagazineCover(station) {
   const mount = document.getElementById('magazine-cover-mount');
   if (!mount) return;
   if (station.cardImg) {
-    mount.innerHTML = `<img src="${station.cardImg}" alt="${station.genre} Magazine Cover" class="magazine-img">`;
+    // Feature 8: Skeleton loading state
+    mount.innerHTML = `<div class="img-skeleton"><img src="${station.cardImg}" alt="${station.genre} Magazine Cover" class="magazine-img" loading="lazy"></div>`;
+    const img = mount.querySelector('img');
+    if (img) {
+      img.addEventListener('load', () => img.closest('.img-skeleton')?.classList.add('loaded'));
+      if (img.complete) img.closest('.img-skeleton')?.classList.add('loaded');
+    }
   } else {
     mount.innerHTML = buildMagazineFallbackHTML(
       station,
@@ -689,6 +720,16 @@ function updatePlayStateUI(isPlaying) {
 
   DOM.vinylFrame?.classList.toggle('playing', isPlaying);
   if (DOM.recFlicker) DOM.recFlicker.style.animationPlayState = isPlaying ? 'running' : 'paused';
+
+  // Feature 1: Restore CSS idle bounce when paused
+  const heroWave = document.getElementById('hero-wave');
+  if (heroWave) {
+    if (isPlaying) {
+      heroWave.classList.add('active-visualizer');
+    } else {
+      heroWave.classList.remove('active-visualizer');
+    }
+  }
 }
 
 // ── RAF-based main progress loop ──────────────────────────────────────────────
@@ -970,8 +1011,8 @@ function renderBookletSpread() {
       <div class="booklet-page right-page">
         <div class="booklet-gallery-wrap">
           <h2 class="booklet-title" style="--genre-color: ${color}">VISUAL ARCHIVE</h2>
-          <div class="booklet-img-frame">
-            <img src="${galleryImg}" class="booklet-img" alt="Visual archive">
+          <div class="booklet-img-frame img-skeleton">
+            <img src="${galleryImg}" class="booklet-img" alt="Visual archive" loading="lazy" onload="this.closest('.img-skeleton')?.classList.add('loaded')">
           </div>
           <div>
             <div class="booklet-artists-label">KEY MOVEMENT PROPAGATORS:</div>
@@ -1484,8 +1525,16 @@ function updateTubeMapActiveState(genreName) {
   initTimelineNodes();
   drawTubeLines();
 
-  // Default to Jungle
-  const defaultStation = getStationByGenre('JUNGLE') || STATIONS[0];
+  // Feature 6: Deep linking — check URL for ?station= param
+  const urlParams = new URLSearchParams(window.location.search);
+  const stationParam = urlParams.get('station');
+  let defaultStation;
+  if (stationParam) {
+    const targetFreq = parseFloat(stationParam);
+    defaultStation = STATIONS.find(s => Math.abs(s.freq - targetFreq) < 0.05) || getStationByGenre('JUNGLE') || STATIONS[0];
+  } else {
+    defaultStation = getStationByGenre('JUNGLE') || STATIONS[0];
+  }
   activeStation = defaultStation;
   lastActiveStation = defaultStation;
   currentFreq = defaultStation.freq;
@@ -1501,5 +1550,76 @@ function updateTubeMapActiveState(genreName) {
   // Clear signal footer button
   document.getElementById('clear-signal-footer')?.addEventListener('click', () => {
     if (activeGenreId) handleGenreSelect(activeGenreId);
+  });
+
+  // Scroll-aware Header & Ticker logic
+  window.addEventListener('scroll', () => {
+    const ticker = document.querySelector('.ticker-wrap');
+    const header = document.querySelector('header');
+    if (window.scrollY > 40) {
+      ticker?.classList.add('scrolled');
+      header?.classList.add('scrolled');
+    } else {
+      ticker?.classList.remove('scrolled');
+      header?.classList.remove('scrolled');
+    }
+  });
+
+  // Magazine/Booklet keyboard shortcuts
+  window.addEventListener('keydown', e => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+    const modalOpen = magazineModal && magazineModal.style.display === 'flex';
+    if (!modalOpen) return;
+
+    if (e.code === 'Escape') {
+      e.preventDefault();
+      closeBookletModal();
+    } else if (e.code === 'ArrowRight' || e.code === 'ArrowDown') {
+      e.preventDefault();
+      if (currentSpread < 4) { currentSpread++; renderBookletSpread(); }
+    } else if (e.code === 'ArrowLeft' || e.code === 'ArrowUp') {
+      e.preventDefault();
+      if (currentSpread > 1) { currentSpread--; renderBookletSpread(); }
+    } else if (e.code === 'Space') {
+      e.preventDefault();
+      toggleBookletAudio();
+    }
+  });
+
+  // Feature 4: JS-driven glitch page transitions (works on file:// and http://)
+  // Create the transition overlay element
+  const transOverlay = document.createElement('div');
+  transOverlay.className = 'page-transition-overlay';
+  document.body.appendChild(transOverlay);
+
+  // Play glitch-in animation on page load
+  document.body.classList.add('glitch-entering');
+  document.body.addEventListener('animationend', function handler(e) {
+    if (e.animationName === 'glitch-in') {
+      document.body.classList.remove('glitch-entering');
+      document.body.removeEventListener('animationend', handler);
+    }
+  });
+
+  // Intercept internal navigation links
+  document.querySelectorAll('a[href]').forEach(link => {
+    const href = link.getAttribute('href');
+    // Only intercept local page navigations (not anchors, not external)
+    if (!href || href.startsWith('#') || href.startsWith('http') || href.startsWith('mailto:')) return;
+
+    link.addEventListener('click', e => {
+      e.preventDefault();
+      const target = link.href;
+
+      // Trigger glitch-out on the whole page
+      document.body.style.animation = 'glitch-out 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards';
+      transOverlay.style.opacity = '1';
+      transOverlay.style.background = '#000';
+
+      setTimeout(() => {
+        window.location.href = target;
+      }, 280);
+    });
   });
 })();

@@ -73,7 +73,11 @@ body {
   width: 100%;
   z-index: 200;
   box-shadow: 0 0 20px rgba(var(--theme-primary-rgb), 0.5);
-  transition: background 0.3s ease;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease;
+}
+
+.ticker-wrap.scrolled {
+  transform: translateY(-100%);
 }
 
 .ticker {
@@ -104,7 +108,14 @@ header {
   border-bottom: 2px solid rgba(var(--theme-primary-rgb), 0.4);
   background: rgba(10, 12, 16, 0.96);
   backdrop-filter: blur(12px);
-  transition: border-color 0.3s ease;
+  transition: top 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, background 0.3s ease, backdrop-filter 0.3s ease;
+}
+
+header.scrolled {
+  top: 0;
+  background: rgba(10, 12, 16, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
 .header-inner {
@@ -574,6 +585,25 @@ h1.hero-title {
   scroll-snap-type: x proximity;
 }
 
+.tape-shelf-row::-webkit-scrollbar,
+.nodes-track-scroll-frame::-webkit-scrollbar {
+  height: 6px;
+}
+
+.tape-shelf-row::-webkit-scrollbar-track,
+.nodes-track-scroll-frame::-webkit-scrollbar-track {
+  background: #020204;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.tape-shelf-row::-webkit-scrollbar-thumb,
+.nodes-track-scroll-frame::-webkit-scrollbar-thumb {
+  background: var(--theme-primary, #ff00ff);
+  border-radius: 3px;
+  box-shadow: 0 0 8px var(--theme-primary, #ff00ff);
+}
+
 .cassette-spine {
   width: 26px;
   height: 84px;
@@ -1016,7 +1046,33 @@ h1.hero-title {
 .analog-dial-wrapper { align-self: flex-start; }
 @media (min-width: 768px) { .analog-dial-wrapper { align-self: auto; } }
 
-.gain-knob { width: 48px; height: 48px; background: #050505; border: 3px solid #00ffcc; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: ns-resize; }
+.gain-knob {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  background: radial-gradient(circle, #1e1e24 40%, #08080a 70%);
+  border: 3px solid #00ffcc;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: ns-resize;
+  box-shadow: 
+    inset 0 2px 4px rgba(255,255,255,0.1),
+    inset 0 -2px 4px rgba(0,0,0,0.8),
+    0 0 15px rgba(0, 255, 204, 0.25);
+}
+
+.gain-knob::before {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 2px dotted rgba(0, 255, 204, 0.4);
+  mask-image: radial-gradient(circle, transparent 65%, black 66%);
+  -webkit-mask-image: radial-gradient(circle, transparent 65%, black 66%);
+  pointer-events: none;
+}
 .knob-line { width: 4px; height: 20px; background: var(--neon-pink); border-radius: 2px; }
 
 /* ─── Transit Network Sound Map Line Section ─── */
@@ -1287,3 +1343,83 @@ h1.hero-title {
 .booklet-nav-btn:hover:not(:disabled) { border-color: var(--genre-color, #ff00ff); color: var(--genre-color, #ff00ff); }
 .booklet-nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 .booklet-page-indicator { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: rgba(255,255,255,0.4); }
+
+/* ─── Feature 4: TV Static / Glitch Page Transition (JS-driven) ─── */
+@keyframes glitch-out {
+  0% { opacity: 1; filter: none; }
+  15% { opacity: 0.85; filter: saturate(3) hue-rotate(90deg); transform: translateX(-2px); }
+  30% { opacity: 0.7; filter: saturate(0) brightness(2); transform: translateX(3px) skewX(2deg); }
+  50% { opacity: 0.4; filter: contrast(5) brightness(3); transform: translateX(-1px); }
+  70% { opacity: 0.2; filter: saturate(0) brightness(4) contrast(0.5); }
+  100% { opacity: 0; filter: brightness(5); }
+}
+
+@keyframes glitch-in {
+  0% { opacity: 0; filter: brightness(5); }
+  20% { opacity: 0.3; filter: saturate(0) brightness(3) contrast(0.5); }
+  40% { opacity: 0.5; filter: contrast(4) brightness(2); transform: translateX(2px); }
+  60% { opacity: 0.7; filter: saturate(2) hue-rotate(-60deg); transform: translateX(-1px) skewX(-1deg); }
+  80% { opacity: 0.9; filter: saturate(1.5) hue-rotate(20deg); transform: translateX(1px); }
+  100% { opacity: 1; filter: none; transform: none; }
+}
+
+/* Fullscreen overlay used by the JS transition system */
+.page-transition-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  pointer-events: none;
+  background: #000;
+  opacity: 0;
+}
+
+.page-transition-overlay.glitch-out {
+  pointer-events: all;
+  animation: glitch-out 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+body.glitch-entering {
+  animation: glitch-in 0.35s cubic-bezier(0.0, 0, 0.2, 1) both;
+}
+
+/* ─── Feature 8: Skeleton Loading States ─── */
+.img-skeleton {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 80px;
+  background: linear-gradient(
+    110deg,
+    rgba(var(--theme-primary-rgb, 255, 0, 255), 0.05) 8%,
+    rgba(var(--theme-primary-rgb, 255, 0, 255), 0.18) 18%,
+    rgba(var(--theme-primary-rgb, 255, 0, 255), 0.05) 33%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-pulse 1.5s ease-in-out infinite;
+  border: 1px solid rgba(var(--theme-primary-rgb, 255, 0, 255), 0.15);
+  overflow: hidden;
+}
+
+@keyframes skeleton-pulse {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.img-skeleton img {
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.img-skeleton.loaded {
+  background: none;
+  animation: none;
+  border-color: transparent;
+}
+
+.img-skeleton.loaded img {
+  opacity: 1;
+}
