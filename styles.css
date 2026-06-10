@@ -1281,67 +1281,7 @@ h1.hero-title {
   margin-bottom: 16px;
 }
 
-/* Vertical LED VU Meters */
-.stereo-vu-meters {
-  display: flex;
-  flex-direction: row;
-  gap: 5px;
-  height: 100%;
-  padding: 4px;
-  background: #050505;
-  border: 1px solid #222;
-  border-radius: 4px;
-  align-items: center;
-  position: relative;
-  width: 26px;
-  box-sizing: border-box;
-}
 
-.vu-meter {
-  display: flex;
-  flex-direction: column-reverse;
-  gap: 3px;
-  height: 124px;
-  width: 6px;
-}
-
-.vu-segment {
-  flex: 1;
-  background: #111;
-  border-radius: 1px;
-  transition: background-color 0.05s ease, box-shadow 0.05s ease;
-}
-
-.vu-segment.vu-low.active {
-  background: var(--neon-green, #00ffcc);
-  box-shadow: 0 0 4px var(--neon-green, #00ffcc);
-}
-
-.vu-segment.vu-mid.active {
-  background: #ffaa00;
-  box-shadow: 0 0 4px #ffaa00;
-}
-
-.vu-segment.vu-high.active {
-  background: #ff5500;
-  box-shadow: 0 0 4px #ff5500;
-}
-
-.vu-segment.vu-peak.active {
-  background: var(--neon-pink, #ff00ff);
-  box-shadow: 0 0 6px var(--neon-pink, #ff00ff);
-}
-
-.vu-label {
-  position: absolute;
-  bottom: 0px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 6px;
-  color: #444;
-  font-weight: 700;
-}
 
 /* Tape Window */
 .tape-deck-window {

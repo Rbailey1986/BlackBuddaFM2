@@ -888,9 +888,6 @@ function drawVisualizer() {
   const playing = audioEl && !audioEl.paused;
   const staticVol = staticGain ? staticGain.gain.value : 0;
 
-  const segmentsLeft = document.querySelectorAll('#vu-meter-left .vu-segment');
-  const segmentsRight = document.querySelectorAll('#vu-meter-right .vu-segment');
-
   if (!playing && staticVol === 0) {
     const stillDecaying = [
       decayBars(DOM.heroBars),
@@ -898,47 +895,15 @@ function drawVisualizer() {
       ...miniBarSets.map(decayBars),
     ].some(Boolean);
 
-    decayVUMeter(segmentsLeft);
-    decayVUMeter(segmentsRight);
-
     if (!stillDecaying) { isVisualizerRunning = false; return; }
   } else {
     updateBars(DOM.heroBars, dataArray, 0, 8);
     updateBars(DOM.monitorBars, dataArray, 4, 12);
     const activeMini = miniBarSets[currentPart - 1];
     if (activeMini) updateBars(activeMini, dataArray, 8, 16);
-
-    // Calculate dynamic channel Left and Right VU levels
-    let sumL = 0;
-    for (let i = 0; i < 8; i++) sumL += dataArray[i] || 0;
-    const avgL = sumL / 8;
-
-    let sumR = 0;
-    for (let i = 4; i < 12; i++) sumR += dataArray[i] || 0;
-    const avgR = sumR / 8;
-
-    updateVUMeter(segmentsLeft, avgL);
-    updateVUMeter(segmentsRight, avgR);
   }
 
   requestAnimationFrame(drawVisualizer);
-}
-
-function updateVUMeter(segments, average) {
-  if (!segments || !segments.length) return;
-  const numSegments = segments.length;
-  // Convert 0-255 average to active segments (0-10) with some sensitivity headroom
-  const activeCount = Math.min(numSegments, Math.floor((average / 230) * numSegments));
-
-  segments.forEach((seg, idx) => {
-    const isLit = (numSegments - 1 - idx) < activeCount;
-    seg.classList.toggle('active', isLit);
-  });
-}
-
-function decayVUMeter(segments) {
-  if (!segments || !segments.length) return;
-  segments.forEach(seg => seg.classList.remove('active'));
 }
 
 function updateBars(bars, dataArr, startBin, endBin) {
